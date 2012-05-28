@@ -31,7 +31,7 @@ class AutopilotAdaptor: public QDBusAbstractAdaptor
     Q_CLASSINFO("D-Bus Introspection", ""
 "  <interface name=\"com.canonical.Unity.Debug.Introspection\">\n"
 "    <method name=\"GetState\">\n"
-"      <annotation value=\"QVariantMap\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\"/>\n"
+//"      <annotation value=\"QList<QVariantMap>\" name=\"com.trolltech.QtDBus.QtTypeName.Out0\"/>\n"
 "      <arg direction=\"in\" type=\"s\" name=\"piece\"/>\n"
 "      <arg direction=\"out\" type=\"aa{sv}\" name=\"state\"/>\n"
 "    </method>\n"
