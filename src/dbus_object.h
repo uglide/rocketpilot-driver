@@ -11,7 +11,7 @@ Q_OBJECT
 public:
 
 public Q_SLOTS:
-    QList<QVariantMap> GetState(const QString &piece);
+    QList<QVariant> GetState(const QString &piece);
 
 };
 

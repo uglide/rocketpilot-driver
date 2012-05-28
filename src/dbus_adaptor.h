@@ -12,14 +12,11 @@
 #ifndef DBUS_ADAPTOR_H_1337917721
 #define DBUS_ADAPTOR_H_1337917721
 
-#include <QtCore/QObject>
-#include <QtDBus/QtDBus>
-class QByteArray;
-template<class T> class QList;
-template<class Key, class Value> class QMap;
+#include <QObject>
+#include <QtDBus>
+
 class QString;
-class QStringList;
-class QVariant;
+
 
 /*
  * Adaptor class for interface com.canonical.Unity.Debug.Introspection
@@ -43,7 +40,7 @@ public:
 
 public: // PROPERTIES
 public Q_SLOTS: // METHODS
-    QList<QVariantMap> GetState(const QString &piece);
+    void GetState(const QString &piece, const QDBusMessage &message);
 Q_SIGNALS: // SIGNALS
 };
 

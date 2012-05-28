@@ -35,22 +35,20 @@ AutopilotAdaptor::~AutopilotAdaptor()
     // destructor
 }
 
-QList<QVariantMap> AutopilotAdaptor::GetState(const QString &piece)
+void AutopilotAdaptor::GetState(const QString &piece, const QDBusMessage &message)
 {
     // handle method call com.canonical.Unity.Debug.Introspection.GetState
-    // QList<QVariantMap> state;
-    // QMetaObject::invokeMethod(parent(),
-    //     "GetState",
-    //     Q_RETURN_ARG(QList<QVariantMap>, state),
-    //     Q_ARG(QString, piece));
+    QList<QVariant> state;
+    QMetaObject::invokeMethod(parent(),
+        "GetState",
+        Q_RETURN_ARG(QList<QVariant>, state),
+        Q_ARG(QString, piece));
 
-    // qDebug() << "Wrapper returning state:" << state << "query was:" << piece;
-    // return state;
-    QList<QVariantMap> state;
+
     qDebug() << "Inside GetState()";
-    QVariantMap m;
-    m["some_property"] = QString("Some Value");
-    state.append(m);
-    return state;
+    qDebug() << "Message is:" << message;
+
+    QVariant reply(state);
+    QDBusConnection::sessionBus().send(message.createReply(reply));
 }
 
