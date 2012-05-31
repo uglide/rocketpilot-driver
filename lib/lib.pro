@@ -1,6 +1,7 @@
 
 TEMPLATE = lib
 TARGET = qttestability
+DESTDIR=..
 QT = core gui dbus
 
 QMAKE_CXXFLAGS += -std=c++0x
