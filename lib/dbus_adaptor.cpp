@@ -6,7 +6,7 @@ under the terms of the GNU General Public License version 3, as published
 by the Free Software Foundation.
 */
 
-#include "src/dbus_adaptor.h"
+#include "dbus_adaptor.h"
 #include <QtCore/QMetaObject>
 #include <QtCore/QByteArray>
 #include <QtCore/QList>
