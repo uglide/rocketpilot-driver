@@ -35,22 +35,16 @@ AutopilotAdaptor::~AutopilotAdaptor()
 
 void AutopilotAdaptor::GetState(const QString &piece, const QDBusMessage &message)
 {
-    //message.setDelayedReply(true);
+    message.setDelayedReply(true);
     QDBusMessage reply = message.createReply();
-    //QDBusConnection::sessionBus().send(reply);
 
     // handle method call com.canonical.Unity.Debug.Introspection.GetState
-    QList<QVariant> state;
-    QMetaObject::invokeMethod(parent(),
-        "GetState",
-        Q_RETURN_ARG(QList<QVariant>, state),
-        Q_ARG(QString, piece));
-
-
-    qDebug() << "Inside GetState()";
-    qDebug() << "Message is:" << message;
-
-    reply << QVariant(state);
-    QDBusConnection::sessionBus().send(reply);
+    QMetaObject::invokeMethod(
+                parent(),
+                "GetState",
+                Qt::QueuedConnection,
+                Q_ARG(QString, piece),
+                Q_ARG(QDBusMessage, reply)
+                );
 }
 

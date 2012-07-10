@@ -13,21 +13,20 @@ QObjectList GetObjectChildren(const QObject* const obj);
 
 QVariantMap Introspect(const QObject* obj)
 {
-    qDebug() << "Introspecting object:" << obj->metaObject()->className();
     QVariantMap ret;
 
     PopulateMapWithProperties(ret, obj);
 
-    // QList<QVariant> children;
-    // foreach(QObject* child, GetObjectChildren(obj))
-    // {
-    //     QList<QVariant> child_struct;
-    //     child_struct << QVariant(child->metaObject()->className())
-    //         << QVariant(Introspect(child));
-    //     children.append(QVariant(child_struct));
-    // }
-    // if (children.length())
-    //     ret["Children"] = QVariant(children);
+    QList<QVariant> children;
+    foreach(QObject* child, GetObjectChildren(obj))
+    {
+//        QList<QVariant> child_struct;
+//        child_struct << QVariant(child->metaObject()->className())
+//            << QVariant(Introspect(child));
+        children.append(QVariant(child->metaObject()->className()));
+    }
+    if (children.length())
+        ret["Children"] = QVariant(children);
 
     return ret;
 }
@@ -46,7 +45,6 @@ void PopulateMapWithProperties(QVariantMap &map, const QObject* const obj)
         }
         if (! IsValidDBusType(prop.type()))
             continue;
-        qDebug() << "reading property:" << prop.name();
         map[prop.name()] = prop.read(obj);
     }
 }

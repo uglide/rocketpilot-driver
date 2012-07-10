@@ -13,21 +13,47 @@ by the Free Software Foundation.
 #include <QVariantMap>
 #include <QDebug>
 #include <QApplication>
+#include <QDBusConnection>
+#include <QThread>
 
-QList<QVariant> DBusObject::GetState(const QString &piece)
+DBusObject::DBusObject(QObject *parent)
+    : QObject(parent)
 {
-    QList<QVariant> state;
-    qDebug("Inside GetState()");
+}
 
-    QObject *ob = QCoreApplication::instance();
-    QVariantMap m = Introspect(ob);
-    state.append(QVariant(m));
+void DBusObject::GetState(const QString &piece, const QDBusMessage &msg)
+{
+    _queries.append(Query(piece, msg));
+
+    // We need to surrender to the Qt event loop, so we do the processing
+    // via a queued slot connection:
+//    QMetaObject::invokeMethod(
+//                this,
+//                "ProcessQuery",
+//                Qt::QueuedConnection
+//                );
+    QTimer::singleShot(10000, this, SLOT(ProcessQuery()));
+    qDebug("End of GetState");
+}
+
+void DBusObject::ProcessQuery()
+{
+    qDebug("Start of ProcessQuery");
+    Query query = _queries.takeFirst();
+    QList<QVariant> state;
+
+    QObject *obj = QCoreApplication::instance();
+    state.append(Introspect(obj));
 
     foreach (QWidget *widget, QApplication::topLevelWidgets())
     {
         QVariantMap m = Introspect((QObject*) widget);
         state.append(QVariant(m));
     }
-    qDebug() << "Returning:" << state;
-    return state;
+
+    QDBusMessage msg = query.second;
+    msg << QVariant(state);
+
+    QDBusConnection::sessionBus().send(msg);
 }
+

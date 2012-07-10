@@ -10,17 +10,27 @@ by the Free Software Foundation.
 #define DBUS_OBJECT_H
 
 #include <QObject>
-#include <QVariantMap>
+#include <QPair>
+#include <QQueue>
+#include <QDBusMessage>
+#include <QTimer>
 
 
 class DBusObject : public QObject
 {
 Q_OBJECT
 public:
+    DBusObject(QObject* parent=nullptr);
 
-public Q_SLOTS:
-    QList<QVariant> GetState(const QString &piece);
+public slots:
+    void GetState(const QString &piece, const QDBusMessage& msg);
 
+private slots:
+    void ProcessQuery();
+
+private:
+    typedef QPair<QString, QDBusMessage> Query;
+    QQueue<Query> _queries;
 };
 
 #endif
