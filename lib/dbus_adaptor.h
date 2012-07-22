@@ -7,8 +7,8 @@ by the Free Software Foundation.
 */
 
 
-#ifndef DBUS_ADAPTOR_H_1337917721
-#define DBUS_ADAPTOR_H_1337917721
+#ifndef DBUS_ADAPTOR_H
+#define DBUS_ADAPTOR_H
 
 #include <QObject>
 #include <QtDBus>
@@ -17,19 +17,18 @@ class QString;
 
 
 /*
- * Adaptor class for interface com.canonical.Unity.Debug.Introspection
+ * Adaptor class for interface com.canonical.Autopilot.Introspection
  */
 class AutopilotAdaptor: public QDBusAbstractAdaptor
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "com.canonical.Unity.Debug.Introspection")
+    Q_CLASSINFO("D-Bus Interface", "com.canonical.Autopilot.Introspection")
     Q_CLASSINFO("D-Bus Introspection", ""
-"  <interface name=\"com.canonical.Unity.Debug.Introspection\">\n"
-"    <method name=\"GetState\">\n"
-"      <arg direction=\"in\" type=\"s\" name=\"piece\"/>\n"
-//"      <arg direction=\"out\" type=\"aa{sv}\" name=\"state\"/>\n"
-"      <arg direction=\"out\" type=\"s\" name=\"state\"/>\n"
-"    </method>\n"
+"  <interface name=\"com.canonical.Autopilot.Introspection\">\n"
+"     <method name='GetState'>"
+"       <arg type='s' name='piece' direction='in' />"
+"       <arg type='a(sv)' name='state' direction='out' />"
+"     </method>"
 "  </interface>\n"
         "")
 public:

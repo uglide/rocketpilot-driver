@@ -12,6 +12,6 @@ by the Free Software Foundation.
 #include <QVariantMap>
 
 /// Introspect 'obj' and return it's properties in a QVariantMap.
-QVariantMap Introspect(const QObject* obj);
+QList<QVariant> Introspect(const QString& query_string);
 
 #endif

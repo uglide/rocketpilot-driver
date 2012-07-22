@@ -1,39 +1,78 @@
+/*
+Copyright 2012 Canonical
+
+This program is free software: you can redistribute it and/or modify it
+under the terms of the GNU General Public License version 3, as published
+by the Free Software Foundation.
+*/
+
 #include "introspection.h"
 
-#include <QObject>
-#include <QMetaProperty>
+#include <QApplication>
 #include <QDebug>
-#include <QVariant>
 #include <QMap>
+#include <QMetaProperty>
+#include <QObject>
+#include <QStringList>
+#include <QVariant>
 
-void PopulateMapWithProperties(QVariantMap &map, const QObject* const obj);
+QObjectList GetNodesThatMatchQuery(QString const& query_string);
+QVariant IntrospectNode(QObject* obj);
+QString GetNodeName(QObject* obj);
+QVariantMap GetNodeProperties(QObject* obj);
 bool IsValidDBusType(QVariant::Type t);
-QObjectList GetObjectChildren(const QObject* const obj);
+QStringList GetNodeChildNames(QObject* obj);
 
 
-QVariantMap Introspect(const QObject* obj)
+QList<QVariant> Introspect(QString const& query_string)
 {
-    QVariantMap ret;
-
-    PopulateMapWithProperties(ret, obj);
-
-    QList<QVariant> children;
-    foreach(QObject* child, GetObjectChildren(obj))
+    QList<QVariant> state;
+    QObjectList node_list = GetNodesThatMatchQuery(query_string);
+    foreach (QObject* obj, node_list)
     {
-//        QList<QVariant> child_struct;
-//        child_struct << QVariant(child->metaObject()->className())
-//            << QVariant(Introspect(child));
-        children.append(QVariant(child->metaObject()->className()));
+        state.append(IntrospectNode(obj));
     }
-    if (children.length())
-        ret["Children"] = QVariant(children);
 
-    return ret;
+    return state;
+
 }
 
 
-void PopulateMapWithProperties(QVariantMap &map, const QObject* const obj)
+QObjectList GetNodesThatMatchQuery(QString const& query_string)
 {
+    QObjectList node_list;
+    ///\TODO - populate with only the nodes that match the query string.
+    QObject *obj = QApplication::instance();
+    node_list.append(obj);
+
+    foreach (QWidget *widget, QApplication::topLevelWidgets())
+    {
+    node_list.append((QObject*) widget);
+    }
+
+    return node_list;
+}
+
+
+QVariant IntrospectNode(QObject* obj)
+{
+    // return must be (name, state_map)
+    QString object_name = GetNodeName(obj);
+    QVariantMap object_properties = GetNodeProperties(obj);
+    QList<QVariant> object_tuple = { QVariant(object_name), QVariant(object_properties) };
+    return QVariant(object_tuple);
+}
+
+
+QString GetNodeName(QObject* obj)
+{
+    return obj->metaObject()->className();
+}
+
+
+QVariantMap GetNodeProperties(QObject* obj)
+{
+    QVariantMap object_properties;
     const QMetaObject* meta = obj->metaObject();
     for(int i = meta->propertyOffset(); i < meta->propertyCount(); ++i)
     {
@@ -45,9 +84,14 @@ void PopulateMapWithProperties(QVariantMap &map, const QObject* const obj)
         }
         if (! IsValidDBusType(prop.type()))
             continue;
-        map[prop.name()] = prop.read(obj);
+        object_properties[prop.name()] = prop.read(obj);
     }
+    QStringList children = GetNodeChildNames(obj);
+    if (!children.empty())
+        object_properties["Children"] = children;
+    return object_properties;
 }
+
 
 bool IsValidDBusType(QVariant::Type t)
 {
@@ -69,13 +113,14 @@ bool IsValidDBusType(QVariant::Type t)
     }
 }
 
-QObjectList GetObjectChildren(const QObject* const obj)
+
+QStringList GetNodeChildNames(QObject* obj)
 {
-    QObjectList children = obj->children();
-    for (auto it = children.begin(); it != children.end(); ++it)
+    QStringList child_names;
+    foreach (QObject *child, obj->children())
     {
-        if ((*it)->parent() != obj)
-            it = children.erase(it);
+        if (child->parent() == obj)
+            child_names.append(GetNodeName(child));
     }
-    return children;
+    return child_names;
 }
