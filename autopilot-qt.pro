@@ -1,3 +1,3 @@
 
 TEMPLATE = subdirs
-SUBDIRS = lib test
+SUBDIRS = lib # test

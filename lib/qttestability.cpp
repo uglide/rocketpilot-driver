@@ -13,22 +13,26 @@ by the Free Software Foundation.
 #include <QCoreApplication>
 #include <QDebug>
 #include <QtDBus>
+#include <qindicateserver.h>
 
 void qt_testability_init(void)
 {
-    QCoreApplication* app = QCoreApplication::instance();
-    qDebug() << "App instance is: " << app;
+    qDebug() << "In Testability init function.";
+
 
     DBusObject* obj = new DBusObject;
     new AutopilotAdaptor(obj);
 
     QDBusConnection connection = QDBusConnection::sessionBus();
-    if (!connection.registerService("com.canonical.Autopilot"))
-    {
-        qDebug("Unable to register service!");
-    }
+
     if (!connection.registerObject("/", obj))
     {
         qDebug("Unable to register object!");
     }
+
+    QIndicate::Server* server = QIndicate::Server::defaultInstance();
+    server->setType("autopilot");
+    server->setProperty("autopilot_service", connection.baseService());
+    server->show();
+
 }

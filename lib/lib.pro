@@ -3,7 +3,8 @@ TEMPLATE = lib
 TARGET = qttestability
 DESTDIR=..
 QT = core gui dbus
-
+CONFIG += link_pkgconfig
+PKGCONFIG += indicate-qt
 QMAKE_CXXFLAGS += -std=c++0x
 
 SOURCES = qttestability.cpp \
