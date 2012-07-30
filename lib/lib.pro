@@ -16,3 +16,7 @@ HEADERS = qttestability.h \
           dbus_adaptor.h \
           dbus_object.h \
           introspection.h
+
+target.file = libtestability*
+target.path = /usr/lib
+INSTALLS += target
