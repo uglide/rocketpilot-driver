@@ -88,18 +88,23 @@ QVariantMap GetNodeProperties(QObject* obj)
 {
     QVariantMap object_properties;
     const QMetaObject* meta = obj->metaObject();
-    for(int i = meta->propertyOffset(); i < meta->propertyCount(); ++i)
+    do
     {
-        QMetaProperty prop = meta->property(i);
-        if (!prop.isValid())
+        for(int i = meta->propertyOffset(); i < meta->propertyCount(); ++i)
         {
-            qDebug() << "Property at index" << i << "Is not valid!";
-            continue;
+            QMetaProperty prop = meta->property(i);
+            if (!prop.isValid())
+            {
+                qDebug() << "Property at index" << i << "Is not valid!";
+                continue;
+            }
+            if (! IsValidDBusType(prop.type()))
+                continue;
+            object_properties[prop.name()] = prop.read(obj);
         }
-        if (! IsValidDBusType(prop.type()))
-            continue;
-        object_properties[prop.name()] = prop.read(obj);
-    }
+        meta = meta->superClass();
+    } while(meta);
+
     QStringList children = GetNodeChildNames(obj);
     if (!children.empty())
         object_properties["Children"] = children;
