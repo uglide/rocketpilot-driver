@@ -6,7 +6,9 @@ under the terms of the GNU General Public License version 3, as published
 by the Free Software Foundation.
 */
 
-#include "introspection.h"
+
+#include <node.h>
+#include <xpathselect.h>
 
 #include <QApplication>
 #include <QDebug>
@@ -16,21 +18,22 @@ by the Free Software Foundation.
 #include <QStringList>
 #include <QVariant>
 
-QObjectList GetNodesThatMatchQuery(QString const& query_string);
+#include "introspection.h"
+#include "qtnode.h"
+#include "rootnode.h"
+
+QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string);
 QVariant IntrospectNode(QObject* obj);
 QString GetNodeName(QObject* obj);
-QVariantMap GetNodeProperties(QObject* obj);
-bool IsValidDBusType(QVariant::Type t);
 QStringList GetNodeChildNames(QObject* obj);
-
 
 QList<QVariant> Introspect(QString const& query_string)
 {
     QList<QVariant> state;
-    QObjectList node_list = GetNodesThatMatchQuery(query_string);
-    foreach (QObject* obj, node_list)
+    QList<QtNode::Ptr> node_list = GetNodesThatMatchQuery(query_string);
+    foreach (QtNode::Ptr obj, node_list)
     {
-        state.append(IntrospectNode(obj));
+        state.append(obj->IntrospectNode());
     }
 
     return state;
@@ -38,18 +41,29 @@ QList<QVariant> Introspect(QString const& query_string)
 }
 
 
-QObjectList GetNodesThatMatchQuery(QString const& query_string)
+QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
 {
-    QObjectList node_list;
-    ///\TODO - populate with only the nodes that match the query string.
-    QObject *obj = QApplication::instance();
-    node_list.append(obj);
+    std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QApplication::instance());
 
     foreach (QWidget *widget, QApplication::topLevelWidgets())
     {
-    node_list.append((QObject*) widget);
+        root->AddChild((QObject*) widget);
     }
 
+    QList<QtNode::Ptr> node_list;
+
+    xpathselect::NodeList list = xpathselect::SelectNodes(root, query_string.toStdString());
+    qDebug() << "XPathSelect library returned" << list.size() << "items.";
+    for (auto node : list)
+    {
+        // node may be our root node wrapper *or* an ordinary qobject wrapper
+        auto object_ptr = std::static_pointer_cast<QtNode>(node);
+        if (object_ptr)
+        {
+            node_list.append(object_ptr);
+        }
+
+    }
     return node_list;
 }
 

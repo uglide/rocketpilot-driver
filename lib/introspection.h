@@ -14,4 +14,11 @@ by the Free Software Foundation.
 /// Introspect 'obj' and return it's properties in a QVariantMap.
 QList<QVariant> Introspect(const QString& query_string);
 
+/// Return true if 't' is a type that we can marshall over DBus
+bool IsValidDBusType(QVariant::Type t);
+
+/// Return a QVariantMap containing all the properties for the
+/// given QObject.
+QVariantMap GetNodeProperties(QObject* obj);
+
 #endif
