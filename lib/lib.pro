@@ -20,3 +20,8 @@ HEADERS = qttestability.h \
           introspection.h \
     rootnode.h \
     qtnode.h
+          introspection.h
+
+target.file = libtestability*
+target.path = /usr/lib
+INSTALLS += target
