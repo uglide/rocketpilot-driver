@@ -22,8 +22,14 @@ QVariant RootNode::IntrospectNode() const
 
     QVariantMap object_properties;
     object_properties["Children"] = child_names;
+    object_properties["id"] = GetObjectId();
     QList<QVariant> object_tuple = { QVariant(object_name), QVariant(object_properties) };
     return QVariant(object_tuple);
+}
+
+qint64 RootNode::GetObjectId() const
+{
+    return 1;
 }
 
 void RootNode::AddChild(QObject* child)
