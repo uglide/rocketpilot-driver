@@ -40,7 +40,22 @@ std::string QtNode::GetName() const
 
 bool QtNode::MatchProperty(const std::string& name, const std::string& value) const
 {
-    ///TODO
+    if (name == "id")
+        return QString::fromStdString(value).toLongLong() == GetObjectId();
+    QVariantMap properties = GetNodeProperties(object_);
+
+    QString qname = QString::fromStdString(name);
+    if (! properties.contains(qname))
+        return false;
+
+    QVariant object_value = properties[qname];
+    QVariant check_value(QString::fromStdString(value));
+    if (check_value.canConvert(object_value.type()))
+    {
+        check_value.convert(object_value.type());
+        return check_value == object_value;
+    }
+
     return false;
 }
 

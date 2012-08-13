@@ -19,7 +19,7 @@ HEADERS = qttestability.h \
           dbus_object.h \
           introspection.h \
     rootnode.h \
-    qtnode.h
+    qtnode.h \
           introspection.h
 
 target.file = libtestability*

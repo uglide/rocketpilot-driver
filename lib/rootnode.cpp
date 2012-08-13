@@ -45,9 +45,9 @@ std::string RootNode::GetName() const
 
 bool RootNode::MatchProperty(const std::string& name, const std::string& value) const
 {
-    Q_UNUSED(name);
-    Q_UNUSED(value);
-    // root node has no properties.
+    if (name == "id")
+        return QString::fromStdString(value).toLongLong() == GetObjectId();
+
     return false;
 }
 
