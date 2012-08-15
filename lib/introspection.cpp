@@ -17,6 +17,7 @@ by the Free Software Foundation.
 #include <QObject>
 #include <QStringList>
 #include <QVariant>
+#include <QWidget>
 #include <QRect>
 
 #include "introspection.h"
@@ -108,9 +109,19 @@ QVariantMap GetNodeProperties(QObject* obj)
         meta = meta->superClass();
     } while(meta);
 
+    // add the 'Children' pseudo-property:
     QStringList children = GetNodeChildNames(obj);
     if (!children.empty())
         object_properties["Children"] = children;
+
+    // sneaky - if this is a QWidget-derived class then add 'globalRect' property to the mix.
+    QWidget *w = qobject_cast<QWidget*>(obj);
+    if (w)
+    {
+        QRect r = w->rect();
+        r = QRect(w->mapToGlobal(r.topLeft()), r.size());
+        object_properties["globalRect"] = PackProperty(r);
+    }
     return object_properties;
 }
 
