@@ -25,7 +25,7 @@ void qt_testability_init(void)
 
     QDBusConnection connection = QDBusConnection::sessionBus();
 
-    if (!connection.registerObject("/", obj))
+    if (!connection.registerObject("/com/canonical/Autopilot/Introspection", obj))
     {
         qDebug("Unable to register object!");
     }
