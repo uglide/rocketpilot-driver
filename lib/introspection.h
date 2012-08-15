@@ -15,10 +15,11 @@ by the Free Software Foundation.
 QList<QVariant> Introspect(const QString& query_string);
 
 /// Return true if 't' is a type that we can marshall over DBus
-bool IsValidDBusType(QVariant::Type t);
+QVariant PackProperty(QVariant const& prop);
 
 /// Return a QVariantMap containing all the properties for the
 /// given QObject.
 QVariantMap GetNodeProperties(QObject* obj);
+
 
 #endif

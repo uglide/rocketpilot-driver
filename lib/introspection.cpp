@@ -17,10 +17,13 @@ by the Free Software Foundation.
 #include <QObject>
 #include <QStringList>
 #include <QVariant>
+#include <QWidget>
+#include <QRect>
 
 #include "introspection.h"
 #include "qtnode.h"
 #include "rootnode.h"
+
 
 QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string);
 QVariant IntrospectNode(QObject* obj);
@@ -98,37 +101,80 @@ QVariantMap GetNodeProperties(QObject* obj)
                 qDebug() << "Property at index" << i << "Is not valid!";
                 continue;
             }
-            if (! IsValidDBusType(prop.type()))
+            QVariant object_property = PackProperty(prop.read(obj));
+            if (! object_property.isValid())
                 continue;
-            object_properties[prop.name()] = prop.read(obj);
+            object_properties[prop.name()] = object_property;
         }
         meta = meta->superClass();
     } while(meta);
 
+    // add the 'Children' pseudo-property:
     QStringList children = GetNodeChildNames(obj);
     if (!children.empty())
         object_properties["Children"] = children;
+
+    // sneaky - if this is a QWidget-derived class then add 'globalRect' property to the mix.
+    QWidget *w = qobject_cast<QWidget*>(obj);
+    if (w)
+    {
+        QRect r = w->rect();
+        r = QRect(w->mapToGlobal(r.topLeft()), r.size());
+        object_properties["globalRect"] = PackProperty(r);
+    }
     return object_properties;
 }
 
 
-bool IsValidDBusType(QVariant::Type t)
+QVariant PackProperty(QVariant const& prop)
 {
-    switch (t)
+    switch (prop.type())
     {
-        case QVariant::Int:
-        case QVariant::Bool:
-        case QVariant::String:
-        case QVariant::UInt:
-        case QVariant::ULongLong:
-        {
-            return true;
-        }
+    case QVariant::Int:
+    case QVariant::Bool:
+    case QVariant::String:
+    case QVariant::UInt:
+    case QVariant::ULongLong:
+    case QVariant::StringList:
+    {
+        return prop;
+    }
 
-        default:
-        {
-            return false;
-        }
+    case QVariant::ByteArray:
+    {
+        return QVariant(QString(qvariant_cast<QByteArray>(prop)));
+    }
+
+    case QVariant::Point:
+    {
+        QPoint p = qvariant_cast<QPoint>(prop);
+        QList<QVariant> l = {QVariant(p.x()), QVariant(p.y())};
+        return QVariant(l);
+    }
+
+    case QVariant::Rect:
+    {
+        QRect r = qvariant_cast<QRect>(prop);
+        QList<QVariant> l = {
+            QVariant(r.x()),
+            QVariant(r.y()),
+            QVariant(r.width()),
+            QVariant(r.height()) };
+        return QVariant(l);
+    }
+
+    case QVariant::Size:
+    {
+        QSize s = qvariant_cast<QSize>(prop);
+        QList<QVariant> l = { QVariant(s.width()), QVariant(s.height()) };
+        return QVariant(s);
+    }
+
+
+    default:
+    {
+        return QVariant();
+    }
     }
 }
 
