@@ -15,6 +15,8 @@ by the Free Software Foundation.
 #include <QtDBus>
 #include <qindicateserver.h>
 
+const QString DBUS_OBJECT_PATH("/com/canonical/Autopilot/Introspection");
+
 void qt_testability_init(void)
 {
     qDebug() << "In Testability init function.";
@@ -25,7 +27,7 @@ void qt_testability_init(void)
 
     QDBusConnection connection = QDBusConnection::sessionBus();
 
-    if (!connection.registerObject("/com/canonical/Autopilot/Introspection", obj))
+    if (!connection.registerObject(DBUS_OBJECT_PATH, obj))
     {
         qDebug("Unable to register object!");
     }
