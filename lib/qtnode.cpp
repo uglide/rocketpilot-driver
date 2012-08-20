@@ -2,6 +2,9 @@
 
 #include "introspection.h"
 
+#include <QGraphicsScene>
+#include <QGraphicsObject>
+
 const QByteArray AP_ID_NAME("_autopilot_id");
 
 QtNode::QtNode(QObject *obj)
@@ -66,6 +69,20 @@ xpathselect::NodeList QtNode::Children() const
     {
         if (child->parent() == object_)
             children.push_back(std::make_shared<QtNode>(child));
+    }
+    // If our wrapped object is a QGraphicsScene, we need to explicitly grab any child graphics
+    // items that are derived from QObjects. Declarative UIs use this idiom, so this need to be
+    // done to support QML applications.
+    QGraphicsScene *scene = qobject_cast<QGraphicsScene*>(object_);
+    if (scene)
+    {
+        QList<QGraphicsItem*> child_items = scene->items();
+        foreach(QGraphicsItem* item, child_items)
+        {
+            QGraphicsObject *obj = item->toGraphicsObject();
+            if (obj && ! obj->parent())
+                children.push_back(std::make_shared<QtNode>(obj));
+        }
     }
     return children;
 }

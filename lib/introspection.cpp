@@ -16,6 +16,9 @@ by the Free Software Foundation.
 #include <QMetaProperty>
 #include <QObject>
 #include <QStringList>
+#include <QGraphicsItem>
+#include <QGraphicsScene>
+#include <QGraphicsView>
 #include <QVariant>
 #include <QWidget>
 #include <QRect>
@@ -29,6 +32,7 @@ QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string);
 QVariant IntrospectNode(QObject* obj);
 QString GetNodeName(QObject* obj);
 QStringList GetNodeChildNames(QObject* obj);
+void AddCustomProperties(QObject* obj, QVariantMap& properties);
 
 QList<QVariant> Introspect(QString const& query_string)
 {
@@ -109,22 +113,44 @@ QVariantMap GetNodeProperties(QObject* obj)
         meta = meta->superClass();
     } while(meta);
 
+    AddCustomProperties(obj, object_properties);
+
     // add the 'Children' pseudo-property:
     QStringList children = GetNodeChildNames(obj);
     if (!children.empty())
         object_properties["Children"] = children;
 
-    // sneaky - if this is a QWidget-derived class then add 'globalRect' property to the mix.
+    return object_properties;
+}
+
+
+void AddCustomProperties(QObject* obj, QVariantMap &properties)
+{
+    // Add any custom properties we need to the given QObject.
+    // Add GlobalRect support for QWidget-derived classes
     QWidget *w = qobject_cast<QWidget*>(obj);
     if (w)
     {
         QRect r = w->rect();
         r = QRect(w->mapToGlobal(r.topLeft()), r.size());
-        object_properties["globalRect"] = PackProperty(r);
+        properties["globalRect"] = PackProperty(r);
     }
-    return object_properties;
-}
+    // ...and support for QGraphicsItem-derived classes.
+    else if (QGraphicsItem *i = qobject_cast<QGraphicsItem*>(obj))
+    {
+        // need to get the view that this item is in. Should only be one. If there's
+        // more than one, we're in trouble.
+        QGraphicsView *view = i->scene()->views().last();
+        QRectF bounding_rect = i->boundingRect();
+        bounding_rect = i->mapRectToScene(bounding_rect);
+        QRect scene_rect = view->mapFromScene(bounding_rect).boundingRect();
+        QRect global_rect = QRect(
+                    view->mapToGlobal(scene_rect.topLeft()),
+                    scene_rect.size());
+        properties["globalRect"] = PackProperty(global_rect);
+    }
 
+}
 
 QVariant PackProperty(QVariant const& prop)
 {
