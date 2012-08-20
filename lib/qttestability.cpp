@@ -13,7 +13,6 @@ by the Free Software Foundation.
 #include <QCoreApplication>
 #include <QDebug>
 #include <QtDBus>
-//#include <qindicateserver.h>
 
 const QString DBUS_OBJECT_PATH("/com/canonical/Autopilot/Introspection");
 
