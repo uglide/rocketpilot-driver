@@ -7,8 +7,8 @@ by the Free Software Foundation.
 */
 
 
-#include <node.h>
-#include <xpathselect.h>
+#include <xpathselect/node.h>
+#include <xpathselect/xpathselect.h>
 
 #include <QApplication>
 #include <QDebug>
