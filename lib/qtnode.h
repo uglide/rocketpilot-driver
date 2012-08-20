@@ -2,7 +2,7 @@
 #define QTNODE_H
 
 #include <QVariant>
-#include <node.h>
+#include <xpathselect/node.h>
 
 /// Base class for all Qt-based object nodes.
 ///

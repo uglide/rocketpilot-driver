@@ -4,7 +4,7 @@ TARGET = qttestability
 DESTDIR=..
 QT = core gui dbus
 CONFIG += link_pkgconfig
-PKGCONFIG += indicate-qt xpathselect
+PKGCONFIG += xpathselect
 QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
 
 SOURCES = qttestability.cpp \

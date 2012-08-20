@@ -13,7 +13,6 @@ by the Free Software Foundation.
 #include <QCoreApplication>
 #include <QDebug>
 #include <QtDBus>
-#include <qindicateserver.h>
 
 const QString DBUS_OBJECT_PATH("/com/canonical/Autopilot/Introspection");
 
@@ -31,10 +30,4 @@ void qt_testability_init(void)
     {
         qDebug("Unable to register object!");
     }
-
-    QIndicate::Server* server = QIndicate::Server::defaultInstance();
-    server->setType("autopilot");
-    server->setProperty("autopilot_service", connection.baseService());
-    server->show();
-
 }
