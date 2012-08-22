@@ -1,0 +1,7 @@
+Makefile
+libqttestability.so
+libqttestability.so.1
+libqttestability.so.1.0
+libqttestability.so.1.0.0
+*.pro.user*
+moc_*.cpp
