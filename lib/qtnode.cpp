@@ -12,6 +12,11 @@ QtNode::QtNode(QObject *obj)
 {
 }
 
+QObject* QtNode::getWrappedObject() const
+{
+    return object_;
+}
+
 QVariant QtNode::IntrospectNode() const
 {
     // return must be (name, state_map)

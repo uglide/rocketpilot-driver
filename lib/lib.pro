@@ -3,7 +3,7 @@ TEMPLATE = lib
 TARGET = qttestability
 DESTDIR=..
 QT = core gui dbus
-CONFIG += link_pkgconfig
+CONFIG += link_pkgconfig qtestlib
 PKGCONFIG += xpathselect
 QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
 
@@ -12,7 +12,8 @@ SOURCES = qttestability.cpp \
           dbus_object.cpp \
           introspection.cpp \
     rootnode.cpp \
-    qtnode.cpp
+    qtnode.cpp \
+    dbus_adaptor_qt.cpp
 
 HEADERS = qttestability.h \
           dbus_adaptor.h \
@@ -20,7 +21,8 @@ HEADERS = qttestability.h \
           introspection.h \
     rootnode.h \
     qtnode.h \
-          introspection.h
+          introspection.h \
+    dbus_adaptor_qt.h
 
 target.file = libtestability*
 target.path = /usr/lib

@@ -15,6 +15,9 @@ public:
     typedef std::shared_ptr<QtNode> Ptr;
 
     QtNode(QObject* object);
+
+    QObject* getWrappedObject() const;
+
     virtual QVariant IntrospectNode() const;
     virtual qint64 GetObjectId() const;
 

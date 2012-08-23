@@ -28,7 +28,6 @@ by the Free Software Foundation.
 #include "rootnode.h"
 
 
-QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string);
 QVariant IntrospectNode(QObject* obj);
 QString GetNodeName(QObject* obj);
 QStringList GetNodeChildNames(QObject* obj);
