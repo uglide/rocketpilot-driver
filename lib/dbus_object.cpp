@@ -120,15 +120,19 @@ void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
     QObject *object = objects.takeFirst()->getWrappedObject();
     const QMetaObject *meta = object->metaObject();
     QList<QVariant> signal_list;
-    for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
+    do
     {
-        QMetaMethod method = meta->method(i);
-        if (method.methodType() == QMetaMethod::Signal)
+        for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
         {
-            QString signature = QString::fromLatin1(method.signature());
-            signal_list.append(QVariant(signature));
+            QMetaMethod method = meta->method(i);
+            if (method.methodType() == QMetaMethod::Signal)
+            {
+                QString signature = QString::fromLatin1(method.signature());
+                signal_list.append(QVariant(signature));
+            }
         }
-    }
+        meta = meta->superClass();
+    } while(meta);
 
     QDBusMessage reply = message.createReply();
     reply << QVariant(signal_list);
