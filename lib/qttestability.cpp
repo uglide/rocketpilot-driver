@@ -8,6 +8,7 @@ by the Free Software Foundation.
 
 #include "qttestability.h"
 #include "dbus_adaptor.h"
+#include "dbus_adaptor_qt.h"
 #include "dbus_object.h"
 
 #include <QCoreApplication>
@@ -23,6 +24,7 @@ void qt_testability_init(void)
 
     DBusObject* obj = new DBusObject;
     new AutopilotAdaptor(obj);
+    new AutopilotQtSpecificAdaptor(obj);
 
     QDBusConnection connection = QDBusConnection::sessionBus();
 

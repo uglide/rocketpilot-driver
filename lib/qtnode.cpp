@@ -12,6 +12,11 @@ QtNode::QtNode(QObject *obj)
 {
 }
 
+QObject* QtNode::getWrappedObject() const
+{
+    return object_;
+}
+
 QVariant QtNode::IntrospectNode() const
 {
     // return must be (name, state_map)
@@ -38,6 +43,11 @@ qint64 QtNode::GetObjectId() const
 std::string QtNode::GetName() const
 {
     QString name = object_->metaObject()->className();
+
+    // QML type names get mangled by Qt - they get _QML_N or _QMLTYPE_N appended.
+    //
+    if (name.contains('_'))
+        name = name.split('_').front();
     return name.toStdString();
 }
 

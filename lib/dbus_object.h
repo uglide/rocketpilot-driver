@@ -14,6 +14,8 @@ by the Free Software Foundation.
 #include <QQueue>
 #include <QDBusMessage>
 #include <QTimer>
+#include <QSignalSpy>
+#include <QSharedPointer>
 
 
 class DBusObject : public QObject
@@ -24,6 +26,9 @@ public:
 
 public slots:
     void GetState(const QString &piece, const QDBusMessage& msg);
+    void RegisterSignalInterest(int object_id, QString signal_name);
+    void GetSignalEmissions(int object_id, QString signal_name, const QDBusMessage &message);
+    void ListSignals(int object_id, const QDBusMessage& message);
 
 private slots:
     void ProcessQuery();
@@ -31,6 +36,10 @@ private slots:
 private:
     typedef QPair<QString, QDBusMessage> Query;
     QQueue<Query> _queries;
+
+    typedef QPair<int, QString> SignalId;
+    typedef QSharedPointer<QSignalSpy> SignalSpyPtr;
+    QMap<SignalId, SignalSpyPtr> signal_watchers_;
 };
 
 #endif

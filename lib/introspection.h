@@ -9,10 +9,15 @@ by the Free Software Foundation.
 #ifndef INTROSPECTION_H
 #define INTROSPECTION_H
 
+#include "qtnode.h"
+
 #include <QVariantMap>
 
 /// Introspect 'obj' and return it's properties in a QVariantMap.
 QList<QVariant> Introspect(const QString& query_string);
+
+/// Get a list of QtNode pointers that match the given query.
+QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string);
 
 /// Return true if 't' is a type that we can marshall over DBus
 QVariant PackProperty(QVariant const& prop);
