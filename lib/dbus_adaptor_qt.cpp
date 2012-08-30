@@ -43,3 +43,15 @@ void AutopilotQtSpecificAdaptor::ListSignals(int object_id, const QDBusMessage& 
                 Q_ARG(QDBusMessage, message)
                 );
 }
+
+void AutopilotQtSpecificAdaptor::ListMethods(int object_id, const QDBusMessage& message)
+{
+    message.setDelayedReply(true);
+    QMetaObject::invokeMethod(
+                parent(),
+                "ListMethods",
+                Qt::QueuedConnection,
+                Q_ARG(int, object_id),
+                Q_ARG(QDBusMessage, message)
+                );
+}

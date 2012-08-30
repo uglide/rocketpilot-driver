@@ -17,6 +17,20 @@ by the Free Software Foundation.
 #include <QDBusConnection>
 #include <QThread>
 
+QtNode::Ptr GetNodeWithId(int object_id)
+{
+    QString query = QString("//*[id=%1]").arg(object_id);
+    QList<QtNode::Ptr> objects = GetNodesThatMatchQuery(query);
+
+    if (objects.isEmpty())
+    {
+        qWarning() << "No Object with with id" << object_id << "found in object tree.";
+        return QtNode::Ptr();
+    }
+
+    return objects.at(0);
+}
+
 DBusObject::DBusObject(QObject *parent)
     : QObject(parent)
 {
@@ -46,21 +60,10 @@ void DBusObject::RegisterSignalInterest(int object_id, QString signal_name)
         return;
     }
 
-    QString query = QString("//*[id=%1]").arg(object_id);
-    QList<QtNode::Ptr> objects = GetNodesThatMatchQuery(query);
-
-    if (objects.isEmpty())
-    {
-        qWarning() << "No Object with with id" << object_id << "While trying to monitor signal" << signal_name;
+    QtNode::Ptr node = GetNodeWithId(object_id);
+    if (! node)
         return;
-    }
 
-    if (objects.count() != 1)
-    {
-        qWarning() << "More than one object has id" << object_id << ". This should never happen, and indicates a bug in autopilot-qt.";
-    }
-
-    QtNode::Ptr node = objects.takeFirst();
     QObject* obj = node->getWrappedObject();
 
     QString munged_signal_name = QString("2%1").arg(signal_name);
@@ -108,16 +111,11 @@ void DBusObject::GetSignalEmissions(int object_id, QString signal_name, const QD
 
 void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
 {
-    QString query = QString("//*[id=%1]").arg(object_id);
-    QList<QtNode::Ptr> objects = GetNodesThatMatchQuery(query);
-
-    if (objects.isEmpty())
-    {
-        qWarning() << "No Object with with id" << object_id << "While trying to list signals";
+    QtNode::Ptr node = GetNodeWithId(object_id);
+    if (! node)
         return;
-    }
 
-    QObject *object = objects.takeFirst()->getWrappedObject();
+    QObject *object = node->getWrappedObject();
     const QMetaObject *meta = object->metaObject();
     QList<QVariant> signal_list;
     do
@@ -136,6 +134,38 @@ void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
 
     QDBusMessage reply = message.createReply();
     reply << QVariant(signal_list);
+    QDBusConnection::sessionBus().send(reply);
+}
+
+void DBusObject::ListMethods(int object_id, const QDBusMessage &message)
+{
+    QtNode::Ptr node = GetNodeWithId(object_id);
+    if (! node)
+    {
+        qWarning() << "No Object found.";
+        return;
+    }
+
+    QObject *object = node->getWrappedObject();
+    const QMetaObject *meta = object->metaObject();
+    QList<QVariant> method_list;
+    do
+    {
+        for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
+        {
+            QMetaMethod method = meta->method(i);
+            if (method.methodType() == QMetaMethod::Slot ||
+                method.methodType() == QMetaMethod::Method)
+            {
+                QString signature = QString::fromLatin1(method.signature());
+                method_list.append(QVariant(signature));
+            }
+        }
+        meta = meta->superClass();
+    } while(meta);
+
+    QDBusMessage reply = message.createReply();
+    reply << QVariant(method_list);
     QDBusConnection::sessionBus().send(reply);
 }
 
