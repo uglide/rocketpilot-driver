@@ -26,7 +26,12 @@ class AutopilotQtSpecificAdaptor : public QDBusAbstractAdaptor
                 ""
                 "    <method name='ListMethods'>"
                 "      <arg type='i' name='object_id' direction='in' />"
-                "       <arg type='as' name='methods' direction='out' />"
+                "      <arg type='as' name='methods' direction='out' />"
+                "    </method>"
+                "    <method name='InvokeMethod'>"
+                "      <arg type='i' name='object_id' direction='in' />"
+                "      <arg type='s' name='method_name' direction='in' />"
+                "      <arg type='av' name='arguments' direction='in' />"
                 "    </method>"
                 ""
                 "  </interface>\n"
@@ -42,6 +47,7 @@ public slots:
     void ListSignals(int object_id, const QDBusMessage& message);
 
     void ListMethods(int object_id, const QDBusMessage& message);
+    void InvokeMethod(int object_id, QString method_name, QVariantList args, const QDBusMessage& message);
     
 };
 

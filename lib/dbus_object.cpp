@@ -169,6 +169,82 @@ void DBusObject::ListMethods(int object_id, const QDBusMessage &message)
     QDBusConnection::sessionBus().send(reply);
 }
 
+void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList args, const QDBusMessage &message)
+{
+    QtNode::Ptr node = GetNodeWithId(object_id);
+    if (! node)
+    {
+        qWarning() << "No Object found.";
+        return;
+    }
+
+    QObject *object = node->getWrappedObject();
+    const QMetaObject *meta = object->metaObject();
+
+    int method_index = -1;
+    do
+    {
+        method_index = meta->indexOfMethod(method_name.toAscii());
+        if (method_index == -1)
+            meta = meta->superClass();
+    } while(meta && method_index == -1);
+
+    if (method_index == -1)
+    {
+        qWarning() << "Unable to find method" << method_name << "On object with id" << object_id;
+        return;
+    }
+
+    QMetaMethod method = meta->method(method_index);
+
+    qDebug() << "Method parameter names:" << method.parameterNames();
+    qDebug() << "Method parameter types:" << method.parameterTypes();
+    qDebug() << "Method signature:" << method.signature()
+             << "return type:" << method.typeName();
+
+    QVector<QGenericArgument> generic_args(10);
+    QList<QByteArray> parameterTypes = method.parameterTypes();
+
+    if (args.size() != parameterTypes.size())
+    {
+        qCritical() << "Method takes" << parameterTypes.size() << "Arguments, but" << args.size()
+                    << "arguments were provided instead. Not calling method.";
+        return;
+    }
+
+    for (int i = 0; i < args.size(); ++i)
+    {
+        QVariant passed_value = args.at(i);
+        QByteArray passed_type_name = passed_value.typeName();
+        QByteArray required_type_name = parameterTypes.at(i);
+        if (passed_type_name != required_type_name)
+        {
+            // TODO - try and convert to correct type.
+            qCritical() << "Argument" << i << "Is of the wrong type.";
+            qCritical() << "    Expected:" << required_type_name;
+            qCritical() << "    Got:" << passed_type_name;
+            break;
+        }
+        generic_args[i] = QGenericArgument(passed_value.typeName(), passed_value.constData());
+    }
+
+    bool ret = method.invoke(object,
+                  generic_args.at(0),
+                  generic_args.at(1),
+                  generic_args.at(2),
+                  generic_args.at(3),
+                  generic_args.at(4),
+                  generic_args.at(5),
+                  generic_args.at(6),
+                  generic_args.at(7),
+                  generic_args.at(8),
+                  generic_args.at(9));
+    if (ret)
+        qDebug() << "Method Invoked.";
+    else
+        qDebug() << "Method invocation failed.";
+}
+
 void DBusObject::ProcessQuery()
 {
     qDebug("Start of ProcessQuery");
