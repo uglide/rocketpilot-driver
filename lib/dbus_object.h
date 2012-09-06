@@ -30,6 +30,9 @@ public slots:
     void GetSignalEmissions(int object_id, QString signal_name, const QDBusMessage &message);
     void ListSignals(int object_id, const QDBusMessage& message);
 
+    void ListMethods(int object_id, const QDBusMessage& message);
+    void InvokeMethod(int object_id, QString method_name, QVariantList args, const QDBusMessage &message);
+
 private slots:
     void ProcessQuery();
 

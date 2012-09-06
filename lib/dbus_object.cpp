@@ -17,6 +17,20 @@ by the Free Software Foundation.
 #include <QDBusConnection>
 #include <QThread>
 
+QtNode::Ptr GetNodeWithId(int object_id)
+{
+    QString query = QString("//*[id=%1]").arg(object_id);
+    QList<QtNode::Ptr> objects = GetNodesThatMatchQuery(query);
+
+    if (objects.isEmpty())
+    {
+        qWarning() << "No Object with with id" << object_id << "found in object tree.";
+        return QtNode::Ptr();
+    }
+
+    return objects.at(0);
+}
+
 DBusObject::DBusObject(QObject *parent)
     : QObject(parent)
 {
@@ -46,21 +60,10 @@ void DBusObject::RegisterSignalInterest(int object_id, QString signal_name)
         return;
     }
 
-    QString query = QString("//*[id=%1]").arg(object_id);
-    QList<QtNode::Ptr> objects = GetNodesThatMatchQuery(query);
-
-    if (objects.isEmpty())
-    {
-        qWarning() << "No Object with with id" << object_id << "While trying to monitor signal" << signal_name;
+    QtNode::Ptr node = GetNodeWithId(object_id);
+    if (! node)
         return;
-    }
 
-    if (objects.count() != 1)
-    {
-        qWarning() << "More than one object has id" << object_id << ". This should never happen, and indicates a bug in autopilot-qt.";
-    }
-
-    QtNode::Ptr node = objects.takeFirst();
     QObject* obj = node->getWrappedObject();
 
     QString munged_signal_name = QString("2%1").arg(signal_name);
@@ -108,16 +111,11 @@ void DBusObject::GetSignalEmissions(int object_id, QString signal_name, const QD
 
 void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
 {
-    QString query = QString("//*[id=%1]").arg(object_id);
-    QList<QtNode::Ptr> objects = GetNodesThatMatchQuery(query);
-
-    if (objects.isEmpty())
-    {
-        qWarning() << "No Object with with id" << object_id << "While trying to list signals";
+    QtNode::Ptr node = GetNodeWithId(object_id);
+    if (! node)
         return;
-    }
 
-    QObject *object = objects.takeFirst()->getWrappedObject();
+    QObject *object = node->getWrappedObject();
     const QMetaObject *meta = object->metaObject();
     QList<QVariant> signal_list;
     do
@@ -137,6 +135,116 @@ void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
     QDBusMessage reply = message.createReply();
     reply << QVariant(signal_list);
     QDBusConnection::sessionBus().send(reply);
+}
+
+void DBusObject::ListMethods(int object_id, const QDBusMessage &message)
+{
+    QtNode::Ptr node = GetNodeWithId(object_id);
+    if (! node)
+    {
+        qWarning() << "No Object found.";
+        return;
+    }
+
+    QObject *object = node->getWrappedObject();
+    const QMetaObject *meta = object->metaObject();
+    QList<QVariant> method_list;
+    do
+    {
+        for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
+        {
+            QMetaMethod method = meta->method(i);
+            if (method.methodType() == QMetaMethod::Slot ||
+                method.methodType() == QMetaMethod::Method)
+            {
+                QString signature = QString::fromLatin1(method.signature());
+                method_list.append(QVariant(signature));
+            }
+        }
+        meta = meta->superClass();
+    } while(meta);
+
+    QDBusMessage reply = message.createReply();
+    reply << QVariant(method_list);
+    QDBusConnection::sessionBus().send(reply);
+}
+
+void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList args, const QDBusMessage &message)
+{
+    QtNode::Ptr node = GetNodeWithId(object_id);
+    if (! node)
+    {
+        qWarning() << "No Object found.";
+        return;
+    }
+
+    QObject *object = node->getWrappedObject();
+    const QMetaObject *meta = object->metaObject();
+
+    int method_index = -1;
+    do
+    {
+        method_index = meta->indexOfMethod(method_name.toAscii());
+        if (method_index == -1)
+            meta = meta->superClass();
+    } while(meta && method_index == -1);
+
+    if (method_index == -1)
+    {
+        qWarning() << "Unable to find method" << method_name << "On object with id" << object_id;
+        return;
+    }
+
+    QMetaMethod method = meta->method(method_index);
+
+    qDebug() << "Method parameter names:" << method.parameterNames();
+    qDebug() << "Method parameter types:" << method.parameterTypes();
+    qDebug() << "Method signature:" << method.signature()
+             << "return type:" << method.typeName();
+
+    QVector<QGenericArgument> generic_args(10);
+    QList<QByteArray> parameterTypes = method.parameterTypes();
+
+    if (args.size() != parameterTypes.size())
+    {
+        qCritical() << "Method takes" << parameterTypes.size() << "Arguments, but" << args.size()
+                    << "arguments were provided instead. Not calling method.";
+        return;
+    }
+
+    for (int i = 0; i < args.size(); ++i)
+    {
+        QVariant passed_value = args.at(i);
+        QByteArray passed_type_name = passed_value.typeName();
+        QByteArray required_type_name = parameterTypes.at(i);
+        if (passed_type_name != required_type_name)
+        {
+            // TODO - try and convert to correct type... if it's needed.
+            qCritical() << "Argument" << i << "Is of the wrong type.";
+            qCritical() << "    Expected:" << required_type_name;
+            qCritical() << "    Got:" << passed_type_name;
+            break;
+        }
+        generic_args[i] = QGenericArgument(passed_value.typeName(), passed_value.constData());
+    }
+
+    // method.invoke(...) takes between 0 and 10 parameters. Since We can't convert a QVector into
+    // an argument list (like we can in Python), I'm stuck with this terrible syntax:
+    bool ret = method.invoke(object,
+                  generic_args.at(0),
+                  generic_args.at(1),
+                  generic_args.at(2),
+                  generic_args.at(3),
+                  generic_args.at(4),
+                  generic_args.at(5),
+                  generic_args.at(6),
+                  generic_args.at(7),
+                  generic_args.at(8),
+                  generic_args.at(9));
+    if (ret)
+        qDebug() << "Method Invoked.";
+    else
+        qDebug() << "Method invocation failed.";
 }
 
 void DBusObject::ProcessQuery()
