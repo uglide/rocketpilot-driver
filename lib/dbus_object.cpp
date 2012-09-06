@@ -219,7 +219,7 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
         QByteArray required_type_name = parameterTypes.at(i);
         if (passed_type_name != required_type_name)
         {
-            // TODO - try and convert to correct type.
+            // TODO - try and convert to correct type... if it's needed.
             qCritical() << "Argument" << i << "Is of the wrong type.";
             qCritical() << "    Expected:" << required_type_name;
             qCritical() << "    Got:" << passed_type_name;
@@ -228,6 +228,8 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
         generic_args[i] = QGenericArgument(passed_value.typeName(), passed_value.constData());
     }
 
+    // method.invoke(...) takes between 0 and 10 parameters. Since We can't convert a QVector into
+    // an argument list (like we can in Python), I'm stuck with this terrible syntax:
     bool ret = method.invoke(object,
                   generic_args.at(0),
                   generic_args.at(1),
