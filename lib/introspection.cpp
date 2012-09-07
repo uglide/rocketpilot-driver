@@ -192,9 +192,19 @@ QVariant PackProperty(QVariant const& prop)
     {
         QSize s = qvariant_cast<QSize>(prop);
         QList<QVariant> l = { QVariant(s.width()), QVariant(s.height()) };
-        return QVariant(s);
+        return QVariant(l);
     }
 
+    case QVariant::Color:
+    {
+        QColor color = qvariant_cast<QColor>(prop).toRgb();
+        QList<QVariant> l = { QVariant(color.red()),
+                              QVariant(color.green()),
+                              QVariant(color.blue()),
+                              QVariant(color.alpha())
+                            };
+        return QVariant(l);
+    }
 
     default:
     {
