@@ -10,17 +10,27 @@ by the Free Software Foundation.
 #include <xpathselect/node.h>
 #include <xpathselect/xpathselect.h>
 
-#include <QApplication>
 #include <QDebug>
+
+#if QT_VERSION >= 0x050000
+  #include <QtWidgets/QApplication>
+  #include <QtWidgets/QGraphicsItem>
+  #include <QtWidgets/QGraphicsScene>
+  #include <QtWidgets/QGraphicsView>
+  #include <QtWidgets/QWidget>
+#else
+  #include <QGraphicsItem>
+  #include <QGraphicsScene>
+  #include <QGraphicsView>
+  #include <QApplication>
+  #include <QWidget>
+#endif
+
 #include <QMap>
 #include <QMetaProperty>
 #include <QObject>
 #include <QStringList>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
-#include <QGraphicsView>
 #include <QVariant>
-#include <QWidget>
 #include <QRect>
 
 #include "introspection.h"

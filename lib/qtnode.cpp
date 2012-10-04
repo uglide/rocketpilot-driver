@@ -2,8 +2,15 @@
 
 #include "introspection.h"
 
-#include <QGraphicsScene>
-#include <QGraphicsObject>
+#include <QDebug>
+
+#if QT_VERSION >= 0x050000
+  #include <QtWidgets/QGraphicsScene>
+  #include <QtWidgets/QGraphicsObject>
+#else
+  #include <QGraphicsScene>
+  #include <QGraphicsObject>
+#endif
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
