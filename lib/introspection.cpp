@@ -13,7 +13,7 @@ by the Free Software Foundation.
 #include <QDebug>
 
 #if QT_VERSION >= 0x050000
-  #include <QtWidgets/QApplication>
+  #include <QtGui/QGuiApplication>
   #include <QtWidgets/QGraphicsItem>
   #include <QtWidgets/QGraphicsScene>
   #include <QtWidgets/QGraphicsView>
@@ -59,13 +59,19 @@ QList<QVariant> Introspect(QString const& query_string)
 
 QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
 {
+#if QT_VERSION >= 0x050000
+    std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QGuiApplication::instance());
+    foreach (QWindow *widget, QGuiApplication::topLevelWindows())
+    {
+        root->AddChild((QObject*) widget);
+    }
+#else
     std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QApplication::instance());
-
     foreach (QWidget *widget, QApplication::topLevelWidgets())
     {
         root->AddChild((QObject*) widget);
     }
-
+#endif
     QList<QtNode::Ptr> node_list;
 
     xpathselect::NodeList list = xpathselect::SelectNodes(root, query_string.toStdString());
