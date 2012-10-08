@@ -87,7 +87,7 @@ xpathselect::NodeList QtNode::Children() const
 {
     xpathselect::NodeList children;
 
-#if QT_VERSION > 0x050000
+#if QT_VERSION >= 0x050000
     // Qt5's hierarchy for QML has changed a bit:
     // - On top there's a QQuickView which holds all the QQuick items
     // - QQuickItems don't always follow the QObject type hierarchy (e.g. QQuickListView does not), therefore we use the QQuickItem's childItems()
