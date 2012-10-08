@@ -18,6 +18,8 @@ by the Free Software Foundation.
   #include <QtWidgets/QGraphicsScene>
   #include <QtWidgets/QGraphicsView>
   #include <QtWidgets/QWidget>
+  #include <QtQuick/QQuickItem>
+  #include <QtQuick/QQuickWindow>
 #else
   #include <QGraphicsItem>
   #include <QGraphicsScene>
@@ -164,7 +166,17 @@ void AddCustomProperties(QObject* obj, QVariantMap &properties)
                     scene_rect.size());
         properties["globalRect"] = PackProperty(global_rect);
     }
-
+#if QT_VERSION >= 0x050000
+    // ... and support for QQuickItems (aka. Qt5 Declarative items)
+    else if (QQuickItem *i = qobject_cast<QQuickItem*>(obj))
+    {
+        QQuickWindow *view = i->window();
+        QRectF bounding_rect = i->boundingRect();
+        bounding_rect = i->mapRectToScene(bounding_rect);
+        QRect global_rect = QRect(view->mapToGlobal(bounding_rect.toRect().topLeft()), bounding_rect.size().toSize());
+        properties["globalRect"] = PackProperty(global_rect);
+    }
+#endif
 }
 
 QVariant PackProperty(QVariant const& prop)
