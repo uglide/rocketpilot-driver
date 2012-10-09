@@ -4,7 +4,7 @@
 
 #include <QDebug>
 
-#if QT_VERSION >= 0x050000
+#ifdef QT5_SUPPORT
   #include <QtWidgets/QGraphicsScene>
   #include <QtWidgets/QGraphicsObject>
   #include <QtQml/QQmlEngine>
@@ -87,7 +87,7 @@ xpathselect::NodeList QtNode::Children() const
 {
     xpathselect::NodeList children;
 
-#if QT_VERSION >= 0x050000
+#ifdef QT5_SUPPORT
     // Qt5's hierarchy for QML has changed a bit:
     // - On top there's a QQuickView which holds all the QQuick items
     // - QQuickItems don't always follow the QObject type hierarchy (e.g. QQuickListView does not), therefore we use the QQuickItem's childItems()

@@ -12,7 +12,7 @@ by the Free Software Foundation.
 
 #include <QDebug>
 
-#if QT_VERSION >= 0x050000
+#ifdef QT5_SUPPORT
   #include <QtGui/QGuiApplication>
   #include <QtWidgets/QGraphicsItem>
   #include <QtWidgets/QGraphicsScene>
@@ -61,7 +61,7 @@ QList<QVariant> Introspect(QString const& query_string)
 
 QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
 {
-#if QT_VERSION >= 0x050000
+#ifdef QT5_SUPPORT
     std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QGuiApplication::instance());
     foreach (QWindow *widget, QGuiApplication::topLevelWindows())
     {
@@ -166,7 +166,7 @@ void AddCustomProperties(QObject* obj, QVariantMap &properties)
                     scene_rect.size());
         properties["globalRect"] = PackProperty(global_rect);
     }
-#if QT_VERSION >= 0x050000
+#ifdef QT5_SUPPORT
     // ... and support for QQuickItems (aka. Qt5 Declarative items)
     else if (QQuickItem *i = qobject_cast<QQuickItem*>(obj))
     {

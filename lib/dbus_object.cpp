@@ -14,10 +14,10 @@ by the Free Software Foundation.
 #include <QVariantMap>
 #include <QDebug>
 
-#if QT_VERSION >= 0x050000
-   #include <QtWidgets/QApplication>
+#ifdef QT5_SUPPORT
+  #include <QtWidgets/QApplication>
 #else
-   #include <QApplication>
+  #include <QApplication>
 #endif
 
 #include <QDBusConnection>
@@ -131,8 +131,8 @@ void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
             QMetaMethod method = meta->method(i);
             if (method.methodType() == QMetaMethod::Signal)
             {
-#if QT_VERSION >= 0x050000
-		QString signature = QString::fromLatin1(method.methodSignature());
+#ifdef QT5_SUPPORT
+                QString signature = QString::fromLatin1(method.methodSignature());
 #else
                 QString signature = QString::fromLatin1(method.signature());
 #endif
@@ -167,7 +167,7 @@ void DBusObject::ListMethods(int object_id, const QDBusMessage &message)
             if (method.methodType() == QMetaMethod::Slot ||
                 method.methodType() == QMetaMethod::Method)
             {
-#if QT_VERSION >= 0x050000
+#ifdef QT5_SUPPORT
                 QString signature = QString::fromLatin1(method.methodSignature());
 #else
                 QString signature = QString::fromLatin1(method.signature());
@@ -214,7 +214,7 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
     qDebug() << "Method parameter names:" << method.parameterNames();
     qDebug() << "Method parameter types:" << method.parameterTypes();
 
-#if QT_VERSION >= 0x050000
+#ifdef QT5_SUPPORT
     qDebug() << "Method signature:" << method.methodSignature()
              << "return type:" << method.typeName();
 #else
