@@ -1,0 +1,34 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+# Sample debian/rules that uses debhelper.
+# This file was originally written by Joey Hess and Craig Small.
+# As a special exception, when this file is copied by dh-make into a
+# dh-make output file, you may use that output file without restriction.
+# This special exception was added by Craig Small in version 0.37 of dh-make.
+
+# Uncomment this to turn on verbose mode.
+export DH_VERBOSE=1
+
+%:
+	dh $@ 
+
+override_dh_auto_configure:
+	mkdir qt4
+	mkdir qt5
+	cd qt4 && qmake ../autopilot-qt.pro
+	cd qt5 && /opt/qt5/bin/qmake ../autopilot-qt.pro
+
+override_dh_auto_build:
+	cd qt4 && make
+	cd qt5 && make
+
+override_dh_clean:
+	dh_clean
+	rm -rf qt4
+	rm -rf qt5
+
+override_dh_install:
+	mkdir -p $(CURDIR)/debian/autopilot-qt/usr/lib/
+	mkdir -p $(CURDIR)/debian/autopilot-qt5/opt/qt5/lib/
+	cp -pP qt4/libqttestability* $(CURDIR)/debian/autopilot-qt/usr/lib/
+	cp -pP qt5/libqttestability* $(CURDIR)/debian/autopilot-qt5/opt/qt5/lib/
