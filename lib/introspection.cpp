@@ -187,8 +187,10 @@ QVariant PackProperty(QVariant const& prop)
     case QVariant::Bool:
     case QVariant::String:
     case QVariant::UInt:
+    case QVariant::LongLong:
     case QVariant::ULongLong:
     case QVariant::StringList:
+    case QVariant::Double:
     {
         return prop;
     }
