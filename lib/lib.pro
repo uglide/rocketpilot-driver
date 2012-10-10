@@ -25,5 +25,13 @@ HEADERS = qttestability.h \
     dbus_adaptor_qt.h
 
 target.file = libtestability*
-target.path = /usr/lib
+
+#version check qt
+contains(QT_VERSION, ^5\\..\\..*) {
+    DEFINES += QT5_SUPPORT
+    target.path = /opt/qt5/lib
+} else {
+    target.path = /usr/lib
+}
+
 INSTALLS += target

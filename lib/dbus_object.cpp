@@ -13,7 +13,13 @@ by the Free Software Foundation.
 #include <QList>
 #include <QVariantMap>
 #include <QDebug>
-#include <QApplication>
+
+#ifdef QT5_SUPPORT
+  #include <QtWidgets/QApplication>
+#else
+  #include <QApplication>
+#endif
+
 #include <QDBusConnection>
 #include <QThread>
 
@@ -125,7 +131,11 @@ void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
             QMetaMethod method = meta->method(i);
             if (method.methodType() == QMetaMethod::Signal)
             {
+#ifdef QT5_SUPPORT
+                QString signature = QString::fromLatin1(method.methodSignature());
+#else
                 QString signature = QString::fromLatin1(method.signature());
+#endif
                 signal_list.append(QVariant(signature));
             }
         }
@@ -157,7 +167,11 @@ void DBusObject::ListMethods(int object_id, const QDBusMessage &message)
             if (method.methodType() == QMetaMethod::Slot ||
                 method.methodType() == QMetaMethod::Method)
             {
+#ifdef QT5_SUPPORT
+                QString signature = QString::fromLatin1(method.methodSignature());
+#else
                 QString signature = QString::fromLatin1(method.signature());
+#endif
                 method_list.append(QVariant(signature));
             }
         }
@@ -199,8 +213,14 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
 
     qDebug() << "Method parameter names:" << method.parameterNames();
     qDebug() << "Method parameter types:" << method.parameterTypes();
+
+#ifdef QT5_SUPPORT
+    qDebug() << "Method signature:" << method.methodSignature()
+             << "return type:" << method.typeName();
+#else
     qDebug() << "Method signature:" << method.signature()
              << "return type:" << method.typeName();
+#endif
 
     QVector<QGenericArgument> generic_args(10);
     QList<QByteArray> parameterTypes = method.parameterTypes();

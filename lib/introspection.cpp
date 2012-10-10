@@ -10,17 +10,29 @@ by the Free Software Foundation.
 #include <xpathselect/node.h>
 #include <xpathselect/xpathselect.h>
 
-#include <QApplication>
 #include <QDebug>
+
+#ifdef QT5_SUPPORT
+  #include <QtGui/QGuiApplication>
+  #include <QtWidgets/QGraphicsItem>
+  #include <QtWidgets/QGraphicsScene>
+  #include <QtWidgets/QGraphicsView>
+  #include <QtWidgets/QWidget>
+  #include <QtQuick/QQuickItem>
+  #include <QtQuick/QQuickWindow>
+#else
+  #include <QGraphicsItem>
+  #include <QGraphicsScene>
+  #include <QGraphicsView>
+  #include <QApplication>
+  #include <QWidget>
+#endif
+
 #include <QMap>
 #include <QMetaProperty>
 #include <QObject>
 #include <QStringList>
-#include <QGraphicsItem>
-#include <QGraphicsScene>
-#include <QGraphicsView>
 #include <QVariant>
-#include <QWidget>
 #include <QRect>
 
 #include "introspection.h"
@@ -49,13 +61,19 @@ QList<QVariant> Introspect(QString const& query_string)
 
 QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
 {
+#ifdef QT5_SUPPORT
+    std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QGuiApplication::instance());
+    foreach (QWindow *widget, QGuiApplication::topLevelWindows())
+    {
+        root->AddChild((QObject*) widget);
+    }
+#else
     std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QApplication::instance());
-
     foreach (QWidget *widget, QApplication::topLevelWidgets())
     {
         root->AddChild((QObject*) widget);
     }
-
+#endif
     QList<QtNode::Ptr> node_list;
 
     xpathselect::NodeList list = xpathselect::SelectNodes(root, query_string.toStdString());
@@ -148,7 +166,17 @@ void AddCustomProperties(QObject* obj, QVariantMap &properties)
                     scene_rect.size());
         properties["globalRect"] = PackProperty(global_rect);
     }
-
+#ifdef QT5_SUPPORT
+    // ... and support for QQuickItems (aka. Qt5 Declarative items)
+    else if (QQuickItem *i = qobject_cast<QQuickItem*>(obj))
+    {
+        QQuickWindow *view = i->window();
+        QRectF bounding_rect = i->boundingRect();
+        bounding_rect = i->mapRectToScene(bounding_rect);
+        QRect global_rect = QRect(view->mapToGlobal(bounding_rect.toRect().topLeft()), bounding_rect.size().toSize());
+        properties["globalRect"] = PackProperty(global_rect);
+    }
+#endif
 }
 
 QVariant PackProperty(QVariant const& prop)
@@ -159,8 +187,10 @@ QVariant PackProperty(QVariant const& prop)
     case QVariant::Bool:
     case QVariant::String:
     case QVariant::UInt:
+    case QVariant::LongLong:
     case QVariant::ULongLong:
     case QVariant::StringList:
+    case QVariant::Double:
     {
         return prop;
     }
