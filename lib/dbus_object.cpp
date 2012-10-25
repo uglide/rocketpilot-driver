@@ -120,7 +120,6 @@ void DBusObject::GetSignalEmissions(int object_id, QString signal_name, const QD
         qDebug("Reply sent.");
     else
         qDebug("Error on reply send.");
-    qDebug() << "****************************************************************5";
 }
 
 void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
