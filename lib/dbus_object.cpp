@@ -94,15 +94,22 @@ void DBusObject::GetSignalEmissions(int object_id, QString signal_name, const QD
     {
         SignalSpyPtr signal_spy = signal_watchers_[signal];
         QList<QVariant> signal_emit_list;
-        qDebug() << "Signal emissionss" << *signal_spy;
+        qDebug() << "Signal emissions" << signal_spy.data()->length() << signal_spy.data();
         for (int i = 0; i < signal_spy->length(); ++i)
         {
-            QList<QVariant> signal_emission = signal_spy->at(i);
-            qDebug() << "Packing" << signal_emission << "Into QVariant";
+            QList<QVariant> signal_emission;
+            foreach(const QVariant &arg, signal_spy->at(i)) {
+
+                // We cannot marshall QObject* or QObject:
+                // Marshalling a pointer through DBus makes no sense as its just an address to protected memory
+                // Marshalling a QObject (without pointer) is not possible because of QObjects no-copy-nature
+                if((int)arg.type() != (int)QMetaType::QObjectStar) {
+                    signal_emission.append(arg);
+                }
+            }
+
             signal_emit_list.append(QVariant(signal_emission));
         }
-
-        qDebug() << "Packing" << signal_emit_list << "into DBus reply.";
         reply << QVariant(signal_emit_list);
     }
     else
@@ -113,6 +120,7 @@ void DBusObject::GetSignalEmissions(int object_id, QString signal_name, const QD
         qDebug("Reply sent.");
     else
         qDebug("Error on reply send.");
+    qDebug() << "****************************************************************5";
 }
 
 void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
