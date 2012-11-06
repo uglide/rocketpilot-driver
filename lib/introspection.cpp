@@ -122,6 +122,7 @@ QVariantMap GetNodeProperties(QObject* obj)
                 qDebug() << "Property at index" << i << "Is not valid!";
                 continue;
             }
+            qDebug() << "trying tp pack property" << prop.name();
             QVariant object_property = PackProperty(prop.read(obj));
             if (! object_property.isValid())
                 continue;
@@ -234,6 +235,11 @@ QVariant PackProperty(QVariant const& prop)
                               QVariant(color.alpha())
                             };
         return QVariant(l);
+    }
+
+    case QVariant::Url:
+    {
+        return QVariant(prop.toUrl().toString());
     }
 
     default:
