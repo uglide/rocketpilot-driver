@@ -123,7 +123,6 @@ QVariantMap GetNodeProperties(QObject* obj)
                 qDebug() << "Property at index" << i << "Is not valid!";
                 continue;
             }
-            qDebug() << "trying tp pack property" << prop.name();
             QVariant object_property = PackProperty(prop.read(obj));
             if (! object_property.isValid())
                 continue;
