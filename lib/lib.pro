@@ -2,7 +2,7 @@
 TEMPLATE = lib
 TARGET = qttestability
 DESTDIR=..
-QT = core gui dbus
+QT = core gui dbus quick widgets
 CONFIG += link_pkgconfig qtestlib
 PKGCONFIG += xpathselect
 QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
