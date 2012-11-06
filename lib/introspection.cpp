@@ -34,6 +34,7 @@ by the Free Software Foundation.
 #include <QStringList>
 #include <QVariant>
 #include <QRect>
+#include <QUrl>
 
 #include "introspection.h"
 #include "qtnode.h"
