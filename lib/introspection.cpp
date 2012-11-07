@@ -34,6 +34,7 @@ by the Free Software Foundation.
 #include <QStringList>
 #include <QVariant>
 #include <QRect>
+#include <QUrl>
 
 #include "introspection.h"
 #include "qtnode.h"
@@ -234,6 +235,11 @@ QVariant PackProperty(QVariant const& prop)
                               QVariant(color.alpha())
                             };
         return QVariant(l);
+    }
+
+    case QVariant::Url:
+    {
+        return QVariant(prop.toUrl().toString());
     }
 
     default:
