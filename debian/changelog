@@ -1,3 +1,9 @@
+autopilot-qt (0.2) quantal; urgency=low
+
+  * Release
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Wed, 14 Nov 2012 16:55:45 +0100
+
 autopilot-qt (0.1) quantal; urgency=low
 
   * Initial release
