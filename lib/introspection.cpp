@@ -242,6 +242,12 @@ QVariant PackProperty(QVariant const& prop)
         return QVariant(prop.toUrl().toString());
     }
 
+    // Depending on the architecture, floating points might be of type QMetaType::Float instead of QVariant::Double
+    // QDBus however, can only carry QVariant types, so lets convert it to QVariant::Double
+    case QMetaType::Float:
+    {
+        return QVariant(prop.toDouble());
+    }
     default:
     {
         return QVariant();
