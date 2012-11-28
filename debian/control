@@ -15,6 +15,11 @@ Build-Depends: debhelper (>= 9),
 Standards-Version: 3.9.3
 Section: libs
 Homepage: https://launchpad.net/autopilot-qt
+# If you aren't a member of ~autopilot but need to upload
+# packaging changes, just go ahead. ~autopilot will notice
+# and sync up the code again.
+Vcs-Bzr: https://code.launchpad.net/~autopilot/autopilot-qt/trunk
+Vcs-Browser: https://bazaar.launchpad.net/~autopilot/autopilot-qt/trunk/files
 
 Package: autopilot-qt
 Section: libs
