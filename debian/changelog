@@ -5,6 +5,8 @@ autopilot-qt (0.3-0ubuntu1) UNRELEASED; urgency=low
     - Bump Build-Depends on debhelper to 9.
     - Add Vcs-Bzr, Vcs-Browser and a notice to uploaders.
   * debian/compat: bump to compat level 9.
+  * debian/rules:
+    - Clean up extra comments.
 
  -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Tue, 27 Nov 2012 18:04:58 -0500
 
