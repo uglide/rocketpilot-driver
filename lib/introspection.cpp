@@ -78,7 +78,6 @@ QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
     QList<QtNode::Ptr> node_list;
 
     xpathselect::NodeList list = xpathselect::SelectNodes(root, query_string.toStdString());
-    qDebug() << "XPathSelect library returned" << list.size() << "items.";
     for (auto node : list)
     {
         // node may be our root node wrapper *or* an ordinary qobject wrapper
@@ -111,6 +110,7 @@ QString GetNodeName(QObject* obj)
 
 QVariantMap GetNodeProperties(QObject* obj)
 {
+    qDebug() << "start of getProps" << obj->metaObject()->className();
     QVariantMap object_properties;
     const QMetaObject* meta = obj->metaObject();
     do
@@ -138,6 +138,7 @@ QVariantMap GetNodeProperties(QObject* obj)
     if (!children.empty())
         object_properties["Children"] = children;
 
+    qDebug() << "end of getProps";
     return object_properties;
 }
 
