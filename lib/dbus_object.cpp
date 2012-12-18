@@ -53,8 +53,6 @@ void DBusObject::GetState(const QString &piece, const QDBusMessage &msg)
                 "ProcessQuery",
                 Qt::QueuedConnection
                 );
-
-    qDebug("End of GetState");
 }
 
 void DBusObject::RegisterSignalInterest(int object_id, QString signal_name)
@@ -276,7 +274,6 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
 
 void DBusObject::ProcessQuery()
 {
-    qDebug("Start of ProcessQuery");
     Query query = _queries.takeFirst();
     QList<QVariant> state = Introspect(query.first);
 
@@ -284,6 +281,5 @@ void DBusObject::ProcessQuery()
     msg << QVariant(state);
 
     QDBusConnection::sessionBus().send(msg);
-    qDebug("Reply sent.");
 }
 
