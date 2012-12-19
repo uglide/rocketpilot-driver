@@ -38,8 +38,6 @@ void AutopilotAdaptor::GetState(const QString &piece, const QDBusMessage &messag
     message.setDelayedReply(true);
     QDBusMessage reply = message.createReply();
 
-    qDebug() << "GetState for" << piece << message;
-
     // handle method call com.canonical.Unity.Debug.Introspection.GetState
     QMetaObject::invokeMethod(
                 parent(),

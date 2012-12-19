@@ -19,8 +19,7 @@ const QString DBUS_OBJECT_PATH("/com/canonical/Autopilot/Introspection");
 
 void qt_testability_init(void)
 {
-    qDebug() << "In Testability init function.";
-
+    qDebug() << "Loading testability driver.";
 
     DBusObject* obj = new DBusObject;
     new AutopilotAdaptor(obj);
@@ -30,6 +29,6 @@ void qt_testability_init(void)
 
     if (!connection.registerObject(DBUS_OBJECT_PATH, obj))
     {
-        qDebug("Unable to register object!");
+        qDebug("Unable to register object on D-Bus! Testability interface will not be available.");
     }
 }

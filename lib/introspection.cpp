@@ -110,7 +110,6 @@ QString GetNodeName(QObject* obj)
 
 QVariantMap GetNodeProperties(QObject* obj)
 {
-    qDebug() << "start of getProps" << obj->metaObject()->className();
     QVariantMap object_properties;
     const QMetaObject* meta = obj->metaObject();
     do
