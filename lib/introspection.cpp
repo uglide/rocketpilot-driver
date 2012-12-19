@@ -137,7 +137,6 @@ QVariantMap GetNodeProperties(QObject* obj)
     if (!children.empty())
         object_properties["Children"] = children;
 
-    qDebug() << "end of getProps";
     return object_properties;
 }
 
