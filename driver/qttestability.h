@@ -6,10 +6,10 @@ under the terms of the GNU General Public License version 3, as published
 by the Free Software Foundation.
 */
 
-#include "qttestability.h"
+#ifndef QTTESTABILITY_H
+#define QTTESTABILITY_H
+
+extern "C" void qt_testability_init(void);
 
 
-void qt_testability_init(void)
-{
-
-}
+#endif
