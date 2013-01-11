@@ -25,7 +25,7 @@ callback(struct dl_phdr_info *info, size_t size, void *data)
     (void) size;
     QtVersion *v = (QtVersion*) data;
 
-    if (*v != QT_VERSION_UNKNOWN)
+    if (*v == QT_VERSION_UNKNOWN)
     {
         std::string lib_path(info->dlpi_name);
         if (lib_path.rfind("libQtCore.so.4") != std::string::npos)
@@ -49,11 +49,11 @@ void qt_testability_init(void)
     std::string driver_name;
     if (version == QT_VERSION_4)
     {
-        driver_name = "libqt_driver.so.1";
+        driver_name = "libautopilot_driver_qt4.so.1";
     }
     else if (version == QT_VERSION_5)
     {
-        driver_name = "libqt_driver.so.1";
+        driver_name = "libautopilot_driver_qt4.so.1";
     }
     else
     {
