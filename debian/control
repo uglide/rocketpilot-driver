@@ -11,15 +11,6 @@ Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Recommends: python-autopilot
-Description: This project makes Qt4 applications introspectable by autopilot.
- This allows autopilot to test any existing Qt4 application, 
- without having to rebuild the application under test.
-
-Package: autopilot-qt5
-Section: libs
-Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
-Recommends: python-autopilot
-Description: This project makes Qt5 applications introspectable by autopilot.
- This allows autopilot to test any existing Qt5 application, 
+Description: This project makes Qt applications introspectable by autopilot.
+ This allows autopilot to test any existing Qt4 or Qt5 application,
  without having to rebuild the application under test.

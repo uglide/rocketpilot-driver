@@ -10,7 +10,7 @@
 export DH_VERBOSE=1
 
 %:
-	dh $@ 
+	dh $@
 
 override_dh_auto_configure:
 	mkdir qt4
@@ -30,5 +30,5 @@ override_dh_clean:
 override_dh_install:
 	mkdir -p $(CURDIR)/debian/autopilot-qt/usr/lib/
 	mkdir -p $(CURDIR)/debian/autopilot-qt5/opt/qt5/lib/
-	cp -pP qt4/libqttestability* $(CURDIR)/debian/autopilot-qt/usr/lib/
-	cp -pP qt5/libqttestability* $(CURDIR)/debian/autopilot-qt5/opt/qt5/lib/
+	cp -pP qt4/*.so* $(CURDIR)/debian/autopilot-qt/usr/lib/
+	cp -pP qt5/*.so* $(CURDIR)/debian/autopilot-qt/usr/lib/
