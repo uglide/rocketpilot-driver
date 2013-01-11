@@ -4,6 +4,7 @@ TARGET = qttestability
 DESTDIR=..
 QT =
 QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
+QMAKE_CXXFLAGS -= -pedantic
 
 SOURCES = qttestability.cpp
 HEADERS = qttestability.h
