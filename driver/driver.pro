@@ -1,6 +1,13 @@
 
 TEMPLATE = lib
-TARGET = qt_driver
+#version check qt
+contains(QT_VERSION, ^5\\..\\..*) {
+    DEFINES += QT5_SUPPORT
+    TARGET = autopilot_driver_qt5
+} else {
+  TARGET = autopilot_driver_qt4
+}
+
 DESTDIR=..
 QT = core gui dbus quick widgets testlib
 CONFIG += link_pkgconfig
@@ -26,12 +33,6 @@ HEADERS = qttestability.h \
 
 target.file = libtestability*
 
-#version check qt
-#contains(QT_VERSION, ^5\\..\\..*) {
-#    DEFINES += QT5_SUPPORT
-#    target.path = /opt/qt5/lib
-#} else {
-#    target.path = /usr/lib
-#}
 
+target.path = /usr/lib
 INSTALLS += target
