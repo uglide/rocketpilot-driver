@@ -1,5 +1,5 @@
-
 TEMPLATE = lib
+
 #version check qt
 contains(QT_VERSION, ^5\\..\\..*) {
     DEFINES += QT5_SUPPORT
