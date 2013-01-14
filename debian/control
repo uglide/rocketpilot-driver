@@ -10,6 +10,9 @@ Package: libautopilot-qt
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
+Replaces: autopilot-qt, autopilot-qt5
+Conflicts: autopilot-qt, autopilot-qt5
+Provides: autopilot-qt, autopilot-qt5
 Recommends: python-autopilot
 Description: This project makes Qt applications introspectable by autopilot.
  This allows autopilot to test any existing Qt4 or Qt5 application,
