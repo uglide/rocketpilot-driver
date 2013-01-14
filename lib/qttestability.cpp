@@ -53,7 +53,7 @@ void qt_testability_init(void)
     }
     else if (version == QT_VERSION_5)
     {
-        driver_name = "libautopilot_driver_qt4.so.1";
+        driver_name = "libautopilot_driver_qt5.so.1";
     }
     else
     {
