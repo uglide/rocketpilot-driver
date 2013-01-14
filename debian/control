@@ -1,4 +1,4 @@
-Source: autopilot-qt
+Source: libautopilot-qt
 Priority: extra
 Maintainer: Michael Zanetti <michael.zanetti@canonical.com>
 Build-Depends: debhelper (>= 8.0.0), libindicate-qt-dev, pkg-config, qt4-qmake, libqt4-dev, qtbase, qtdeclarative, libxpathselect-dev, mesa-common-dev, libgl1-mesa-dev, libgles2-mesa-dev
@@ -6,7 +6,7 @@ Standards-Version: 3.9.3
 Section: libs
 Homepage: https://launchpad.net/autopilot-qt
 
-Package: autopilot-qt
+Package: libautopilot-qt
 Section: libs
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}

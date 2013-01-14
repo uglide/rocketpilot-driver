@@ -28,7 +28,7 @@ override_dh_clean:
 	rm -rf qt5
 
 override_dh_install:
-	mkdir -p $(CURDIR)/debian/autopilot-qt/usr/lib/
-	mkdir -p $(CURDIR)/debian/autopilot-qt5/opt/qt5/lib/
-	cp -pP qt4/*.so* $(CURDIR)/debian/autopilot-qt/usr/lib/
-	cp -pP qt5/*.so* $(CURDIR)/debian/autopilot-qt/usr/lib/
+	mkdir -p $(CURDIR)/debian/libautopilot-qt/usr/lib/
+	mkdir -p $(CURDIR)/debian/libautopilot-qt5/opt/qt5/lib/
+	cp -pP qt4/*.so* $(CURDIR)/debian/libautopilot-qt/usr/lib/
+	cp -pP qt5/*.so* $(CURDIR)/debian/libautopilot-qt/usr/lib/
