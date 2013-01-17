@@ -15,8 +15,8 @@ export DH_VERBOSE=1
 override_dh_auto_configure:
 	mkdir qt4
 	mkdir qt5
-	cd qt4 && qmake ../autopilot-qt.pro
-	cd qt5 && /opt/qt5/bin/qmake ../autopilot-qt.pro
+	cd qt4 && qmake -qt=qt4 ../autopilot-qt.pro
+	cd qt5 && qmake -qt=qt5 ../autopilot-qt.pro
 
 override_dh_auto_build:
 	cd qt4 && make
