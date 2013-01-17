@@ -95,7 +95,7 @@ xpathselect::NodeList QtNode::Children() const
 
     QQuickView *view = qobject_cast<QQuickView*>(object_);
     if (view) {
-        children.push_back(std::make_shared<QtNode>(view->rootItem()));
+        children.push_back(std::make_shared<QtNode>(view->rootObject()));
     }
 
     QQuickItem* item = qobject_cast<QQuickItem*>(object_);
