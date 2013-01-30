@@ -32,7 +32,7 @@ callback(struct dl_phdr_info *info, size_t size, void *data)
         {
             *v = QT_VERSION_4;
         }
-        else if (lib_path.rfind("libQtCore.so.5") != std::string::npos)
+        else if (lib_path.rfind("libQtCore.so.5") != std::string::npos || lib_path.rfind("libQt5Core.so.5") != std::string::npos)
         {
             *v = QT_VERSION_5;
         }
