@@ -71,7 +71,7 @@ void DBusObject::RegisterSignalInterest(int object_id, QString signal_name)
     QObject* obj = node->getWrappedObject();
 
     QString munged_signal_name = QString("2%1").arg(signal_name);
-    SignalSpyPtr signal_spy(new QSignalSpy(obj, munged_signal_name.toAscii().data()));
+    SignalSpyPtr signal_spy(new QSignalSpy(obj, munged_signal_name.toLocal8Bit().data()));
     if (signal_spy->isValid())
     {
         signal_watchers_[signal] = signal_spy;
@@ -203,7 +203,7 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
     int method_index = -1;
     do
     {
-        method_index = meta->indexOfMethod(method_name.toAscii());
+        method_index = meta->indexOfMethod(method_name.toLocal8Bit());
         if (method_index == -1)
             meta = meta->superClass();
     } while(meta && method_index == -1);

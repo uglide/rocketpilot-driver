@@ -5,7 +5,7 @@ contains(QT_VERSION, ^5\\..\\..*) {
     DEFINES += QT5_SUPPORT
     TARGET = autopilot_driver_qt5
 } else {
-  TARGET = autopilot_driver_qt4
+    TARGET = autopilot_driver_qt4
 }
 
 DESTDIR=..
@@ -18,18 +18,18 @@ SOURCES = qttestability.cpp \
           dbus_adaptor.cpp \
           dbus_object.cpp \
           introspection.cpp \
-    rootnode.cpp \
-    qtnode.cpp \
-    dbus_adaptor_qt.cpp
+          rootnode.cpp \
+          qtnode.cpp \
+          dbus_adaptor_qt.cpp
 
 HEADERS = qttestability.h \
           dbus_adaptor.h \
           dbus_object.h \
           introspection.h \
-    rootnode.h \
-    qtnode.h \
+          rootnode.h \
+          qtnode.h \
           introspection.h \
-    dbus_adaptor_qt.h
+          dbus_adaptor_qt.h
 
 target.file = libtestability*
 

@@ -1,3 +1,15 @@
+libautopilot-qt (0.4) quantal; urgency=low
+
+  * fix problem with Qt5 final
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Wed, 30 Jan 2013 12:31:03 +0100
+
+libautopilot-qt (0.3) quantal; urgency=low
+
+  * Updated to Qt5 final
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Thu, 17 Jan 2013 21:20:59 +0100
+
 libautopilot-qt (0.2) quantal; urgency=low
 
   * Release
