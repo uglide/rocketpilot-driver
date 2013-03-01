@@ -1,3 +1,9 @@
+libautopilot-qt (0.6) quantal; urgency=low
+
+  * revert to previous version. For Precise, use autopilot-qt4 or autopilot-qt5
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Thu, 28 Feb 2013 22:07:50 +0100
+
 libautopilot-qt (0.5) quantal; urgency=low
 
   * Fix dependency to libxpathselect
