@@ -39,7 +39,7 @@ void RootNode::AddChild(QObject* child)
 
 std::string RootNode::GetName() const
 {
-    QString appName = application_->applicationName();
+    QString appName = application_->applicationName().remove(' ');
     return appName.isEmpty() ? "Root" : appName.toStdString();
 }
 
