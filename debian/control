@@ -22,7 +22,7 @@ Package: libautopilot-qt
 Section: libs
 Architecture: any
 Depends: ${misc:Depends},
-         libxpathselect1.1,
+         libxpathselect1.2,
 Replaces: autopilot-qt, autopilot-qt5
 Conflicts: autopilot-qt, autopilot-qt5
 Provides: autopilot-qt, autopilot-qt5
