@@ -66,7 +66,10 @@ void DBusObject::RegisterSignalInterest(int object_id, QString signal_name)
 
     QtNode::Ptr node = GetNodeWithId(object_id);
     if (! node)
+    {
+        qWarning() << "Unable to register signal interest.";
         return;
+    }
 
     QObject* obj = node->getWrappedObject();
 
@@ -123,68 +126,74 @@ void DBusObject::GetSignalEmissions(int object_id, QString signal_name, const QD
 void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
 {
     QtNode::Ptr node = GetNodeWithId(object_id);
-    if (! node)
-        return;
-
-    QObject *object = node->getWrappedObject();
-    const QMetaObject *meta = object->metaObject();
-    QList<QVariant> signal_list;
-    do
-    {
-        for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
-        {
-            QMetaMethod method = meta->method(i);
-            if (method.methodType() == QMetaMethod::Signal)
-            {
-#ifdef QT5_SUPPORT
-                QString signature = QString::fromLatin1(method.methodSignature());
-#else
-                QString signature = QString::fromLatin1(method.signature());
-#endif
-                signal_list.append(QVariant(signature));
-            }
-        }
-        meta = meta->superClass();
-    } while(meta);
-
     QDBusMessage reply = message.createReply();
-    reply << QVariant(signal_list);
+    if (! node)
+    {
+        qWarning() << "Unable to list signals.";
+    }
+    else
+    {
+        QObject *object = node->getWrappedObject();
+        const QMetaObject *meta = object->metaObject();
+        QList<QVariant> signal_list;
+        do
+        {
+            for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
+            {
+                QMetaMethod method = meta->method(i);
+                if (method.methodType() == QMetaMethod::Signal)
+                {
+#ifdef QT5_SUPPORT
+                    QString signature = QString::fromLatin1(method.methodSignature());
+#else
+                    QString signature = QString::fromLatin1(method.signature());
+#endif
+                    signal_list.append(QVariant(signature));
+                }
+            }
+            meta = meta->superClass();
+        } while(meta);
+
+        reply << QVariant(signal_list);
+    }
+
     QDBusConnection::sessionBus().send(reply);
 }
 
 void DBusObject::ListMethods(int object_id, const QDBusMessage &message)
 {
+    QDBusMessage reply = message.createReply();
     QtNode::Ptr node = GetNodeWithId(object_id);
     if (! node)
     {
-        qWarning() << "No Object found.";
-        return;
+        qWarning() << "No Object found while listing methods.";
     }
-
-    QObject *object = node->getWrappedObject();
-    const QMetaObject *meta = object->metaObject();
-    QList<QVariant> method_list;
-    do
+    else
     {
-        for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
+        QObject *object = node->getWrappedObject();
+        const QMetaObject *meta = object->metaObject();
+        QList<QVariant> method_list;
+        do
         {
-            QMetaMethod method = meta->method(i);
-            if (method.methodType() == QMetaMethod::Slot ||
-                method.methodType() == QMetaMethod::Method)
+            for (int i = meta->methodOffset(); i < meta->methodCount(); ++i)
             {
+                QMetaMethod method = meta->method(i);
+                if (method.methodType() == QMetaMethod::Slot ||
+                    method.methodType() == QMetaMethod::Method)
+                {
 #ifdef QT5_SUPPORT
-                QString signature = QString::fromLatin1(method.methodSignature());
+                    QString signature = QString::fromLatin1(method.methodSignature());
 #else
-                QString signature = QString::fromLatin1(method.signature());
+                    QString signature = QString::fromLatin1(method.signature());
 #endif
-                method_list.append(QVariant(signature));
+                    method_list.append(QVariant(signature));
+                }
             }
-        }
-        meta = meta->superClass();
-    } while(meta);
+            meta = meta->superClass();
+        } while(meta);
 
-    QDBusMessage reply = message.createReply();
-    reply << QVariant(method_list);
+        reply << QVariant(method_list);
+    }
     QDBusConnection::sessionBus().send(reply);
 }
 
