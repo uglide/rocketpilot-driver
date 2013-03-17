@@ -1,6 +1,11 @@
 #include <QApplication>
+#include <QStringList>
 
+#ifdef QT5_SUPPORT
 #include <QQuickView>
+#else
+#include <QDeclarativeView>
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -14,7 +19,12 @@ int main(int argc, char *argv[])
         app.setApplicationName(args.at(appNameIndex+1));
     }
 
+#ifdef QT5_SUPPORT
     QQuickView view;
+#else
+    QDeclarativeView view;
+#endif
+
     view.setSource(QUrl(sourceFile));
 
     view.show();

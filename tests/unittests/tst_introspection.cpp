@@ -55,6 +55,8 @@ private:
 
 void tst_Introspection::initTestCase()
 {
+    QApplication::setApplicationName("tst_introspection");
+
     m_object = new QMainWindow();
     QWidget *centralWidget = new QWidget();
     centralWidget->setObjectName("centralTestWidget");
@@ -110,14 +112,20 @@ void tst_Introspection::test_introspect_data()
     QTest::addColumn<QString>("firstResultPropertyName");
     QTest::addColumn<QVariant>("firstResultPropertyValue");
 
+#ifdef QT5_SUPPORT
     QTest::newRow("/") << "/" << 1 << "tst_introspection" << "Children" << QVariant(QStringList() << "QMainWindow" << "QWidgetWindow");
     QTest::newRow("//QWidget[id=6]") << "//QWidget[id=6]" << 1 << "QWidget" << "objectName" << QVariant("centralTestWidget");
+    QTest::newRow("//QPushButton[id=9]") << "//QPushButton[id=9]" << 1 << "QPushButton" << "objectName" << QVariant("myButton2");
+#else
+    QTest::newRow("/") << "/" << 1 << "tst_introspection" << "Children" << QVariant(QStringList() << "QMainWindow");
+    QTest::newRow("//QWidget[id=5]") << "//QWidget[id=5]" << 1 << "QWidget" << "objectName" << QVariant("centralTestWidget");
+    QTest::newRow("//QPushButton[id=7]") << "//QPushButton[id=9]" << 1 << "QPushButton" << "objectName" << QVariant("myButton2");
+#endif
+
     QTest::newRow("//GridLayout") << "//QGridLayout" << 1 << "QGridLayout" << "objectName" << QVariant("myTestLayout");
     QTest::newRow("//QPushButton") << "//QPushButton" << 2 << "QPushButton" << "objectName" << QVariant("myButton1");
-    QTest::newRow("//QPushButton[id=9]") << "//QPushButton[id=9]" << 1 << "QPushButton" << "objectName" << QVariant("myButton2");
 
     QTest::newRow("//QWidget/*") << "//QWidget/*" << 5 << "QGridLayout" << "objectName" << QVariant("myTestLayout");
-
 }
 
 void tst_Introspection::test_introspect()
@@ -156,7 +164,11 @@ void tst_Introspection::test_application_names()
     QFETCH(QString, app_name);
     qApp->setApplicationName(app_name);
 
+#ifdef QT5_SUPPORT
     QList<QVariant> result = Introspect("//QWidgetWindow");
+#else
+    QList<QVariant> result = Introspect("//QMainWindow");
+#endif
 
     QVERIFY(!result.isEmpty());
 }

@@ -81,7 +81,7 @@ class TestAppNameQtDefault(AutopilotQtTestCase):
 class TestAppNameTech(AutopilotQtTestCase):
 
     def setUp(self):
-        super(TestAppNameTech, self).setUp("--appname", "qt5-test-app")
+        super(TestAppNameTech, self).setUp("--appname", "qt-test-app")
 
     def test_connection(self):
         self.assertThat(self.main_window.get_qml_view().visible, Eventually(Equals(True)))
@@ -89,7 +89,7 @@ class TestAppNameTech(AutopilotQtTestCase):
 class TestAppNameUserfriendly(AutopilotQtTestCase):
 
     def setUp(self):
-        super(TestAppNameUserfriendly, self).setUp("--appname", "Qt5 Test App")
+        super(TestAppNameUserfriendly, self).setUp("--appname", "Qt Test App")
 
     def test_connection(self):
         self.assertThat(self.main_window.get_qml_view().visible, Eventually(Equals(True)))
@@ -97,7 +97,7 @@ class TestAppNameUserfriendly(AutopilotQtTestCase):
 class TestAppNameFqdn(AutopilotQtTestCase):
 
     def setUp(self):
-        super(TestAppNameFqdn, self).setUp("--appname", "com.ubuntu.qt5testapp")
+        super(TestAppNameFqdn, self).setUp("--appname", "com.ubuntu.qttestapp")
 
     def test_connection(self):
         self.assertThat(self.main_window.get_qml_view().visible, Eventually(Equals(True)))

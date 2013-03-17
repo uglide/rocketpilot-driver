@@ -9,28 +9,28 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class MainWindow(object):
+class MainWindowQt4(object):
     """An emulator class that makes it easy to interact with the camera-app."""
 
     def __init__(self, app):
         self.app = app
 
     def get_qml_view(self):
-        qml_view = self.app.select_single("QQuickView")
+        qml_view = self.app.select_single("QDeclarativeView")
         if qml_view is None:
-            logger.error("*** select_single(\"QQuickView\") failed ***")
+            logger.error("*** select_single(\"QDeclarativeView\") failed ***")
         return qml_view
 
     def get_root_item(self):
-        root_item = self.app.select_single("QQuickItem", objectName="rootItem")
+        root_item = self.app.select_single("QDeclarativeItem", objectName="rootItem")
         if root_item is None:
-            logger.error("*** select_single(\"QQuickItem\", objectName=\rootItem\") failed ***")
+            logger.error("*** select_single(\"QDeclarativeItem\", objectName=\rootItem\") failed ***")
         return root_item
 
     def get_test_item(self):
-        test_item = self.app.select_single("QQuickItem", objectName="testItem")
+        test_item = self.app.select_single("QDeclarativeItem", objectName="testItem")
         if test_item is None:
-            logger.error("*** select_single(\"QQuickItem\", objectName=\"testItem\") failed ***")
+            logger.error("*** select_single(\"QDeclarativeItem\", objectName=\"testItem\") failed ***")
         return test_item
 
     def get_test_item_by_objectname(self):
@@ -40,19 +40,19 @@ class MainWindow(object):
         return test_item
 
     def get_test_rectangle(self):
-        rectangle = self.app.select_single("QQuickRectangle")
+        rectangle = self.app.select_single("QDeclarativeRectangle")
         if rectangle is None:
-            logger.error("*** select_single(\"QQuickRectangle\") failed ***")
+            logger.error("*** select_single(\"QDeclarativeRectangle\") failed ***")
         return rectangle
 
     def get_test_rectangle_by_child_search(self):
-        rectangle = self.get_root_item().get_children_by_type("QQuickRectangle")[0]
+        rectangle = self.get_root_item().get_children_by_type("QDeclarativeRectangle")[0]
         if rectangle is None:
-            logger.error("*** get_children_by_type(\"QQuickRectangle\")[0] failed ***")
+            logger.error("*** get_children_by_type(\"QDeclarativeRectangle\")[0] failed ***")
         return rectangle
 
     def get_test_mousearea(self):
-        mousearea = self.app.select_single("QQuickMouseArea")
+        mousearea = self.app.select_single("QDeclarativeMouseArea")
         if mousearea is None:
-            logger.error("*** select_single(\"QQuickMouseArea\") failed ***")
+            logger.error("*** select_single(\"QDeclarativeMouseArea\") failed ***")
         return mousearea
