@@ -49,7 +49,6 @@ private slots:
 
 private:
     QMainWindow *m_object;
-    QPushButton *button;
 };
 
 
@@ -108,7 +107,7 @@ void tst_Introspection::test_introspect_data()
     // first result object type. Empty string if 0 results expected
     QTest::addColumn<QString>("firstResultType");
 
-    // Choose a property from the first result object to be compared, empty QStrign/QVariant if 0 results expected
+    // Choose a property from the first result object to be compared, empty QString/QVariant if 0 results expected
     QTest::addColumn<QString>("firstResultPropertyName");
     QTest::addColumn<QVariant>("firstResultPropertyValue");
 
