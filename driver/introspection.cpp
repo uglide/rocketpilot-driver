@@ -13,7 +13,7 @@ by the Free Software Foundation.
 #include <QDebug>
 
 #ifdef QT5_SUPPORT
-  #include <QtGui/QGuiApplication>
+  #include <QtWidgets/QApplication>
   #include <QtWidgets/QGraphicsItem>
   #include <QtWidgets/QGraphicsScene>
   #include <QtWidgets/QGraphicsView>
@@ -62,12 +62,23 @@ QList<QVariant> Introspect(QString const& query_string)
 
 QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
 {
+    qDebug() << "########## query is" << query_string << QApplication::applicationName();
 #ifdef QT5_SUPPORT
-    std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QGuiApplication::instance());
-    foreach (QWindow *widget, QGuiApplication::topLevelWindows())
+    std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QApplication::instance());
+
+    // Add all QWidget top level widgets
+    foreach (const QWidget *widget, QApplication::topLevelWidgets())
     {
+//        qDebug() << "got toplevel widget" << widget;
         root->AddChild((QObject*) widget);
     }
+    // Add all QML top level Windows
+    foreach (const QWindow *widget, QGuiApplication::topLevelWindows())
+    {
+//        qDebug() << "got toplevel window" << widget;
+        root->AddChild((QObject*) widget);
+    }
+
 #else
     std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QApplication::instance());
     foreach (QWidget *widget, QApplication::topLevelWidgets())
@@ -127,6 +138,15 @@ QVariantMap GetNodeProperties(QObject* obj)
                 continue;
             object_properties[prop.name()] = object_property;
         }
+        foreach(const QByteArray &dynamicPropertyName, obj->dynamicPropertyNames()) {
+            QVariant dynamicPropertyValue = obj->property(dynamicPropertyName);
+
+            QVariant object_property = PackProperty(dynamicPropertyValue);
+            if (! object_property.isValid())
+                continue;
+            object_properties[dynamicPropertyName] = object_property;
+        }
+
         meta = meta->superClass();
     } while(meta);
 
@@ -260,8 +280,11 @@ QStringList GetNodeChildNames(QObject* obj)
     QStringList child_names;
     foreach (QObject *child, obj->children())
     {
-        if (child->parent() == obj)
+//        qDebug() << "checking" << obj;
+        if (child->parent() == obj) {
             child_names.append(GetNodeName(child));
+        }
     }
+//    qDebug() << "got children" << child_names;
     return child_names;
 }
