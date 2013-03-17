@@ -2,7 +2,7 @@
  * Copyright (C) 2013 Canonical, Ltd.
  *
  * Authors:
- *  Nicolas d'Offay <nicolas.doffay@canonical.com>
+ *  Michael Zanetti <michael.zanetti@canonical.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
