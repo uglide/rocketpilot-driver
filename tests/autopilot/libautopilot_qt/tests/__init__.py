@@ -29,7 +29,7 @@ class AutopilotQtTestCase(AutopilotTestCase, QtIntrospectionTestMixin):
     def launch_test_app(self, *app_args):
         # Lets assume we are installed system wide if this file is somewhere in /usr
         if os.path.realpath(__file__).startswith("/usr/"):
-            path = "/usr/share/libautopilot-qt/tests/"
+            path = "/usr/share/libautopilot-qt/"
         else:
             # Load library from local build dir
             os.environ['LD_LIBRARY_PATH'] = "../../"
@@ -38,15 +38,17 @@ class AutopilotQtTestCase(AutopilotTestCase, QtIntrospectionTestMixin):
         app_name_qt4 = path + "qt4testapp"
         app_name_qt5 = path + "qt5testapp"
 
-        if os.path.isfile(app_name_qt5):
+        qt_select = os.environ.get('QT_SELECT')
+
+        if os.path.isfile(app_name_qt5) and not qt_select == "qt4":
             logger.info("Found Qt5 test app")
             app_name = app_name_qt5
-            qml_file = "testapp/qt5.qml"
+            qml_file = path + "qt5.qml"
             self.qt_version = 5
-        elif os.path.isfile(app_name_qt4):
+        elif os.path.isfile(app_name_qt4) and not qt_select == "qt5":
             logger.info("Found Qt4 test app")
             app_name = app_name_qt4
-            qml_file = "testapp/qt4.qml"
+            qml_file = path + "qt4.qml"
             self.qt_version = 4
         else:
             logger.error("Could not find test app.")

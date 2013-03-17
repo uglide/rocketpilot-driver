@@ -1,0 +1,3 @@
+tests/autopilot/libautopilot_qt/* usr/lib/python2.7/dist-packages/libautopilot_qt/
+tests/autopilot/testapp/qt*.qml usr/share/libautopilot-qt/
+qt*/tests/autopilot/testapp/qt*testapp usr/share/libautopilot-qt/
