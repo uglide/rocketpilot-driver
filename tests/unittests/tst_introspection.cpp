@@ -125,6 +125,7 @@ void tst_Introspection::test_introspect_data()
     QTest::newRow("//QPushButton") << "//QPushButton" << 2 << "QPushButton" << "objectName" << QVariant("myButton1");
 
     QTest::newRow("//QWidget/*") << "//QWidget/*" << 5 << "QGridLayout" << "objectName" << QVariant("myTestLayout");
+    QTest::newRow("broken query") << "broken query" << 0 << QString() << QString() << QVariant();
 }
 
 void tst_Introspection::test_introspect()
