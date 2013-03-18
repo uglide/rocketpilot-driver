@@ -75,7 +75,6 @@ QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
     {
         root->AddChild((QObject*) widget);
     }
-
 #else
     std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QApplication::instance());
     foreach (QWidget *widget, QApplication::topLevelWidgets())
