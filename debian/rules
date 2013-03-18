@@ -22,3 +22,8 @@ override_dh_clean:
 
 override_dh_install:
 	dh_install --fail-missing
+
+override_dh_auto_test:
+	cd qt4 && xvfb-run make check
+	cd qt5 && xvfb-run make check
+
