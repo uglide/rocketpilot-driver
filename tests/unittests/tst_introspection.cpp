@@ -112,16 +112,14 @@ void tst_Introspection::test_introspect_data()
 #ifdef QT5_SUPPORT
     QTest::newRow("/") << "/" << 1 << "tst_introspection" << "Children" << QVariant(QStringList() << "QMainWindow" << "QWidgetWindow");
     QTest::newRow("//QWidget[id=6]") << "//QWidget[id=6]" << 1 << "QWidget" << "objectName" << QVariant("centralTestWidget");
-    QTest::newRow("//QPushButton[id=9]") << "//QPushButton[id=9]" << 1 << "QPushButton" << "objectName" << QVariant("myButton2");
 #else
     QTest::newRow("/") << "/" << 1 << "tst_introspection" << "Children" << QVariant(QStringList() << "QMainWindow");
     QTest::newRow("//QWidget[id=5]") << "//QWidget[id=5]" << 1 << "QWidget" << "objectName" << QVariant("centralTestWidget");
-    QTest::newRow("//QPushButton[id=7]") << "//QPushButton[id=9]" << 1 << "QPushButton" << "objectName" << QVariant("myButton2");
 #endif
 
     QTest::newRow("//GridLayout") << "//QGridLayout" << 1 << "QGridLayout" << "objectName" << QVariant("myTestLayout");
     QTest::newRow("//QPushButton") << "//QPushButton" << 2 << "QPushButton" << "objectName" << QVariant("myButton1");
-
+    QTest::newRow("//QPushButton[id=9]") << "//QPushButton[id=9]" << 1 << "QPushButton" << "objectName" << QVariant("myButton2");
     QTest::newRow("//QWidget/*") << "//QWidget/*" << 5 << "QGridLayout" << "objectName" << QVariant("myTestLayout");
     QTest::newRow("broken query") << "broken query" << 0 << QString() << QString() << QVariant();
 }
