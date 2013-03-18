@@ -26,7 +26,7 @@ class TestQueries(AutopilotQtTestCase):
         root_item = self.main_window.get_root_item()
         self.assertThat(root_item, NotEquals(None))
 
-    def test_find_by_objectnane(self):
+    def test_find_by_objectname(self):
         test_item = self.main_window.get_test_item_by_objectname()
         self.assertThat(test_item, NotEquals(None))
 
