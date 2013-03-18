@@ -7,7 +7,6 @@
 
 """libautopilot-qt autopilot tests."""
 
-from os import remove
 import os
 
 from autopilot.introspection.qt import QtIntrospectionTestMixin
@@ -18,6 +17,7 @@ from libautopilot_qt.emulators.main_window_qt5 import MainWindowQt5
 
 import logging
 logger = logging.getLogger(__name__)
+
 
 class AutopilotQtTestCase(AutopilotTestCase, QtIntrospectionTestMixin):
     qt_version = 0
@@ -64,4 +64,3 @@ class AutopilotQtTestCase(AutopilotTestCase, QtIntrospectionTestMixin):
             return MainWindowQt4(self.app)
         if self.qt_version == 5:
             return MainWindowQt5(self.app)
-

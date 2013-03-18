@@ -7,15 +7,11 @@
 
 from __future__ import absolute_import
 
-from testtools.matchers import Equals, NotEquals, GreaterThan
+from testtools.matchers import Equals, NotEquals
 from autopilot.matchers import Eventually
 
 from libautopilot_qt.tests import AutopilotQtTestCase
 
-import unittest
-import time
-import os
-from os import path
 
 class TestQueries(AutopilotQtTestCase):
 
@@ -58,17 +54,18 @@ class TestProperties(AutopilotQtTestCase):
         self.assertThat(test_item.doubleProperty, Equals(0.42))
 
         rectangle = self.main_window.get_test_rectangle()
-        self.assertThat(rectangle.color, Equals([0,0,255,255]))
+        self.assertThat(rectangle.color, Equals([0, 0, 255, 255]))
 
     def test_mouse_interaction(self):
         rectangle = self.main_window.get_test_rectangle()
-        self.assertThat(rectangle.color, Equals([0,0,255,255]))
+        self.assertThat(rectangle.color, Equals([0, 0, 255, 255]))
 
         mousearea = self.main_window.get_test_mousearea()
         self.pointing_device.move_to_object(mousearea)
         self.pointing_device.click()
 
-        self.assertThat(rectangle.color, Eventually(Equals([255,0,0,255])))
+        self.assertThat(rectangle.color, Eventually(Equals([255, 0, 0, 255])))
+
 
 class TestAppNameQtDefault(AutopilotQtTestCase):
 
@@ -78,6 +75,7 @@ class TestAppNameQtDefault(AutopilotQtTestCase):
     def test_connection(self):
         self.assertThat(self.main_window.get_qml_view().visible, Eventually(Equals(True)))
 
+
 class TestAppNameTech(AutopilotQtTestCase):
 
     def setUp(self):
@@ -86,6 +84,7 @@ class TestAppNameTech(AutopilotQtTestCase):
     def test_connection(self):
         self.assertThat(self.main_window.get_qml_view().visible, Eventually(Equals(True)))
 
+
 class TestAppNameUserfriendly(AutopilotQtTestCase):
 
     def setUp(self):
@@ -93,6 +92,7 @@ class TestAppNameUserfriendly(AutopilotQtTestCase):
 
     def test_connection(self):
         self.assertThat(self.main_window.get_qml_view().visible, Eventually(Equals(True)))
+
 
 class TestAppNameFqdn(AutopilotQtTestCase):
 

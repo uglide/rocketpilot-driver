@@ -10,7 +10,6 @@ logger = logging.getLogger(__name__)
 
 
 class MainWindowQt4(object):
-    """An emulator class that makes it easy to interact with the camera-app."""
 
     def __init__(self, app):
         self.app = app
