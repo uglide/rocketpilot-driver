@@ -29,7 +29,6 @@
 
 QVariant IntrospectNode(QObject* obj);
 
-
 class tst_Introspection : public QObject
 {
     Q_OBJECT
@@ -85,7 +84,6 @@ void tst_Introspection::initTestCase()
     m_object->move(333, 444);
     m_object->setVisible(false);
     m_object->setWindowOpacity(0.12345);
-
 
     m_object->show();
 }
