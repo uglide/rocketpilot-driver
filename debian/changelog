@@ -1,6 +1,6 @@
 libautopilot-qt (0.6-0ubuntu1) UNRELEASED; urgency=low
 
-  * Automatic snapshot from revision 1 (bootstrap).
+  * Automatic snapshot from revision 1 (bootstrap). (LP: #1155265)
   * debian/control:
     - Wrap, sort and add trailing commas to (Build-)Depends lists.
     - Bump Build-Depends on debhelper to 9.
