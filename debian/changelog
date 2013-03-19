@@ -18,9 +18,6 @@ libautopilot-qt (0.7) quantal; urgency=low
   * debian/libautopilot-qt.install: move file copies into the install file
     where they should be (from debian/rules).
 
-  [ Michael Zanetti ]
-  * added tests
-
  -- Michael Zanetti <michael.zanetti@canonical.com>  Tue, 19 Mar 2013 22:37:31 +0100
 
 libautopilot-qt (0.6) quantal; urgency=low
