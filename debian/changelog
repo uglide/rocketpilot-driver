@@ -1,20 +1,23 @@
 libautopilot-qt (0.6-0ubuntu1) UNRELEASED; urgency=low
 
+  * Automatic snapshot from revision 1 (bootstrap). (LP: #1155265)
   * debian/control:
     - Wrap, sort and add trailing commas to (Build-)Depends lists.
     - Bump Build-Depends on debhelper to 9.
     - Add Vcs-Bzr, Vcs-Browser and a notice to uploaders.
     - Drop Build-Depends on libindicate-qt.
+    - Add xvfb to Build-Depends.
   * debian/copyright: license everything under GPL3.
   * debian/compat: bump to compat level 9.
   * debian/rules:
     - Don't make DH be verbose.
     - Clean up extra comments.
     - Simplify the dh_install process.
+    - Run unit tests, also inside xvfb-run.
   * debian/libautopilot-qt.install: move file copies into the install file
     where they should be (from debian/rules).
 
- -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Tue, 27 Nov 2012 18:04:58 -0500
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Mon, 18 Mar 2013 10:42:14 -0400
 
 libautopilot-qt (0.6) quantal; urgency=low
 
