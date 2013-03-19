@@ -1,5 +1,6 @@
-libautopilot-qt (0.6-0ubuntu1) UNRELEASED; urgency=low
+libautopilot-qt (0.7) quantal; urgency=low
 
+  [ Mathieu Trudel-Lapierre ]
   * Automatic snapshot from revision 1 (bootstrap). (LP: #1155265)
   * debian/control:
     - Wrap, sort and add trailing commas to (Build-)Depends lists.
@@ -17,7 +18,7 @@ libautopilot-qt (0.6-0ubuntu1) UNRELEASED; urgency=low
   * debian/libautopilot-qt.install: move file copies into the install file
     where they should be (from debian/rules).
 
- -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Mon, 18 Mar 2013 10:42:14 -0400
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Tue, 19 Mar 2013 22:37:31 +0100
 
 libautopilot-qt (0.6) quantal; urgency=low
 
