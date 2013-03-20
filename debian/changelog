@@ -1,3 +1,9 @@
+autopilot-qt (0.8) UNRELEASED; urgency=low
+
+  * Renamed from libautopilot-qt back to autopilot-qt for consistency. 
+
+ -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Wed, 20 Mar 2013 11:36:47 -0400
+
 autopilot-qt (0.7) quantal; urgency=low
 
   [ Mathieu Trudel-Lapierre ]
