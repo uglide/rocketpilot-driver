@@ -1,4 +1,4 @@
-libautopilot-qt (0.7) quantal; urgency=low
+autopilot-qt (0.7) quantal; urgency=low
 
   [ Mathieu Trudel-Lapierre ]
   * Automatic snapshot from revision 1 (bootstrap). (LP: #1155265)
@@ -20,37 +20,37 @@ libautopilot-qt (0.7) quantal; urgency=low
 
  -- Michael Zanetti <michael.zanetti@canonical.com>  Tue, 19 Mar 2013 22:37:31 +0100
 
-libautopilot-qt (0.6) quantal; urgency=low
+autopilot-qt (0.6) quantal; urgency=low
 
   * revert to previous version. For Precise, use autopilot-qt4 or autopilot-qt5
 
  -- Michael Zanetti <michael.zanetti@canonical.com>  Thu, 28 Feb 2013 22:07:50 +0100
 
-libautopilot-qt (0.5) quantal; urgency=low
+autopilot-qt (0.5) quantal; urgency=low
 
   * Fix dependency to libxpathselect
 
  -- Michael Zanetti <michael.zanetti@canonical.com>  Wed, 27 Feb 2013 16:00:58 +0100
 
-libautopilot-qt (0.4) quantal; urgency=low
+autopilot-qt (0.4) quantal; urgency=low
 
   * fix problem with Qt5 final
 
  -- Michael Zanetti <michael.zanetti@canonical.com>  Wed, 30 Jan 2013 12:31:03 +0100
 
-libautopilot-qt (0.3) quantal; urgency=low
+autopilot-qt (0.3) quantal; urgency=low
 
   * Updated to Qt5 final
 
  -- Michael Zanetti <michael.zanetti@canonical.com>  Thu, 17 Jan 2013 21:20:59 +0100
 
-libautopilot-qt (0.2) quantal; urgency=low
+autopilot-qt (0.2) quantal; urgency=low
 
   * Release
 
  -- Michael Zanetti <michael.zanetti@canonical.com>  Wed, 14 Nov 2012 16:55:45 +0100
 
-libautopilot-qt (0.1) quantal; urgency=low
+autopilot-qt (0.1) quantal; urgency=low
 
   * Initial release
 

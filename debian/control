@@ -1,4 +1,4 @@
-Source: libautopilot-qt
+Source: autopilot-qt
 Priority: extra
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Michael Zanetti <michael.zanetti@canonical.com>
