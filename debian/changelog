@@ -1,3 +1,10 @@
+autopilot-qt (0.8daily13.03.21.1-0ubuntu2) UNRELEASED; urgency=low
+
+  * debian/control: updated standards-version
+  * debian/copyright: drop buggy "Lesser" mention in the license text
+
+ -- Sebastien Bacher <seb128@ubuntu.com>  Thu, 21 Mar 2013 10:27:15 +0100
+
 autopilot-qt (0.8daily13.03.21.1-0ubuntu1) raring; urgency=low
 
   [ Mathieu Trudel-Lapierre ]
