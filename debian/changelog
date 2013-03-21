@@ -1,8 +1,25 @@
-autopilot-qt (0.8) UNRELEASED; urgency=low
+autopilot-qt (0.8daily13.03.21.1-0ubuntu1) raring; urgency=low
 
+  [ Mathieu Trudel-Lapierre ]
   * Renamed from libautopilot-qt back to autopilot-qt for consistency. 
 
- -- Mathieu Trudel-Lapierre <mathieu-tl@ubuntu.com>  Wed, 20 Mar 2013 11:36:47 -0400
+  [ Thomi Richards ]
+  * autopilot-qt does not send a reply when it cannot find a node using
+    xpathselect (LP: #1155342)
+  * latest version breaks autopilot-qt (LP: #1144448)
+  * Support for call slots & invokable methods (LP: #1042606)
+
+  [ Mathieu Trudel-Lapierre ]
+  * [FFE] [needs-packaging] autopilot-qt (test driver for QT for
+    autopilot) (LP: #1155265)
+
+  [ Michael Zanetti ]
+  * latest version breaks autopilot-qt (LP: #1144448)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 48
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 21 Mar 2013 02:33:07 +0000
 
 autopilot-qt (0.7) quantal; urgency=low
 
