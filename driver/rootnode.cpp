@@ -5,7 +5,7 @@
 #include <QStringList>
 
 RootNode::RootNode(QCoreApplication* application)
-    : QtNode(application, "")
+    : QtNode(application, std::string())
     , application_(application)
 {
 }
