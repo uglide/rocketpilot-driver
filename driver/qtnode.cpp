@@ -32,7 +32,7 @@ QObject* QtNode::getWrappedObject() const
 QVariant QtNode::IntrospectNode() const
 {
     // return must be (name, state_map)
-    QString object_name = QString::fromStdString(GetName());
+    QString object_name = QString::fromStdString(GetPath());
     QVariantMap object_properties = GetNodeProperties(object_);
     object_properties["id"] = GetObjectId();
     QList<QVariant> object_tuple = { QVariant(object_name), QVariant(object_properties) };
