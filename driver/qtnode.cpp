@@ -18,7 +18,7 @@
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
-QtNode::QtNode(QObject *obj, QString const& parent_path)
+QtNode::QtNode(QObject *obj, std::string const& parent_path)
     : object_(obj)
 {
     full_path_ = parent_path + "/" + GetName();
@@ -65,7 +65,7 @@ std::string QtNode::GetName() const
 
 std::string QtNode::GetPath() const
 {
-    return full_path_.toStdString();
+    return full_path_;
 }
 
 bool QtNode::MatchProperty(const std::string& name, const std::string& value) const

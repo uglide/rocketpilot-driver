@@ -14,7 +14,7 @@ class QtNode: public xpathselect::Node
 public:
     typedef std::shared_ptr<QtNode> Ptr;
 
-    QtNode(QObject* object, QString const& parent_path);
+    QtNode(QObject* object, std::string const& parent_path);
 
     QObject* getWrappedObject() const;
 
@@ -27,7 +27,7 @@ public:
     virtual xpathselect::NodeList Children() const;
 private:
     QObject *object_;
-    QString full_path_;
+    std::string full_path_;
 };
 
 #endif // QTNODE_H
