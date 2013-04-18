@@ -5,7 +5,7 @@
 #include <QStringList>
 
 RootNode::RootNode(QCoreApplication* application)
-    : QtNode(application)
+    : QtNode(application, "")
     , application_(application)
 {
 }
@@ -55,6 +55,6 @@ xpathselect::NodeList RootNode::Children() const
 {
     xpathselect::NodeList children;
     foreach(QObject* child, children_)
-        children.push_back(std::make_shared<QtNode>(child));
+        children.push_back(std::make_shared<QtNode>(child, GetPath()));
     return children;
 }

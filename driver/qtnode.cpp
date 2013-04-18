@@ -18,9 +18,10 @@
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
-QtNode::QtNode(QObject *obj)
+QtNode::QtNode(QObject *obj, QString const& parent_path)
     : object_(obj)
 {
+    full_path_ = parent_path + "/" + GetName();
 }
 
 QObject* QtNode::getWrappedObject() const
@@ -62,6 +63,11 @@ std::string QtNode::GetName() const
     return name.toStdString();
 }
 
+std::string QtNode::GetPath() const
+{
+    return full_path_.toStdString();
+}
+
 bool QtNode::MatchProperty(const std::string& name, const std::string& value) const
 {
     if (name == "id")
@@ -95,21 +101,21 @@ xpathselect::NodeList QtNode::Children() const
 
     QQuickView *view = qobject_cast<QQuickView*>(object_);
     if (view) {
-        children.push_back(std::make_shared<QtNode>(view->rootObject()));
+        children.push_back(std::make_shared<QtNode>(view->rootObject(), GetPath()));
     }
 
     QQuickItem* item = qobject_cast<QQuickItem*>(object_);
     if (item) {
         foreach (QQuickItem *childItem, item->childItems()) {
             if (childItem->parentItem() == item) {
-                children.push_back(std::make_shared<QtNode>(childItem));
+                children.push_back(std::make_shared<QtNode>(childItem, GetPath()));
             }
         }
     } else {
         foreach (QObject *child, object_->children())
         {
             if (child->parent() == object_)
-                children.push_back(std::make_shared<QtNode>(child));
+                children.push_back(std::make_shared<QtNode>(child, GetPath()));
         }
     }
 
@@ -117,7 +123,7 @@ xpathselect::NodeList QtNode::Children() const
     foreach (QObject *child, object_->children())
     {
         if (child->parent() == object_)
-            children.push_back(std::make_shared<QtNode>(child));
+            children.push_back(std::make_shared<QtNode>(child, GetPath()));
     }
 
     // If our wrapped object is a QGraphicsScene, we need to explicitly grab any child graphics
@@ -131,7 +137,7 @@ xpathselect::NodeList QtNode::Children() const
         {
             QGraphicsObject *obj = item->toGraphicsObject();
             if (obj && ! obj->parent())
-                children.push_back(std::make_shared<QtNode>(obj));
+                children.push_back(std::make_shared<QtNode>(obj, GetPath()));
         }
     }
 #endif
