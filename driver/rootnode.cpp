@@ -13,7 +13,7 @@ RootNode::RootNode(QCoreApplication* application)
 QVariant RootNode::IntrospectNode() const
 {
     // return must be (name, state_map)
-    QString object_name = QString::fromStdString(GetName());
+    QString object_name = QString::fromStdString(GetPath());
     QStringList child_names;
     foreach(QObject* child, children_)
     {
@@ -41,6 +41,11 @@ std::string RootNode::GetName() const
 {
     QString appName = application_->applicationName().remove(' ').remove('.');
     return appName.isEmpty() ? "Root" : appName.toStdString();
+}
+
+std::string RootNode::GetPath() const
+{
+    return "/" + GetName();
 }
 
 bool RootNode::MatchProperty(const std::string& name, const std::string& value) const
