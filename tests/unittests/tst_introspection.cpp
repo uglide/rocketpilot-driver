@@ -114,14 +114,14 @@ void tst_Introspection::test_introspect_data()
     QTest::newRow("//QWidget[id=6]") << "//QWidget[id=6]" << 1 << "/tst_introspection/QMainWindow/QWidget" << "objectName" << QVariant("centralTestWidget");
     QTest::newRow("//QPushButton[id=9]") << "//QPushButton[id=9]" << 1 << "/tst_introspection/QMainWindow/QWidget/QPushButton" << "objectName" << QVariant("myButton2");
 #else
-    QTest::newRow("/") << "/" << 1 << "tst_introspection" << "Children" << QVariant(QStringList() << "QMainWindow");
-    QTest::newRow("//QWidget[id=5]") << "//QWidget[id=5]" << 1 << "QWidget" << "objectName" << QVariant("centralTestWidget");
+    QTest::newRow("/") << "/" << 1 << "/tst_introspection" << "Children" << QVariant(QStringList() << "QMainWindow");
+    QTest::newRow("//QWidget[id=5]") << "//QWidget[id=5]" << 1 << "/tst_introspection/QMainWindow/QWidget" << "objectName" << QVariant("centralTestWidget");
 
     // Depending on the environment, Qt4 could add a second QWidget at position 6. That moves other items down by one.
     if (Introspect("//QWidget[id=6]").count() > 0) {
-        QTest::newRow("//QPushButton[id=9]") << "//QPushButton[id=9]" << 1 << "QPushButton" << "objectName" << QVariant("myButton2");
+        QTest::newRow("//QPushButton[id=9]") << "//QPushButton[id=9]" << 1 << "/tst_introspection/QMainWindow/QWidget/QPushButton" << "objectName" << QVariant("myButton2");
     } else {
-        QTest::newRow("//QPushButton[id=8]") << "//QPushButton[id=8]" << 1 << "QPushButton" << "objectName" << QVariant("myButton2");
+        QTest::newRow("//QPushButton[id=8]") << "//QPushButton[id=8]" << 1 << "/tst_introspection/QMainWindow/QWidget/QPushButton" << "objectName" << QVariant("myButton2");
     }
 #endif
 
