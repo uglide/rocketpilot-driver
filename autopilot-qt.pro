@@ -5,4 +5,4 @@ contains(QT_VERSION, ^5\\..\\..*) {
     SUBDIRS += lib
 }
 
-SUBDIRS += driver
+SUBDIRS += driver tests

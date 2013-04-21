@@ -36,3 +36,15 @@ Recommends: python-autopilot
 Description: This project makes Qt applications introspectable by autopilot.
  This allows autopilot to test any existing Qt4 or Qt5 application,
  without having to rebuild the application under test.
+
+Package: libautopilot-qt-autopilot
+Section: libs
+Architecture: any
+Depends: ${shlibs:Depends},
+         ${misc:Depends},
+         python-support (>= 0.90),
+         libautopilot-qt (= ${source:Version}),
+         python-autopilot,
+Description: Autopilot tests for libautopilot-qt
+ This contains sample Qt4 and Qt5 apps and autopilot tests
+ to test libautopilot-qt.
