@@ -132,7 +132,9 @@ QVariantMap GetNodeProperties(QObject* obj)
             QVariant object_property = PackProperty(prop.read(obj));
             if (! object_property.isValid())
                 continue;
-            object_properties[prop.name()] = object_property;
+            if (!object_properties.contains(prop.name())) {
+                object_properties[prop.name()] = object_property;
+            }
         }
         foreach(const QByteArray &dynamicPropertyName, obj->dynamicPropertyNames()) {
             QVariant dynamicPropertyValue = obj->property(dynamicPropertyName);
