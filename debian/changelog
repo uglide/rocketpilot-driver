@@ -1,8 +1,25 @@
-autopilot-qt (1.3) UNRELEASED; urgency=low
+autopilot-qt (1.3daily13.05.03ubuntu.unity.next-0ubuntu1) raring; urgency=low
 
+  [ Christopher Lee ]
   * Bump version number
 
- -- Christopher Lee <chris.lee@canonical.com>  Thu, 18 Apr 2013 15:53:10 +1200
+  [ Michael Zanetti ]
+  * [FFE] autopilot-qt lacks testing (LP: #1157697)
+
+  [ Thomi Richards <thomi.richards@canonical.com>, Christopher Lee ]
+  * DBus wire protocol changes required (LP: #1155351)
+
+  [ Thomi Richards ]
+  * DBus wire protocol changes required (LP: #1155351)
+
+  [ Olivier Tilloy ]
+  * Value of MouseArea.enabled property always incorrectly reported as
+    True (LP: #1170764)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 54 (ubuntu-unity/next)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 03 May 2013 00:00:55 +0000
 
 autopilot-qt (0.8daily13.03.22-0ubuntu1) raring; urgency=low
 
