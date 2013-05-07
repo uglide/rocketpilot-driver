@@ -48,3 +48,10 @@ void AutopilotAdaptor::GetState(const QString &piece, const QDBusMessage &messag
                 );
 }
 
+void AutopilotAdaptor::GetVersion(const QDBusMessage &message)
+{
+    QDBusMessage reply =  message.createReply();
+    reply << QVariant(QString("1.3"));
+    QDBusConnection::sessionBus().send(reply);
+}
+
