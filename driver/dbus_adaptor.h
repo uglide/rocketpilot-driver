@@ -29,6 +29,9 @@ class AutopilotAdaptor: public QDBusAbstractAdaptor
 "       <arg type='s' name='piece' direction='in' />"
 "       <arg type='a(sv)' name='state' direction='out' />"
 "     </method>"
+"     <method name='GetVersion'>"
+"       <arg type='s' name='version' direction='out' />"
+"     </method>"
 "  </interface>\n"
         "")
 public:
@@ -38,6 +41,7 @@ public:
 public: // PROPERTIES
 public Q_SLOTS: // METHODS
     void GetState(const QString &piece, const QDBusMessage &message);
+    void GetVersion(const QDBusMessage &message);
 Q_SIGNALS: // SIGNALS
 };
 
