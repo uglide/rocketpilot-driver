@@ -1,10 +1,13 @@
-autopilot-qt (1.3daily13.05.03ubuntu.unity.next-0ubuntu2) UNRELEASED; urgency=low
+autopilot-qt (1.3daily13.05.09ubuntu.unity.next-0ubuntu1) raring; urgency=low
 
   [ Mathieu Trudel-Lapierre ]
   * debian/control: don't build the binary packages on powerpc; also remove
     armel from the list since we don't build for it anymore.
 
- -- Christopher Lee <chris.lee@canonical.com>  Thu, 18 Apr 2013 15:53:10 +1200
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 57 (ubuntu-unity/next)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Thu, 09 May 2013 00:00:58 +0000
 
 autopilot-qt (1.3daily13.05.03ubuntu.unity.next-0ubuntu1) raring; urgency=low
 
