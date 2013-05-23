@@ -71,7 +71,7 @@ QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
         root->AddChild((QObject*) widget);
     }
     // Add all QML top level Windows
-    foreach (const QWindow *widget, QGuiApplication::topLevelWindows())
+    foreach (QWindow *widget, QGuiApplication::allWindows())
     {
         root->AddChild((QObject*) widget);
     }
@@ -282,5 +282,17 @@ QStringList GetNodeChildNames(QObject* obj)
             child_names.append(GetNodeName(child));
         }
     }
+#ifdef QT5_SUPPORT
+    // In case of a QQuickWindow, add the main contentItem()
+    if (QQuickWindow *window = qobject_cast<QQuickWindow*>(obj)) {
+        child_names.append(GetNodeName(window->contentItem()));
+    }
+    // In case of QQuickItems include also childItems(), not only children().
+    if (QQuickItem *item = qobject_cast<QQuickItem*>(obj)) {
+        foreach (QObject *child, item->childItems()) {
+            child_names.append(GetNodeName(child));
+        }
+    }
+#endif
     return child_names;
 }
