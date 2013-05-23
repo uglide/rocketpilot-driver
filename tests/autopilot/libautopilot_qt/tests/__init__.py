@@ -9,7 +9,6 @@
 
 import os
 
-from autopilot.introspection.qt import QtIntrospectionTestMixin
 from autopilot.testcase import AutopilotTestCase
 
 from libautopilot_qt.emulators.main_window_qt4 import MainWindowQt4
@@ -19,7 +18,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class AutopilotQtTestCase(AutopilotTestCase, QtIntrospectionTestMixin):
+class AutopilotQtTestCase(AutopilotTestCase):
     qt_version = 0
 
     def setUp(self, *app_args):
