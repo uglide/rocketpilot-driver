@@ -1,3 +1,22 @@
+autopilot-qt (1.3daily13.06.05-0ubuntu1) saucy; urgency=low
+
+  [ Michael Zanetti ]
+  * update tests to work with AP 1.3.
+  * make it work with Qt 5.0.2.
+
+  [ Christopher Lee ]
+  * Adding GetVersion so we can check that the version of the DBus
+    protocol is as expected.
+
+  [ Olivier Tilloy ]
+  * Do not override an existing property with the value of a parent
+    object. (LP: #1170764)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 61
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 05 Jun 2013 07:08:47 +0000
+
 autopilot-qt (1.3daily13.05.24ubuntu.unity.next-0ubuntu1) raring; urgency=low
 
   [ Michael Zanetti ]
