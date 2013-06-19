@@ -100,7 +100,7 @@ xpathselect::NodeList QtNode::Children() const
     // - In case it is not a QQuickItem, fall back to the standard QObject hierarchy
 
     QQuickView *view = qobject_cast<QQuickView*>(object_);
-    if (view) {
+    if (view && view->rootObject() != 0) {
         children.push_back(std::make_shared<QtNode>(view->rootObject(), GetPath()));
     }
 
