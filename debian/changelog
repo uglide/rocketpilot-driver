@@ -1,3 +1,9 @@
+autopilot-qt (1.3daily13.06.25-0ubuntu1) saucy; urgency=low
+
+  * Automatic snapshot from revision 63
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Tue, 25 Jun 2013 00:01:09 +0000
+
 autopilot-qt (1.3daily13.06.05-0ubuntu2) saucy; urgency=low
 
   * fix crash with maliit-server
