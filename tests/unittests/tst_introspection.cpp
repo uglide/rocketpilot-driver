@@ -79,6 +79,9 @@ void tst_Introspection::initTestCase()
     m_object->setProperty("myColor", QColor("red"));
     m_object->setProperty("myByteArray", QByteArray("0xDEADBEEF"));
     m_object->setProperty("myUrl", QUrl("http://www.ubuntu.com"));
+    m_object->setProperty("myDateTime", QDateTime::currentDateTime());
+    m_object->setProperty("myDate", QDateTime::currentDateTime().date());
+    m_object->setProperty("myTime", QTime::currentTime());
     m_object->setMaximumSize(1234, 4321);
     m_object->resize(123, 321);
     m_object->move(333, 444);
@@ -198,6 +201,9 @@ void tst_Introspection::test_properties_data()
     QTest::newRow("QColor") << "myColor" << QVariant(QList<QVariant>() << 255 << 0 << 0 << 255) << false;
     QTest::newRow("QByteArray") << "myByteArray" << m_object->property("myByteArray") << false;
     QTest::newRow("QUrl") << "myUrl" << m_object->property("myUrl") << false;
+    QTest::newRow("QDateTime") << "myDateTime" << QVariant(m_object->property("myDateTime").toDateTime().toTime_t()) << false;
+    QTest::newRow("QDate") << "myDate" << QVariant(m_object->property("myDate").toDateTime().toTime_t()) << false;
+    QTest::newRow("QTime") << "myTime" << QVariant(m_object->property("myTime").toTime().toString("hh:mm:ss")) << false;
 }
 
 void tst_Introspection::test_properties()
