@@ -1,3 +1,9 @@
+autopilot-qt (1.3daily13.06.05-0ubuntu3) saucy; urgency=low
+
+  * Add support for QDateTime, QDate and QTime
+
+ -- Michael Zanetti <michael.zanetti@canonical.com>  Wed, 26 Jun 2013 12:20:28 +0200
+
 autopilot-qt (1.3daily13.06.05-0ubuntu2) saucy; urgency=low
 
   * fix crash with maliit-server
