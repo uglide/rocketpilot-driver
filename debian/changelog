@@ -1,4 +1,4 @@
-autopilot-qt (1.3daily13.06.25-0ubuntu1) UNRELEASED; urgency=low
+autopilot-qt (1.3daily13.06.25-0ubuntu2) UNRELEASED; urgency=low
 
   * Add support for QDateTime, QDate and QTime
 
