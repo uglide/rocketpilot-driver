@@ -20,3 +20,6 @@ target.path=/usr/share/libautopilot-qt/
 target.file = $TARGET
 
 INSTALLS += target qmlfile 
+
+OTHER_FILES += \
+    $$system(ls ./*.qml)

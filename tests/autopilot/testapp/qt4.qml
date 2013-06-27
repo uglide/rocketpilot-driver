@@ -26,6 +26,10 @@ Item {
     width: 500
     height: 500
 
+    function testSlot(data) {
+        testItem.stringProperty = data
+    }
+
     Item {
         id: testItem
         objectName: "testItem"
