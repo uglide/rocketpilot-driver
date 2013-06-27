@@ -101,3 +101,17 @@ class TestAppNameFqdn(AutopilotQtTestCase):
 
     def test_connection(self):
         self.assertThat(self.main_window.get_qml_view().visible, Eventually(Equals(True)))
+
+
+class TestSlots(AutopilotQtTestCase):
+
+    def setUp(self):
+        super(TestSlots, self).setUp()
+
+    def test_callSlot(self):
+        TEST_DATA = "testdata for test_callSlot"
+        root_item = self.main_window.get_root_item()
+        self.assertThat(len(root_item.get_slots()), NotEquals(0))
+        root_item.slots.testSlot(TEST_DATA)
+        self.assertThat(self.main_window.get_test_item().stringProperty, Equals(TEST_DATA))
+

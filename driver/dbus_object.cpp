@@ -199,6 +199,8 @@ void DBusObject::ListMethods(int object_id, const QDBusMessage &message)
 
 void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList args, const QDBusMessage &message)
 {
+    Q_UNUSED(message);
+
     QtNode::Ptr node = GetNodeWithId(object_id);
     if (! node)
     {
@@ -251,6 +253,14 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
         QVariant passed_value = args.at(i);
         QByteArray passed_type_name = passed_value.typeName();
         QByteArray required_type_name = parameterTypes.at(i);
+
+        // Special treatment for QVariants as the target type
+        if (required_type_name == "QVariant")
+        {
+            generic_args[i] = Q_ARG(QVariant, args.at(i));
+            continue;
+        }
+
         if (passed_type_name != required_type_name)
         {
             // TODO - try and convert to correct type... if it's needed.
@@ -259,7 +269,7 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
             qCritical() << "    Got:" << passed_type_name;
             break;
         }
-        generic_args[i] = QGenericArgument(passed_value.typeName(), passed_value.constData());
+        generic_args[i] = QGenericArgument(passed_type_name, passed_value.constData());
     }
 
     // method.invoke(...) takes between 0 and 10 parameters. Since We can't convert a QVector into
