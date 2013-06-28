@@ -1,3 +1,14 @@
+autopilot-qt (1.3+13.10.20130628-0ubuntu1) saucy; urgency=low
+
+  [ Alexandre Abreu ]
+  * Fix invoking of slots with arguments. So far only no arguments, or
+    arguments of type QVariant are supported. (LP: #1195379)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 65
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Fri, 28 Jun 2013 00:01:10 +0000
+
 autopilot-qt (1.3daily13.06.25-0ubuntu1) saucy; urgency=low
 
   * Automatic snapshot from revision 63
