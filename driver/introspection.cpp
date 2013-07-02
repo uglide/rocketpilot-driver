@@ -35,6 +35,7 @@ by the Free Software Foundation.
 #include <QVariant>
 #include <QRect>
 #include <QUrl>
+#include <QDateTime>
 
 #include "introspection.h"
 #include "qtnode.h"
@@ -265,6 +266,11 @@ QVariant PackProperty(QVariant const& prop)
     {
         return QVariant(prop.toDouble());
     }
+    case QVariant::Date:
+    case QVariant::DateTime:
+        return QVariant(prop.toDateTime().toTime_t());
+    case QVariant::Time:
+        return QVariant(prop.toTime().toString("hh:mm:ss"));
     default:
     {
         return QVariant();
