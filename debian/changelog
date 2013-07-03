@@ -1,3 +1,9 @@
+autopilot-qt (1.3+13.10.20130703-0ubuntu1) saucy; urgency=low
+
+  * Automatic snapshot from revision 67
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 03 Jul 2013 00:01:09 +0000
+
 autopilot-qt (1.3+13.10.20130628-0ubuntu1) saucy; urgency=low
 
   [ Alexandre Abreu ]
