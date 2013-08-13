@@ -26,7 +26,7 @@ Vcs-Browser: https://bazaar.launchpad.net/~autopilot/autopilot-qt/trunk/files
 
 Package: libautopilot-qt
 Section: libs
-Architecture: amd64 armhf i386
+Architecture: any
 Depends: libxpathselect1.3,
          ${misc:Depends},
          ${shlibs:Depends},
@@ -43,8 +43,8 @@ Description: This project makes Qt applications introspectable by autopilot.
 
 Package: libautopilot-qt-autopilot
 Section: libs
-Architecture: amd64 armhf i386
-Depends: libautopilot-qt (= ${source:Version}),
+Architecture: any
+Depends: libautopilot-qt (>= ${source:Version}),
          python-autopilot,
          python-support (>= 0.90),
          ${misc:Depends},
