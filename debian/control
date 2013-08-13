@@ -3,17 +3,17 @@ Priority: extra
 Maintainer: Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
 XSBC-Original-Maintainer: Michael Zanetti <michael.zanetti@canonical.com>
 Build-Depends: debhelper (>= 9),
-               pkg-config,
-               qtchooser,
-               qt4-qmake,
-               qt5-qmake,
-               libqt4-dev,
-               qtbase5-dev,
-               qtdeclarative5-dev,
-               libxpathselect-dev (>= 1.3),
-               mesa-common-dev,
                libgl1-mesa-dev,
                libgles2-mesa-dev,
+               libqt4-dev,
+               libxpathselect-dev (>= 1.3),
+               mesa-common-dev,
+               pkg-config,
+               qt4-qmake,
+               qt5-qmake,
+               qtbase5-dev,
+               qtchooser,
+               qtdeclarative5-dev,
                xvfb,
 Standards-Version: 3.9.4
 Section: libs
@@ -27,12 +27,16 @@ Vcs-Browser: https://bazaar.launchpad.net/~autopilot/autopilot-qt/trunk/files
 Package: libautopilot-qt
 Section: libs
 Architecture: amd64 armhf i386
-Depends: ${misc:Depends},
-         libxpathselect1.3,
-Replaces: autopilot-qt, autopilot-qt5
-Conflicts: autopilot-qt, autopilot-qt5
-Provides: autopilot-qt, autopilot-qt5
-Recommends: python-autopilot
+Depends: libxpathselect1.3,
+         ${misc:Depends},
+         ${shlibs:Depends},
+Replaces: autopilot-qt,
+          autopilot-qt5,
+Conflicts: autopilot-qt,
+           autopilot-qt5,
+Provides: autopilot-qt,
+          autopilot-qt5,
+Recommends: python-autopilot,
 Description: This project makes Qt applications introspectable by autopilot.
  This allows autopilot to test any existing Qt4 or Qt5 application,
  without having to rebuild the application under test.
@@ -40,11 +44,11 @@ Description: This project makes Qt applications introspectable by autopilot.
 Package: libautopilot-qt-autopilot
 Section: libs
 Architecture: amd64 armhf i386
-Depends: ${shlibs:Depends},
-         ${misc:Depends},
-         python-support (>= 0.90),
-         libautopilot-qt (= ${source:Version}),
+Depends: libautopilot-qt (= ${source:Version}),
          python-autopilot,
+         python-support (>= 0.90),
+         ${misc:Depends},
+         ${shlibs:Depends},
 Description: Autopilot tests for libautopilot-qt
  This contains sample Qt4 and Qt5 apps and autopilot tests
  to test libautopilot-qt.
