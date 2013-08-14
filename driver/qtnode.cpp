@@ -68,10 +68,8 @@ std::string QtNode::GetPath() const
     return full_path_;
 }
 
-bool QtNode::MatchProperty(const std::string& name, const std::string& value) const
+bool QtNode::MatchStringProperty(const std::string& name, const std::string& value) const
 {
-    if (name == "id")
-        return QString::fromStdString(value).toLongLong() == GetObjectId();
     QVariantMap properties = GetNodeProperties(object_);
 
     QString qname = QString::fromStdString(name);
@@ -80,6 +78,47 @@ bool QtNode::MatchProperty(const std::string& name, const std::string& value) co
 
     QVariant object_value = properties[qname];
     QVariant check_value(QString::fromStdString(value));
+    if (check_value.canConvert(object_value.type()))
+    {
+        check_value.convert(object_value.type());
+        return check_value == object_value;
+    }
+
+    return false;
+}
+
+bool QtNode::MatchIntegerProperty(const std::string& name, int value) const
+{
+    if (name == "id")
+        return value == GetObjectId();
+
+    QVariantMap properties = GetNodeProperties(object_);
+
+    QString qname = QString::fromStdString(name);
+    if (! properties.contains(qname))
+        return false;
+
+    QVariant object_value = properties[qname];
+    QVariant check_value(value);
+    if (check_value.canConvert(object_value.type()))
+    {
+        check_value.convert(object_value.type());
+        return check_value == object_value;
+    }
+
+    return false;
+}
+
+bool QtNode::MatchBooleanProperty(const std::string& name, bool value) const
+{
+    QVariantMap properties = GetNodeProperties(object_);
+
+    QString qname = QString::fromStdString(name);
+    if (! properties.contains(qname))
+        return false;
+
+    QVariant object_value = properties[qname];
+    QVariant check_value(value);
     if (check_value.canConvert(object_value.type()))
     {
         check_value.convert(object_value.type());

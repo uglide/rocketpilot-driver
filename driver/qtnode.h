@@ -23,7 +23,9 @@ public:
 
     virtual std::string GetName() const;
     virtual std::string GetPath() const;
-    virtual bool MatchProperty(const std::string& name, const std::string& value) const;
+    virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
+    virtual bool MatchIntegerProperty(const std::string& name, int value) const;
+    virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
     virtual xpathselect::NodeList Children() const;
 private:
     QObject *object_;
