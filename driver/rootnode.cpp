@@ -48,6 +48,7 @@ std::string RootNode::GetPath() const
     return "/" + GetName();
 }
 
+// TODO: We can probably delete this method, since QtNode should handle it just fine.
 bool RootNode::MatchProperty(const std::string& name, const std::string& value) const
 {
     if (name == "id")
