@@ -1,3 +1,13 @@
+autopilot-qt (1.3+13.10.20130814-0ubuntu1) saucy; urgency=low
+
+  [ Robert Bruce Park ]
+  * Minor packaging fixes for daily release. (LP: #1206268)
+
+  [ Ubuntu daily release ]
+  * Automatic snapshot from revision 69
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 14 Aug 2013 02:04:34 +0000
+
 autopilot-qt (1.3+13.10.20130703-0ubuntu1) saucy; urgency=low
 
   * Automatic snapshot from revision 67
