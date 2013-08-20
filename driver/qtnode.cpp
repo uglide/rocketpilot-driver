@@ -15,6 +15,25 @@
   #include <QGraphicsScene>
   #include <QGraphicsObject>
 #endif
+#include <QDBusArgument>
+
+// Marshall the NodeIntrospectionData data into a D-Bus argument
+ QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
+ {
+     argument.beginStructure();
+     argument << node_data.object_path << node_data.state;
+     argument.endStructure();
+     return argument;
+ }
+
+ // Retrieve the NodeIntrospectionData data from the D-Bus argument
+ const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospectionData &node_data)
+ {
+     argument.beginStructure();
+     argument >> node_data.object_path >> node_data.state;
+     argument.endStructure();
+     return argument;
+ }
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
@@ -29,14 +48,13 @@ QObject* QtNode::getWrappedObject() const
     return object_;
 }
 
-QVariant QtNode::IntrospectNode() const
+NodeIntrospectionData QtNode::GetIntrospectionData() const
 {
-    // return must be (name, state_map)
-    QString object_name = QString::fromStdString(GetPath());
-    QVariantMap object_properties = GetNodeProperties(object_);
-    object_properties["id"] = GetObjectId();
-    QList<QVariant> object_tuple = { QVariant(object_name), QVariant(object_properties) };
-    return QVariant(object_tuple);
+    NodeIntrospectionData data;
+    data.object_path = QString::fromStdString(GetPath());
+    data.state = GetNodeProperties(object_);
+    data.state["id"] = GetObjectId();
+    return data;
 }
 
 qint64 QtNode::GetObjectId() const

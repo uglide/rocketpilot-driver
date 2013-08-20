@@ -13,7 +13,7 @@ class RootNode: public QtNode
 public:
     RootNode(QCoreApplication* application);
 
-    virtual QVariant IntrospectNode() const;
+    virtual NodeIntrospectionData GetIntrospectionData() const;
     virtual qint64 GetObjectId() const;
 
     void AddChild(QObject* child);

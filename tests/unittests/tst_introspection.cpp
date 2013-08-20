@@ -142,16 +142,15 @@ void tst_Introspection::test_introspect()
     QFETCH(QString, firstResultPropertyName);
     QFETCH(QVariant, firstResultPropertyValue);
 
-    QList<QVariant> resultList = Introspect(xpath);
+    QList<NodeIntrospectionData> resultList = Introspect(xpath);
 
     QCOMPARE(resultList.count(), resultCount);
 
     if (resultCount > 0) {
-        QVariant firstResult = resultList.first();
-        QVariantMap firstResultProperties = firstResult.toList().last().toMap();
+        NodeIntrospectionData first_object = resultList.first();
 
-        QCOMPARE(firstResult.toList().first().toString(), firstResultType);
-        QCOMPARE(firstResultProperties.value(firstResultPropertyName), firstResultPropertyValue);
+        QCOMPARE(first_object.object_path, firstResultType);
+        QCOMPARE(first_object.state.value(firstResultPropertyName), firstResultPropertyValue);
     }
 }
 
@@ -171,9 +170,9 @@ void tst_Introspection::test_application_names()
     qApp->setApplicationName(app_name);
 
 #ifdef QT5_SUPPORT
-    QList<QVariant> result = Introspect("//QWidgetWindow");
+    QList<NodeIntrospectionData> result = Introspect("//QWidgetWindow");
 #else
-    QList<QVariant> result = Introspect("//QMainWindow");
+    QList<NodeIntrospectionData> result = Introspect("//QMainWindow");
 #endif
 
     QVERIFY(!result.isEmpty());

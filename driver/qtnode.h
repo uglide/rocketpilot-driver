@@ -2,7 +2,20 @@
 #define QTNODE_H
 
 #include <QVariant>
+#include <QDBusArgument>
 #include <xpathselect/node.h>
+
+/// A simple data structure representing the state of a single node:
+struct NodeIntrospectionData
+{
+    QString object_path;
+    QVariantMap state;
+};
+
+Q_DECLARE_METATYPE(NodeIntrospectionData)
+
+QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data);
+const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospectionData &node_data);
 
 /// Base class for all Qt-based object nodes.
 ///
@@ -14,11 +27,13 @@ class QtNode: public xpathselect::Node
 public:
     typedef std::shared_ptr<QtNode> Ptr;
 
+
     QtNode(QObject* object, std::string const& parent_path);
 
     QObject* getWrappedObject() const;
 
-    virtual QVariant IntrospectNode() const;
+    virtual NodeIntrospectionData GetIntrospectionData() const;
+
     virtual qint64 GetObjectId() const;
 
     virtual std::string GetName() const;

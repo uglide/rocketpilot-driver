@@ -1,4 +1,5 @@
 #include "rootnode.h"
+#include "introspection.h"
 
 #include <QObject>
 #include <QCoreApplication>
@@ -10,21 +11,21 @@ RootNode::RootNode(QCoreApplication* application)
 {
 }
 
-QVariant RootNode::IntrospectNode() const
+
+NodeIntrospectionData RootNode::GetIntrospectionData() const
 {
-    // return must be (name, state_map)
-    QString object_name = QString::fromStdString(GetPath());
+    NodeIntrospectionData data;
+    data.object_path = QString::fromStdString(GetPath());
+    data.state = GetNodeProperties(application_);
     QStringList child_names;
     foreach(QObject* child, children_)
     {
         child_names.append(child->metaObject()->className());
     }
 
-    QVariantMap object_properties;
-    object_properties["Children"] = child_names;
-    object_properties["id"] = GetObjectId();
-    QList<QVariant> object_tuple = { QVariant(object_name), QVariant(object_properties) };
-    return QVariant(object_tuple);
+    data.state["Children"] = child_names;
+    data.state["id"] = GetObjectId();
+    return data;
 }
 
 qint64 RootNode::GetObjectId() const

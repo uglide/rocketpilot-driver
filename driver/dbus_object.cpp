@@ -294,10 +294,12 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
 void DBusObject::ProcessQuery()
 {
     Query query = _queries.takeFirst();
-    QList<QVariant> state = Introspect(query.first);
+    QList<NodeIntrospectionData> state = Introspect(query.first);
 
     QDBusMessage msg = query.second;
-    msg << QVariant(state);
+    QVariant var;
+    var.setValue(state);
+    msg << var;
 
     QDBusConnection::sessionBus().send(msg);
 }

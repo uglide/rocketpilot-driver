@@ -14,7 +14,7 @@ by the Free Software Foundation.
 #include <QVariantMap>
 
 /// Introspect 'obj' and return it's properties in a QVariantMap.
-QList<QVariant> Introspect(const QString& query_string);
+QList<NodeIntrospectionData> Introspect(const QString& query_string);
 
 /// Get a list of QtNode pointers that match the given query.
 QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string);

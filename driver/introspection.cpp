@@ -47,13 +47,13 @@ QString GetNodeName(QObject* obj);
 QStringList GetNodeChildNames(QObject* obj);
 void AddCustomProperties(QObject* obj, QVariantMap& properties);
 
-QList<QVariant> Introspect(QString const& query_string)
+QList<NodeIntrospectionData> Introspect(QString const& query_string)
 {
-    QList<QVariant> state;
+    QList<NodeIntrospectionData> state;
     QList<QtNode::Ptr> node_list = GetNodesThatMatchQuery(query_string);
     foreach (QtNode::Ptr obj, node_list)
     {
-        state.append(obj->IntrospectNode());
+        state.append(obj->GetIntrospectionData());
     }
 
     return state;
