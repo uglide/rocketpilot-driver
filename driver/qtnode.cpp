@@ -105,7 +105,7 @@ bool QtNode::MatchStringProperty(const std::string& name, const std::string& val
     return false;
 }
 
-bool QtNode::MatchIntegerProperty(const std::string& name, int value) const
+bool QtNode::MatchIntegerProperty(const std::string& name, int32_t value) const
 {
     if (name == "id")
         return value == GetObjectId();

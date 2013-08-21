@@ -20,7 +20,6 @@ public:
 
     virtual std::string GetName() const;
     virtual std::string GetPath() const;
-    virtual bool MatchProperty(const std::string& name, const std::string& value) const;
     virtual xpathselect::NodeList Children() const;
 private:
     QCoreApplication* application_;

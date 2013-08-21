@@ -1,6 +1,7 @@
 #ifndef QTNODE_H
 #define QTNODE_H
 
+#include <cstdint>
 #include <QVariant>
 #include <QDBusArgument>
 #include <xpathselect/node.h>
@@ -12,7 +13,8 @@ struct NodeIntrospectionData
     QVariantMap state;
 };
 
-Q_DECLARE_METATYPE(NodeIntrospectionData)
+Q_DECLARE_METATYPE(NodeIntrospectionData);
+Q_DECLARE_METATYPE(QList<NodeIntrospectionData>);
 
 QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data);
 const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospectionData &node_data);
@@ -39,7 +41,7 @@ public:
     virtual std::string GetName() const;
     virtual std::string GetPath() const;
     virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
-    virtual bool MatchIntegerProperty(const std::string& name, int value) const;
+    virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
     virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
     virtual xpathselect::NodeList Children() const;
 private:
