@@ -29,7 +29,8 @@ HEADERS = qttestability.h \
           rootnode.h \
           qtnode.h \
           introspection.h \
-          dbus_adaptor_qt.h
+          dbus_adaptor_qt.h \
+          autopilot_types.h
 
 target.file = libtestability*
 

@@ -37,6 +37,7 @@ by the Free Software Foundation.
 #include <QUrl>
 #include <QDateTime>
 
+#include "autopilot_types.h"
 #include "introspection.h"
 #include "qtnode.h"
 #include "rootnode.h"
@@ -211,69 +212,102 @@ QVariant PackProperty(QVariant const& prop)
     case QVariant::StringList:
     case QVariant::Double:
     {
-        return prop;
+        return QList<QVariant> {
+            QVariant(TYPE_PLAIN),
+            prop
+        };
     }
 
     case QVariant::ByteArray:
     {
-        return QVariant(QString(qvariant_cast<QByteArray>(prop)));
+        return QList<QVariant> {
+            QVariant(TYPE_PLAIN),
+            QVariant(QString(qvariant_cast<QByteArray>(prop)))
+        };
     }
 
     case QVariant::Point:
     {
         QPoint p = qvariant_cast<QPoint>(prop);
-        QList<QVariant> l = {QVariant(p.x()), QVariant(p.y())};
-        return QVariant(l);
+        return QList<QVariant> {
+            QVariant(TYPE_POINT),
+            QVariant(p.x()),
+            QVariant(p.y())
+        };
     }
 
     case QVariant::Rect:
     {
         QRect r = qvariant_cast<QRect>(prop);
-        QList<QVariant> l = {
+        return QList<QVariant> {
+            QVariant(TYPE_RECT),
             QVariant(r.x()),
             QVariant(r.y()),
             QVariant(r.width()),
             QVariant(r.height()) };
-        return QVariant(l);
     }
 
     case QVariant::Size:
     {
         QSize s = qvariant_cast<QSize>(prop);
-        QList<QVariant> l = { QVariant(s.width()), QVariant(s.height()) };
-        return QVariant(l);
+        return QList<QVariant> {
+            QVariant(TYPE_SIZE),
+            QVariant(s.width()),
+            QVariant(s.height())
+        };
     }
 
     case QVariant::Color:
     {
         QColor color = qvariant_cast<QColor>(prop).toRgb();
-        QList<QVariant> l = { QVariant(color.red()),
-                              QVariant(color.green()),
-                              QVariant(color.blue()),
-                              QVariant(color.alpha())
-                            };
-        return QVariant(l);
+        return QList<QVariant> {
+            QVariant(TYPE_COLOR),
+            QVariant(color.red()),
+            QVariant(color.green()),
+            QVariant(color.blue()),
+            QVariant(color.alpha())
+        };
     }
 
     case QVariant::Url:
     {
-        return QVariant(prop.toUrl().toString());
+        return QList<QVariant> {
+            QVariant(TYPE_PLAIN),
+            QVariant(prop.toUrl().toString())
+        };
     }
 
     // Depending on the architecture, floating points might be of type QMetaType::Float instead of QVariant::Double
     // QDBus however, can only carry QVariant types, so lets convert it to QVariant::Double
     case QMetaType::Float:
     {
-        return QVariant(prop.toDouble());
+        return QList<QVariant> {
+            QVariant(TYPE_PLAIN),
+            QVariant(prop.toDouble())
+        };
     }
+
     case QVariant::Date:
     case QVariant::DateTime:
-        return QVariant(prop.toDateTime().toTime_t());
+    {
+        return QList<QVariant> {
+            QVariant(TYPE_DATETIME),
+            QVariant(prop.toDateTime().toTime_t())
+        };
+    }
+
     case QVariant::Time:
-        return QVariant(prop.toTime().toString("hh:mm:ss"));
+    {
+        QTime
+        return QList<QVariant> {
+            QVariant(TYPE_TIME),
+            QVariant(prop.toTime().toString("hh:mm:ss"))
+        };
+    }
+
     default:
     {
-        return QVariant();
+        return QVariant(); // unsupported type, will not be sent to the client.
     }
     }
 }
