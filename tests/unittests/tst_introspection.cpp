@@ -113,25 +113,133 @@ void tst_Introspection::test_introspect_data()
     QTest::addColumn<QVariant>("firstResultPropertyValue");
 
 #ifdef QT5_SUPPORT
-    QTest::newRow("/") << "/" << 1 << "/tst_introspection" << "Children" << QVariant(QStringList() << "QMainWindow" << "QWidgetWindow");
-    QTest::newRow("//QWidget[id=6]") << "//QWidget[id=6]" << 1 << "/tst_introspection/QMainWindow/QWidget" << "objectName" << QVariant("centralTestWidget");
-    QTest::newRow("//QPushButton[id=9]") << "//QPushButton[id=9]" << 1 << "/tst_introspection/QMainWindow/QWidget/QPushButton" << "objectName" << QVariant("myButton2");
+    QTest::newRow("/")
+        << "/"
+        << 1
+        << "/tst_introspection"
+        << "Children"
+        << QVariant(
+            QVariantList()
+                << 0
+                << QVariant(
+                    QStringList()
+                        << "QMainWindow"
+                        << "QWidgetWindow"
+                    )
+            );
+
+    QTest::newRow("//QWidget[id=6]")
+        << "//QWidget[id=6]"
+        << 1
+        << "/tst_introspection/QMainWindow/QWidget"
+        << "objectName"
+        << QVariant(
+            QVariantList()
+                << 0
+                << "centralTestWidget"
+            );
+
+    QTest::newRow("//QPushButton[id=9]")
+        << "//QPushButton[id=9]"
+        << 1
+        << "/tst_introspection/QMainWindow/QWidget/QPushButton"
+        << "objectName"
+        << QVariant(
+            QVariantList()
+                << 0
+                << "myButton2"
+            );
 #else
-    QTest::newRow("/") << "/" << 1 << "/tst_introspection" << "Children" << QVariant(QStringList() << "QMainWindow");
-    QTest::newRow("//QWidget[id=5]") << "//QWidget[id=5]" << 1 << "/tst_introspection/QMainWindow/QWidget" << "objectName" << QVariant("centralTestWidget");
+    QTest::newRow("/")
+        << "/"
+        << 1
+        << "/tst_introspection"
+        << "Children"
+        << QVariant(
+            QVariantList()
+                << 0
+                << "QMainWindow"
+            );
+
+    QTest::newRow("//QWidget[id=5]")
+        << "//QWidget[id=5]"
+        << 1
+        << "/tst_introspection/QMainWindow/QWidget"
+        << "objectName"
+        << QVariant(
+            QVariantList()
+                << 0
+                << "centralTestWidget"
+            );
 
     // Depending on the environment, Qt4 could add a second QWidget at position 6. That moves other items down by one.
-    if (Introspect("//QWidget[id=6]").count() > 0) {
-        QTest::newRow("//QPushButton[id=9]") << "//QPushButton[id=9]" << 1 << "/tst_introspection/QMainWindow/QWidget/QPushButton" << "objectName" << QVariant("myButton2");
-    } else {
-        QTest::newRow("//QPushButton[id=8]") << "//QPushButton[id=8]" << 1 << "/tst_introspection/QMainWindow/QWidget/QPushButton" << "objectName" << QVariant("myButton2");
+    if (Introspect("//QWidget[id=6]").count() > 0)
+    {
+        QTest::newRow("//QPushButton[id=9]")
+            << "//QPushButton[id=9]"
+            << 1
+            << "/tst_introspection/QMainWindow/QWidget/QPushButton"
+            << "objectName"
+            << QVariant(
+                QVariantList()
+                    << 0
+                    << "myButton2"
+                );
+    }
+    else
+    {
+        QTest::newRow("//QPushButton[id=8]")
+            << "//QPushButton[id=8]"
+            << 1
+            << "/tst_introspection/QMainWindow/QWidget/QPushButton"
+            << "objectName"
+            << QVariant(
+                QVariantList()
+                    << 0
+                    << "myButton2"
+                );
     }
 #endif
 
-    QTest::newRow("//GridLayout") << "//QGridLayout" << 1 << "/tst_introspection/QMainWindow/QWidget/QGridLayout" << "objectName" << QVariant("myTestLayout");
-    QTest::newRow("//QPushButton") << "//QPushButton" << 2 << "/tst_introspection/QMainWindow/QWidget/QPushButton" << "objectName" << QVariant("myButton1");
-    QTest::newRow("//QWidget/*") << "//QWidget/*" << 5 << "/tst_introspection/QMainWindow/QWidget/QGridLayout" << "objectName" << QVariant("myTestLayout");
-    QTest::newRow("broken query") << "broken query" << 0 << QString() << QString() << QVariant();
+    QTest::newRow("//GridLayout")
+        << "//QGridLayout"
+        << 1
+        << "/tst_introspection/QMainWindow/QWidget/QGridLayout"
+        << "objectName"
+        << QVariant(
+            QVariantList()
+                << 0
+                << "myTestLayout"
+            );
+
+    QTest::newRow("//QPushButton")
+        << "//QPushButton"
+        << 2
+        << "/tst_introspection/QMainWindow/QWidget/QPushButton"
+        << "objectName"
+        << QVariant(
+            QVariantList()
+                << 0
+                << "myButton1"
+            );
+
+    QTest::newRow("//QWidget/*")
+        << "//QWidget/*"
+        << 5
+        << "/tst_introspection/QMainWindow/QWidget/QGridLayout"
+        << "objectName"
+        << QVariant(
+            QVariantList()
+                << 0
+                << "myTestLayout"
+            );
+
+    QTest::newRow("broken query")
+        << "broken query"
+        << 0
+        << QString()
+        << QString()
+        << QVariant();
 }
 
 void tst_Introspection::test_introspect()
@@ -184,25 +292,169 @@ void tst_Introspection::test_properties_data()
     QTest::addColumn<QVariant>("propertyValue");
     QTest::addColumn<bool>("fuzzyCompare");
 
-    QTest::newRow("static property") << "objectName" << QVariant(m_object->objectName()) << false;
-    QTest::newRow("dynamic property") << "dynamicTestProperty" << m_object->property("dynamicTestProperty") << false;
+    QTest::newRow("static property")
+        << "objectName"
+        << QVariant(
+            QVariantList()
+                << 0
+                << m_object->objectName()
+            )
+        << false;
 
-    QTest::newRow("int") << "width" << QVariant(m_object->width()) << false;
-    QTest::newRow("uint") << "myUInt" << m_object->property("myUInt") << false;
-    QTest::newRow("bool") << "visible" << QVariant(m_object->isVisible()) << false;
-    QTest::newRow("double") << "windowOpacity" << QVariant(m_object->windowOpacity()) << true;
+    QTest::newRow("dynamic property")
+        << "dynamicTestProperty"
+        << QVariant(
+            QVariantList()
+                << 0
+                << m_object->property("dynamicTestProperty")
+            )
+        << false;
 
-    QTest::newRow("QString") << "objectName" << QVariant(m_object->objectName()) << false;
-    QTest::newRow("QStringList") << "myStringList" << m_object->property("myStringList") << false;
-    QTest::newRow("QSize") << "maximumSize" << QVariant(QList<QVariant>() << m_object->maximumWidth() << m_object->maximumHeight()) << false;
-    QTest::newRow("QPoint") << "pos" << QVariant(QList<QVariant>() << m_object->x() << m_object->y()) << false;
-    QTest::newRow("QRect") << "geometry" << QVariant(QList<QVariant>() << m_object->geometry().x() << m_object->geometry().y() << m_object->geometry().width() << m_object->geometry().height()) << false;
-    QTest::newRow("QColor") << "myColor" << QVariant(QList<QVariant>() << 255 << 0 << 0 << 255) << false;
-    QTest::newRow("QByteArray") << "myByteArray" << m_object->property("myByteArray") << false;
-    QTest::newRow("QUrl") << "myUrl" << m_object->property("myUrl") << false;
-    QTest::newRow("QDateTime") << "myDateTime" << QVariant(m_object->property("myDateTime").toDateTime().toTime_t()) << false;
-    QTest::newRow("QDate") << "myDate" << QVariant(m_object->property("myDate").toDateTime().toTime_t()) << false;
-    QTest::newRow("QTime") << "myTime" << QVariant(m_object->property("myTime").toTime().toString("hh:mm:ss")) << false;
+    QTest::newRow("int")
+    << "width"
+    << QVariant(
+        QVariantList()
+            << 0
+            << m_object->width()
+        )
+        << false;
+
+    QTest::newRow("uint")
+        << "myUInt"
+        << QVariant(
+            QVariantList()
+                << 0
+                << m_object->property("myUInt")
+            )
+        << false;
+
+    QTest::newRow("bool")
+        << "visible"
+        << QVariant(
+            QVariantList()
+                << 0
+                << m_object->isVisible()
+            )
+        << false;
+
+    QTest::newRow("double")
+        << "windowOpacity"
+        << QVariant(
+            QVariantList()
+                << 0
+                << m_object->windowOpacity()
+            )
+        << true;
+
+    QTest::newRow("QString")
+        << "objectName"
+        << QVariant(
+            QVariantList()
+                << 0
+                << m_object->objectName()
+            )
+        << false;
+
+    QTest::newRow("QStringList")
+        << "myStringList"
+        << QVariant(
+            QVariantList()
+                << 0
+                << m_object->property("myStringList")
+            )
+        << false;
+
+    QTest::newRow("QSize")
+        << "maximumSize"
+        << QVariant(
+            QVariantList()
+                << 3
+                << m_object->maximumWidth()
+                << m_object->maximumHeight()
+            )
+        << false;
+
+    QTest::newRow("QPoint")
+        << "pos"
+        << QVariant(
+            QVariantList()
+                << 2
+                << m_object->x()
+                << m_object->y()
+            )
+        << false;
+
+    QTest::newRow("QRect")
+        << "geometry"
+        << QVariant(
+            QVariantList()
+                << 1
+                << m_object->geometry().x()
+                << m_object->geometry().y()
+                << m_object->geometry().width()
+                << m_object->geometry().height()
+            )
+        << false;
+
+    QTest::newRow("QColor")
+        << "myColor"
+        << QVariant(
+            QVariantList()
+                << 4
+                << qvariant_cast<QColor>(m_object->property("myColor")).red()
+                << qvariant_cast<QColor>(m_object->property("myColor")).green()
+                << qvariant_cast<QColor>(m_object->property("myColor")).blue()
+                << qvariant_cast<QColor>(m_object->property("myColor")).alpha()
+            )
+        << false;
+
+    QTest::newRow("QByteArray")
+        << "myByteArray"
+        << QVariant(
+            QVariantList()
+                << 0
+                << m_object->property("myByteArray")
+            )
+        << false;
+
+    QTest::newRow("QUrl")
+        << "myUrl"
+        << QVariant(
+            QVariantList()
+                << 0
+                << m_object->property("myUrl")
+            )
+        << false;
+
+    QTest::newRow("QDateTime")
+        << "myDateTime"
+        << QVariant(
+            QVariantList()
+                << 5
+                << m_object->property("myDateTime").toDateTime().toTime_t()
+            )
+        << false;
+
+    QTest::newRow("QDate")
+        << "myDate"
+        << QVariant(
+            QVariantList()
+                << 5
+                << m_object->property("myDate").toDateTime().toTime_t()
+            )
+        << false;
+
+    QTest::newRow("QTime")
+        << "myTime"
+        << QVariant(
+            QVariantList()
+                << 6
+                << m_object->property("myTime").toTime().hour()
+                << m_object->property("myTime").toTime().minute()
+                << m_object->property("myTime").toTime().second()
+                << m_object->property("myTime").toTime().msec()
+            )
+        << false;
 }
 
 void tst_Introspection::test_properties()

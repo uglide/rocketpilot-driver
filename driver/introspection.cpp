@@ -155,7 +155,7 @@ QVariantMap GetNodeProperties(QObject* obj)
     // add the 'Children' pseudo-property:
     QStringList children = GetNodeChildNames(obj);
     if (!children.empty())
-        object_properties["Children"] = children;
+        object_properties["Children"] = PackProperty(children);
 
     return object_properties;
 }
@@ -298,10 +298,13 @@ QVariant PackProperty(QVariant const& prop)
 
     case QVariant::Time:
     {
-        QTime
+        QTime t = qvariant_cast<QTime>(prop);
         return QList<QVariant> {
             QVariant(TYPE_TIME),
-            QVariant(prop.toTime().toString("hh:mm:ss"))
+            QVariant(t.hour()),
+            QVariant(t.minute()),
+            QVariant(t.second()),
+            QVariant(t.msec())
         };
     }
 

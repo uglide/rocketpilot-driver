@@ -23,8 +23,8 @@ NodeIntrospectionData RootNode::GetIntrospectionData() const
         child_names.append(child->metaObject()->className());
     }
 
-    data.state["Children"] = child_names;
-    data.state["id"] = GetObjectId();
+    data.state["Children"] = PackProperty(child_names);
+    data.state["id"] = PackProperty(GetObjectId());
     return data;
 }
 
