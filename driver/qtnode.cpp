@@ -53,7 +53,7 @@ NodeIntrospectionData QtNode::GetIntrospectionData() const
     NodeIntrospectionData data;
     data.object_path = QString::fromStdString(GetPath());
     data.state = GetNodeProperties(object_);
-    data.state["id"] = GetObjectId();
+    data.state["id"] = PackProperty(GetObjectId());
     return data;
 }
 
@@ -94,7 +94,7 @@ bool QtNode::MatchStringProperty(const std::string& name, const std::string& val
     if (! properties.contains(qname))
         return false;
 
-    QVariant object_value = properties[qname];
+    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
     QVariant check_value(QString::fromStdString(value));
     if (check_value.canConvert(object_value.type()))
     {
@@ -116,7 +116,7 @@ bool QtNode::MatchIntegerProperty(const std::string& name, int32_t value) const
     if (! properties.contains(qname))
         return false;
 
-    QVariant object_value = properties[qname];
+    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
     QVariant check_value(value);
     if (check_value.canConvert(object_value.type()))
     {
@@ -135,8 +135,9 @@ bool QtNode::MatchBooleanProperty(const std::string& name, bool value) const
     if (! properties.contains(qname))
         return false;
 
-    QVariant object_value = properties[qname];
+    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
     QVariant check_value(value);
+
     if (check_value.canConvert(object_value.type()))
     {
         check_value.convert(object_value.type());

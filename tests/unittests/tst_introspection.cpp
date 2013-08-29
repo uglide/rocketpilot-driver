@@ -26,6 +26,7 @@
 #include <QPushButton>
 
 #include "introspection.h"
+#include "qtnode.h"
 
 QVariant IntrospectNode(QObject* obj);
 
@@ -45,6 +46,8 @@ private slots:
 
     void test_properties_data();
     void test_properties();
+
+    void test_property_matching();
 
 private:
     QMainWindow *m_object;
@@ -74,6 +77,7 @@ void tst_Introspection::initTestCase()
 
     m_object->setObjectName("testWindow");
     m_object->setProperty("dynamicTestProperty", "testValue");
+    m_object->setProperty("dynamicStringProperty", QString("testValue"));
     m_object->setProperty("myUInt", QVariant(quint8(5)));
     m_object->setProperty("myStringList", QVariant(QStringList() << "string1" << "string2" << "string3"));
     m_object->setProperty("myColor", QColor("red"));
@@ -473,6 +477,16 @@ void tst_Introspection::test_properties()
     } else {
         QCOMPARE(properties.value(propertyName), propertyValue);
     }
+}
+
+void tst_Introspection::test_property_matching()
+{
+    QtNode n(m_object, "");
+
+    QVERIFY(n.MatchStringProperty("dynamicStringProperty", "testValue") == true);
+    QVERIFY(n.MatchStringProperty("dynamicTestProperty", "testValue") == true);
+    QVERIFY(n.MatchIntegerProperty("myUInt", 5) == true);
+    QVERIFY(n.MatchBooleanProperty("visible", true) == true);
 }
 
 QTEST_MAIN(tst_Introspection)
