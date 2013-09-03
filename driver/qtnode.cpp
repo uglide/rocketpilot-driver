@@ -83,13 +83,17 @@ std::string QtNode::GetPath() const
 
 int32_t QtNode::GetId() const
 {
-    // Note: This starts at 1 for a reason - 1 is reserved for the pseudo root node, and
-    // so must never be allocated to a regular object.
-    static int32_t next_id=1;
+    // Note: This method is used to assign ids to both the root node (with a QApplication object) and
+    // child nodes. This used to be separate code, but now that we export QApplication properties,
+    // we can use this one method everywhere.
+    static int32_t next_id=0;
 
     QList<QByteArray> property_names = object_->dynamicPropertyNames();
     if (!property_names.contains(AP_ID_NAME))
-        object_->setProperty(AP_ID_NAME, QVariant(++next_id));
+    {
+        int32_t new_id = ++next_id;
+        object_->setProperty(AP_ID_NAME, QVariant(new_id));
+    }
     return qvariant_cast<int32_t>(object_->property(AP_ID_NAME));
 }
 

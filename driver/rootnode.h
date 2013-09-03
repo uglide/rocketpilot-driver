@@ -14,7 +14,6 @@ public:
     RootNode(QCoreApplication* application);
 
     virtual NodeIntrospectionData GetIntrospectionData() const;
-    virtual qint64 GetObjectId() const;
 
     void AddChild(QObject* child);
 

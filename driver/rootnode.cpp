@@ -25,13 +25,8 @@ NodeIntrospectionData RootNode::GetIntrospectionData() const
     }
 
     data.state["Children"] = PackProperty(child_names);
-    data.state["id"] = PackProperty(GetObjectId());
+    data.state["id"] = PackProperty(GetId());
     return data;
-}
-
-qint64 RootNode::GetObjectId() const
-{
-    return 1;
 }
 
 void RootNode::AddChild(QObject* child)

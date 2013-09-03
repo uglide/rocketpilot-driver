@@ -205,7 +205,7 @@ void tst_Introspection::test_introspect_data()
     }
 #endif
 
-    QTest::newRow("//GridLayout")
+    QTest::newRow("/tst_introspection/QMainWindow/QWidget/QGridLayout")
         << "//QGridLayout"
         << 1
         << "/tst_introspection/QMainWindow/QWidget/QGridLayout"
@@ -214,6 +214,17 @@ void tst_Introspection::test_introspect_data()
             QVariantList()
                 << 0
                 << "myTestLayout"
+            );
+
+    QTest::newRow("parent of leaf node")
+        << "/tst_introspection/QMainWindow/QWidget/QGridLayout/.."
+        << 1
+        << "/tst_introspection/QMainWindow/QWidget"
+        << "objectName"
+        << QVariant(
+            QVariantList()
+                << 0
+                << "centralTestWidget"
             );
 
     QTest::newRow("//QPushButton")
