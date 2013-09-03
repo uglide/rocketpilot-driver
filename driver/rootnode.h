@@ -20,7 +20,7 @@ public:
 
     virtual std::string GetName() const;
     virtual std::string GetPath() const;
-    virtual xpathselect::NodeList Children() const;
+    virtual xpathselect::NodeVector Children() const;
 private:
     QCoreApplication* application_;
     QList<QObject*> children_;

@@ -481,7 +481,7 @@ void tst_Introspection::test_properties()
 
 void tst_Introspection::test_property_matching()
 {
-    QtNode n(m_object, "");
+    QtNode n(m_object);
 
     QVERIFY(n.MatchStringProperty("dynamicStringProperty", "testValue") == true);
     QVERIFY(n.MatchStringProperty("dynamicTestProperty", "testValue") == true);

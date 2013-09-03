@@ -37,10 +37,18 @@
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
-QtNode::QtNode(QObject *obj, std::string const& parent_path)
-    : object_(obj)
+QtNode::QtNode(QObject *obj, QtNode::Ptr parent)
+: object_(obj)
+, parent_(parent)
 {
+    std::string parent_path = parent ? parent->GetPath() : "";
     full_path_ = parent_path + "/" + GetName();
+}
+
+QtNode::QtNode(QObject* obj)
+: object_(obj)
+{
+    full_path_ = "/" + GetName();
 }
 
 QObject* QtNode::getWrappedObject() const
@@ -53,21 +61,8 @@ NodeIntrospectionData QtNode::GetIntrospectionData() const
     NodeIntrospectionData data;
     data.object_path = QString::fromStdString(GetPath());
     data.state = GetNodeProperties(object_);
-    data.state["id"] = PackProperty(GetObjectId());
+    data.state["id"] = PackProperty(GetId());
     return data;
-}
-
-qint64 QtNode::GetObjectId() const
-{
-    // Note: This starts at 1 for a reason - 1 is reserved for the pseudo root node, and
-    // so must never be allocated to a regular object.
-    static qint64 next_id=1;
-
-    QList<QByteArray> property_names = object_->dynamicPropertyNames();
-    if (!property_names.contains(AP_ID_NAME))
-        object_->setProperty(AP_ID_NAME, QVariant(++next_id));
-    return object_->property(AP_ID_NAME).toLongLong();
-
 }
 
 std::string QtNode::GetName() const
@@ -84,6 +79,18 @@ std::string QtNode::GetName() const
 std::string QtNode::GetPath() const
 {
     return full_path_;
+}
+
+int32_t QtNode::GetId() const
+{
+    // Note: This starts at 1 for a reason - 1 is reserved for the pseudo root node, and
+    // so must never be allocated to a regular object.
+    static int32_t next_id=1;
+
+    QList<QByteArray> property_names = object_->dynamicPropertyNames();
+    if (!property_names.contains(AP_ID_NAME))
+        object_->setProperty(AP_ID_NAME, QVariant(++next_id));
+    return qvariant_cast<int32_t>(object_->property(AP_ID_NAME));
 }
 
 bool QtNode::MatchStringProperty(const std::string& name, const std::string& value) const
@@ -108,7 +115,7 @@ bool QtNode::MatchStringProperty(const std::string& name, const std::string& val
 bool QtNode::MatchIntegerProperty(const std::string& name, int32_t value) const
 {
     if (name == "id")
-        return value == GetObjectId();
+        return value == GetId();
 
     QVariantMap properties = GetNodeProperties(object_);
 
@@ -147,9 +154,9 @@ bool QtNode::MatchBooleanProperty(const std::string& name, bool value) const
     return false;
 }
 
-xpathselect::NodeList QtNode::Children() const
+xpathselect::NodeVector QtNode::Children() const
 {
-    xpathselect::NodeList children;
+    xpathselect::NodeVector children;
 
 #ifdef QT5_SUPPORT
     // Qt5's hierarchy for QML has changed a bit:
@@ -159,21 +166,21 @@ xpathselect::NodeList QtNode::Children() const
 
     QQuickView *view = qobject_cast<QQuickView*>(object_);
     if (view && view->rootObject() != 0) {
-        children.push_back(std::make_shared<QtNode>(view->rootObject(), GetPath()));
+        children.push_back(std::make_shared<QtNode>(view->rootObject(), shared_from_this()));
     }
 
     QQuickItem* item = qobject_cast<QQuickItem*>(object_);
     if (item) {
         foreach (QQuickItem *childItem, item->childItems()) {
             if (childItem->parentItem() == item) {
-                children.push_back(std::make_shared<QtNode>(childItem, GetPath()));
+                children.push_back(std::make_shared<QtNode>(childItem, shared_from_this()));
             }
         }
     } else {
         foreach (QObject *child, object_->children())
         {
             if (child->parent() == object_)
-                children.push_back(std::make_shared<QtNode>(child, GetPath()));
+                children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
         }
     }
 
@@ -181,7 +188,7 @@ xpathselect::NodeList QtNode::Children() const
     foreach (QObject *child, object_->children())
     {
         if (child->parent() == object_)
-            children.push_back(std::make_shared<QtNode>(child, GetPath()));
+            children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
     }
 
     // If our wrapped object is a QGraphicsScene, we need to explicitly grab any child graphics
@@ -195,10 +202,16 @@ xpathselect::NodeList QtNode::Children() const
         {
             QGraphicsObject *obj = item->toGraphicsObject();
             if (obj && ! obj->parent())
-                children.push_back(std::make_shared<QtNode>(obj, GetPath()));
+                children.push_back(std::make_shared<QtNode>(obj, shared_from_this()));
         }
     }
 #endif
 
     return children;
+}
+
+
+xpathselect::Node::Ptr QtNode::GetParent() const
+{
+    return parent_;
 }

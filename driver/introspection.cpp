@@ -86,11 +86,11 @@ QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
 #endif
     QList<QtNode::Ptr> node_list;
 
-    xpathselect::NodeList list = xpathselect::SelectNodes(root, query_string.toStdString());
+    xpathselect::NodeVector list = xpathselect::SelectNodes(root, query_string.toStdString());
     for (auto node : list)
     {
         // node may be our root node wrapper *or* an ordinary qobject wrapper
-        auto object_ptr = std::static_pointer_cast<QtNode>(node);
+        auto object_ptr = std::static_pointer_cast<const QtNode>(node);
         if (object_ptr)
         {
             node_list.append(object_ptr);

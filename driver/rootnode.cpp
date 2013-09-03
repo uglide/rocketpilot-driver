@@ -4,9 +4,10 @@
 #include <QObject>
 #include <QCoreApplication>
 #include <QStringList>
+#include <QDebug>
 
 RootNode::RootNode(QCoreApplication* application)
-    : QtNode(application, std::string())
+    : QtNode(application)
     , application_(application)
 {
 }
@@ -49,10 +50,10 @@ std::string RootNode::GetPath() const
     return "/" + GetName();
 }
 
-xpathselect::NodeList RootNode::Children() const
+xpathselect::NodeVector RootNode::Children() const
 {
-    xpathselect::NodeList children;
+    xpathselect::NodeVector children;
     foreach(QObject* child, children_)
-        children.push_back(std::make_shared<QtNode>(child, GetPath()));
+        children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
     return children;
 }
