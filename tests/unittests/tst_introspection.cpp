@@ -227,6 +227,17 @@ void tst_Introspection::test_introspect_data()
                 << "centralTestWidget"
             );
 
+    QTest::newRow("parent of root node")
+        << "/tst_introspection/.."
+        << 1
+        << "/tst_introspection"
+        << "id"
+        << QVariant(
+            QVariantList()
+                << 0
+                << 1
+            );
+
     QTest::newRow("//QPushButton")
         << "//QPushButton"
         << 2
