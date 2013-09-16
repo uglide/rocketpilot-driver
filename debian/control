@@ -30,6 +30,8 @@ Architecture: any
 Depends: libxpathselect1.4,
          ${misc:Depends},
          ${shlibs:Depends},
+Breaks: python-autopilot (<< 1.4),
+        python3-autopilot (<< 1.4)
 Replaces: autopilot-qt,
           autopilot-qt5,
 Conflicts: autopilot-qt,
