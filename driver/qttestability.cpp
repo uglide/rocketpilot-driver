@@ -10,6 +10,7 @@ by the Free Software Foundation.
 #include "dbus_adaptor.h"
 #include "dbus_adaptor_qt.h"
 #include "dbus_object.h"
+#include "qtnode.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -20,6 +21,8 @@ const QString DBUS_OBJECT_PATH("/com/canonical/Autopilot/Introspection");
 void qt_testability_init(void)
 {
     qDebug() << "Loading testability driver.";
+    qDBusRegisterMetaType<NodeIntrospectionData>();
+    qDBusRegisterMetaType<QList<NodeIntrospectionData> >();
 
     DBusObject* obj = new DBusObject;
     new AutopilotAdaptor(obj);

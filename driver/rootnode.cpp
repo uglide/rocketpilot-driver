@@ -1,35 +1,32 @@
 #include "rootnode.h"
+#include "introspection.h"
 
 #include <QObject>
 #include <QCoreApplication>
 #include <QStringList>
+#include <QDebug>
 
 RootNode::RootNode(QCoreApplication* application)
-    : QtNode(application, std::string())
+    : QtNode(application)
     , application_(application)
 {
 }
 
-QVariant RootNode::IntrospectNode() const
+
+NodeIntrospectionData RootNode::GetIntrospectionData() const
 {
-    // return must be (name, state_map)
-    QString object_name = QString::fromStdString(GetPath());
+    NodeIntrospectionData data;
+    data.object_path = QString::fromStdString(GetPath());
+    data.state = GetNodeProperties(application_);
     QStringList child_names;
     foreach(QObject* child, children_)
     {
         child_names.append(child->metaObject()->className());
     }
 
-    QVariantMap object_properties;
-    object_properties["Children"] = child_names;
-    object_properties["id"] = GetObjectId();
-    QList<QVariant> object_tuple = { QVariant(object_name), QVariant(object_properties) };
-    return QVariant(object_tuple);
-}
-
-qint64 RootNode::GetObjectId() const
-{
-    return 1;
+    data.state["Children"] = PackProperty(child_names);
+    data.state["id"] = PackProperty(GetId());
+    return data;
 }
 
 void RootNode::AddChild(QObject* child)
@@ -48,18 +45,10 @@ std::string RootNode::GetPath() const
     return "/" + GetName();
 }
 
-bool RootNode::MatchProperty(const std::string& name, const std::string& value) const
+xpathselect::NodeVector RootNode::Children() const
 {
-    if (name == "id")
-        return QString::fromStdString(value).toLongLong() == GetObjectId();
-
-    return false;
-}
-
-xpathselect::NodeList RootNode::Children() const
-{
-    xpathselect::NodeList children;
+    xpathselect::NodeVector children;
     foreach(QObject* child, children_)
-        children.push_back(std::make_shared<QtNode>(child, GetPath()));
+        children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
     return children;
 }

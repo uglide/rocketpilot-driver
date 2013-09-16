@@ -37,6 +37,7 @@ by the Free Software Foundation.
 #include <QUrl>
 #include <QDateTime>
 
+#include "autopilot_types.h"
 #include "introspection.h"
 #include "qtnode.h"
 #include "rootnode.h"
@@ -47,13 +48,13 @@ QString GetNodeName(QObject* obj);
 QStringList GetNodeChildNames(QObject* obj);
 void AddCustomProperties(QObject* obj, QVariantMap& properties);
 
-QList<QVariant> Introspect(QString const& query_string)
+QList<NodeIntrospectionData> Introspect(QString const& query_string)
 {
-    QList<QVariant> state;
+    QList<NodeIntrospectionData> state;
     QList<QtNode::Ptr> node_list = GetNodesThatMatchQuery(query_string);
     foreach (QtNode::Ptr obj, node_list)
     {
-        state.append(obj->IntrospectNode());
+        state.append(obj->GetIntrospectionData());
     }
 
     return state;
@@ -85,11 +86,11 @@ QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
 #endif
     QList<QtNode::Ptr> node_list;
 
-    xpathselect::NodeList list = xpathselect::SelectNodes(root, query_string.toStdString());
+    xpathselect::NodeVector list = xpathselect::SelectNodes(root, query_string.toStdString());
     for (auto node : list)
     {
         // node may be our root node wrapper *or* an ordinary qobject wrapper
-        auto object_ptr = std::static_pointer_cast<QtNode>(node);
+        auto object_ptr = std::static_pointer_cast<const QtNode>(node);
         if (object_ptr)
         {
             node_list.append(object_ptr);
@@ -154,7 +155,7 @@ QVariantMap GetNodeProperties(QObject* obj)
     // add the 'Children' pseudo-property:
     QStringList children = GetNodeChildNames(obj);
     if (!children.empty())
-        object_properties["Children"] = children;
+        object_properties["Children"] = PackProperty(children);
 
     return object_properties;
 }
@@ -211,69 +212,105 @@ QVariant PackProperty(QVariant const& prop)
     case QVariant::StringList:
     case QVariant::Double:
     {
-        return prop;
+        return QList<QVariant> {
+            QVariant(TYPE_PLAIN),
+            prop
+        };
     }
 
     case QVariant::ByteArray:
     {
-        return QVariant(QString(qvariant_cast<QByteArray>(prop)));
+        return QList<QVariant> {
+            QVariant(TYPE_PLAIN),
+            QVariant(QString(qvariant_cast<QByteArray>(prop)))
+        };
     }
 
     case QVariant::Point:
     {
         QPoint p = qvariant_cast<QPoint>(prop);
-        QList<QVariant> l = {QVariant(p.x()), QVariant(p.y())};
-        return QVariant(l);
+        return QList<QVariant> {
+            QVariant(TYPE_POINT),
+            QVariant(p.x()),
+            QVariant(p.y())
+        };
     }
 
     case QVariant::Rect:
     {
         QRect r = qvariant_cast<QRect>(prop);
-        QList<QVariant> l = {
+        return QList<QVariant> {
+            QVariant(TYPE_RECT),
             QVariant(r.x()),
             QVariant(r.y()),
             QVariant(r.width()),
             QVariant(r.height()) };
-        return QVariant(l);
     }
 
     case QVariant::Size:
     {
         QSize s = qvariant_cast<QSize>(prop);
-        QList<QVariant> l = { QVariant(s.width()), QVariant(s.height()) };
-        return QVariant(l);
+        return QList<QVariant> {
+            QVariant(TYPE_SIZE),
+            QVariant(s.width()),
+            QVariant(s.height())
+        };
     }
 
     case QVariant::Color:
     {
         QColor color = qvariant_cast<QColor>(prop).toRgb();
-        QList<QVariant> l = { QVariant(color.red()),
-                              QVariant(color.green()),
-                              QVariant(color.blue()),
-                              QVariant(color.alpha())
-                            };
-        return QVariant(l);
+        return QList<QVariant> {
+            QVariant(TYPE_COLOR),
+            QVariant(color.red()),
+            QVariant(color.green()),
+            QVariant(color.blue()),
+            QVariant(color.alpha())
+        };
     }
 
     case QVariant::Url:
     {
-        return QVariant(prop.toUrl().toString());
+        return QList<QVariant> {
+            QVariant(TYPE_PLAIN),
+            QVariant(prop.toUrl().toString())
+        };
     }
 
     // Depending on the architecture, floating points might be of type QMetaType::Float instead of QVariant::Double
     // QDBus however, can only carry QVariant types, so lets convert it to QVariant::Double
     case QMetaType::Float:
     {
-        return QVariant(prop.toDouble());
+        return QList<QVariant> {
+            QVariant(TYPE_PLAIN),
+            QVariant(prop.toDouble())
+        };
     }
+
     case QVariant::Date:
     case QVariant::DateTime:
-        return QVariant(prop.toDateTime().toTime_t());
+    {
+        return QList<QVariant> {
+            QVariant(TYPE_DATETIME),
+            QVariant(prop.toDateTime().toTime_t())
+        };
+    }
+
     case QVariant::Time:
-        return QVariant(prop.toTime().toString("hh:mm:ss"));
+    {
+        QTime t = qvariant_cast<QTime>(prop);
+        return QList<QVariant> {
+            QVariant(TYPE_TIME),
+            QVariant(t.hour()),
+            QVariant(t.minute()),
+            QVariant(t.second()),
+            QVariant(t.msec())
+        };
+    }
+
     default:
     {
-        return QVariant();
+        return QVariant(); // unsupported type, will not be sent to the client.
     }
     }
 }
