@@ -38,6 +38,7 @@ public:
     AutopilotAdaptor(QObject *parent);
     virtual ~AutopilotAdaptor();
 
+    static QString WIRE_PROTO_VERSION;
 public: // PROPERTIES
 public Q_SLOTS: // METHODS
     void GetState(const QString &piece, const QDBusMessage &message);

@@ -17,6 +17,7 @@ by the Free Software Foundation.
 
 #include <QDebug>
 
+QString AutopilotAdaptor::WIRE_PROTO_VERSION("1.4");
 /*
  * Implementation of adaptor class AutopilotAdaptor
  */
@@ -51,7 +52,7 @@ void AutopilotAdaptor::GetState(const QString &piece, const QDBusMessage &messag
 void AutopilotAdaptor::GetVersion(const QDBusMessage &message)
 {
     QDBusMessage reply =  message.createReply();
-    reply << QVariant(QString("1.4"));
+    reply << QVariant(AutopilotAdaptor::WIRE_PROTO_VERSION);
     QDBusConnection::sessionBus().send(reply);
 }
 
