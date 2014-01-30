@@ -34,10 +34,6 @@ class TestQueries(AutopilotQtTestCase):
         rectangle = self.main_window.get_test_rectangle_by_child_search()
         self.assertThat(rectangle, NotEquals(None))
 
-    def test_find_nonvisual_component(self):
-        component = self.main_window.get_non_visual_component()
-        self.assertThat(component, NotEquals(None))
-
 
 class TestProperties(AutopilotQtTestCase):
 
@@ -65,8 +61,8 @@ class TestProperties(AutopilotQtTestCase):
         self.assertThat(rectangle.color, Equals([0, 0, 255, 255]))
 
         mousearea = self.main_window.get_test_mousearea()
-        self.mouse.move_to_object(mousearea)
-        self.mouse.click()
+        self.pointing_device.move_to_object(mousearea)
+        self.pointing_device.click()
 
         self.assertThat(rectangle.color, Eventually(Equals([255, 0, 0, 255])))
 
