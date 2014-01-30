@@ -180,11 +180,12 @@ xpathselect::NodeVector QtNode::Children() const
                 children.push_back(std::make_shared<QtNode>(childItem, shared_from_this()));
             }
         }
-    } 
-    foreach (QObject *child, object_->children())
-    {
-        if (child->parent() == object_)
-            children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
+    } else {
+        foreach (QObject *child, object_->children())
+        {
+            if (child->parent() == object_)
+                children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
+        }
     }
 
 #else
