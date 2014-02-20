@@ -23,6 +23,9 @@ by the Free Software Foundation.
 #include <QDBusConnection>
 #include <QThread>
 
+#include <QDebug>
+#include <QTime>
+
 QtNode::Ptr GetNodeWithId(int object_id)
 {
     QString query = QString("//*[id=%1]").arg(object_id);
@@ -293,14 +296,23 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
 
 void DBusObject::ProcessQuery()
 {
+    QTime timer;
+    timer.start();
+    qDebug() << "Starting Query";
+
     Query query = _queries.takeFirst();
     QList<NodeIntrospectionData> state = Introspect(query.first);
+
+    qDebug() << "Introspection done, setting value.";
 
     QDBusMessage msg = query.second;
     QVariant var;
     var.setValue(state);
     msg << var;
 
-    QDBusConnection::sessionBus().send(msg);
-}
+    qDebug() << "Length of data: " << state.length() << "(time: " << timer.elapsed() << ")";
 
+    qDebug() << "Sending Query" << timer.elapsed();
+    QDBusConnection::sessionBus().send(msg);
+    qDebug() << "Done." << timer.elapsed();
+}

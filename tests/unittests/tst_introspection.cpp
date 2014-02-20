@@ -49,6 +49,8 @@ private slots:
 
     void test_property_matching();
 
+    void test_get_node_property();
+
 private:
     QMainWindow *m_object;
 };
@@ -509,6 +511,37 @@ void tst_Introspection::test_property_matching()
     QVERIFY(n.MatchStringProperty("dynamicTestProperty", "testValue") == true);
     QVERIFY(n.MatchIntegerProperty("myUInt", 5) == true);
     QVERIFY(n.MatchBooleanProperty("visible", true) == true);
+}
+
+void tst_Introspection::test_get_node_property()
+{
+    QVariant property;
+    QVariant unpacked_property;
+
+    property = GetNodeProperty(m_object, "dynamicTestProperty");
+    unpacked_property = qvariant_cast<QVariantList>(property).at(1);
+    QVERIFY(property.isValid() == true);
+    QVERIFY(unpacked_property.isValid() == true);
+    QVERIFY(unpacked_property.toString() == "testValue");
+
+    property = GetNodeProperty(m_object, "myUInt");
+    unpacked_property = qvariant_cast<QVariantList>(property).at(1);
+    QVERIFY(property.isValid() == true);
+    QVERIFY(unpacked_property.isValid() == true);
+    QVERIFY(unpacked_property.toFloat() == 5);
+
+    // Meta Property
+    property = GetNodeProperty(m_object, "fullScreen");
+    unpacked_property = qvariant_cast<QVariantList>(property).at(1);
+    QVERIFY(property.isValid() == true);
+    QVERIFY(unpacked_property.isValid() == true);
+    QVERIFY(unpacked_property.toBool() == false);
+
+    // property = GetNodeProperty(m_object, "globalRect");
+    // unpacked_property = qvariant_cast<QVariantList>(property).at(1);
+    // QVERIFY(property.isValid() == true);
+    // QVERIFY(unpacked_property.isValid() == true);
+    // QVERIFY(unpacked_property.toFloat() == 5);
 }
 
 QTEST_MAIN(tst_Introspection)

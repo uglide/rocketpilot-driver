@@ -23,7 +23,7 @@ void qt_testability_init(void)
     qDebug().nospace()
         << "Testability driver loaded. Wire protocol version is "
         << AutopilotAdaptor::WIRE_PROTO_VERSION
-        << ".";
+        << ".(hello)";
     qDBusRegisterMetaType<NodeIntrospectionData>();
     qDBusRegisterMetaType<QList<NodeIntrospectionData> >();
 

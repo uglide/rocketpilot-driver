@@ -18,7 +18,7 @@
 #include <QDBusArgument>
 
 // Marshall the NodeIntrospectionData data into a D-Bus argument
- QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
+QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
  {
      argument.beginStructure();
      argument << node_data.object_path << node_data.state;
@@ -67,13 +67,17 @@ NodeIntrospectionData QtNode::GetIntrospectionData() const
 
 std::string QtNode::GetName() const
 {
-    QString name = object_->metaObject()->className();
+    if(node_name_.empty())
+    {
+        QString name = object_->metaObject()->className();
 
-    // QML type names get mangled by Qt - they get _QML_N or _QMLTYPE_N appended.
-    //
-    if (name.contains('_'))
-        name = name.split('_').front();
-    return name.toStdString();
+        // QML type names get mangled by Qt - they get _QML_N or _QMLTYPE_N appended.
+        if (name.contains('_'))
+            name = name.split('_').front();
+        node_name_ = name.toStdString();
+    }
+
+    return node_name_;
 }
 
 std::string QtNode::GetPath() const
@@ -99,13 +103,12 @@ int32_t QtNode::GetId() const
 
 bool QtNode::MatchStringProperty(const std::string& name, const std::string& value) const
 {
-    QVariantMap properties = GetNodeProperties(object_);
+    QVariant property = GetNodeProperty(object_, name);
 
-    QString qname = QString::fromStdString(name);
-    if (! properties.contains(qname))
+    if(!property.isValid())
         return false;
 
-    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
+    QVariant object_value = qvariant_cast<QVariantList>(property).at(1);
     QVariant check_value(QString::fromStdString(value));
     if (check_value.canConvert(object_value.type()))
     {
@@ -121,13 +124,12 @@ bool QtNode::MatchIntegerProperty(const std::string& name, int32_t value) const
     if (name == "id")
         return value == GetId();
 
-    QVariantMap properties = GetNodeProperties(object_);
+    QVariant property = GetNodeProperty(object_, name);
 
-    QString qname = QString::fromStdString(name);
-    if (! properties.contains(qname))
+    if(!property.isValid())
         return false;
 
-    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
+    QVariant object_value = qvariant_cast<QVariantList>(property).at(1);
     QVariant check_value(value);
     if (check_value.canConvert(object_value.type()))
     {
@@ -140,13 +142,12 @@ bool QtNode::MatchIntegerProperty(const std::string& name, int32_t value) const
 
 bool QtNode::MatchBooleanProperty(const std::string& name, bool value) const
 {
-    QVariantMap properties = GetNodeProperties(object_);
+    QVariant property = GetNodeProperty(object_, name);
 
-    QString qname = QString::fromStdString(name);
-    if (! properties.contains(qname))
+    if(!property.isValid())
         return false;
 
-    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
+    QVariant object_value = qvariant_cast<QVariantList>(property).at(1);
     QVariant check_value(value);
 
     if (check_value.canConvert(object_value.type()))
@@ -180,13 +181,13 @@ xpathselect::NodeVector QtNode::Children() const
                 children.push_back(std::make_shared<QtNode>(childItem, shared_from_this()));
             }
         }
-    } 
+    }
     foreach (QObject *child, object_->children())
     {
-        if (child->parent() == object_)
+        if (child->parent() == object_) {
             children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
+        }
     }
-
 #else
     foreach (QObject *child, object_->children())
     {
