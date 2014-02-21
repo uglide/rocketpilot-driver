@@ -121,7 +121,6 @@ QString GetNodeName(QObject* obj)
 QVariantMap GetNodeProperties(QObject* obj)
 {
     QVariantMap object_properties;
-
     const QMetaObject* meta = obj->metaObject();
     do
     {
@@ -170,13 +169,7 @@ QVariant GetNodeProperty(QObject* obj, const std::string& property_name)
         return GetGlobalRect(obj);
 
     if(property_name == "Children")
-    {
-        QStringList children = GetNodeChildNames(obj);
-        if (!children.empty())
-            return PackProperty(children);
-        else
-            return QVariant(QVariant::Invalid);
-    }
+        return GetChildrenNames(obj);
 
     QVariant dynamic_property = obj->property(property_name.c_str());
     if (dynamic_property.isValid())

@@ -293,9 +293,6 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
 
 void DBusObject::ProcessQuery()
 {
-    QTime timer;
-    timer.start();
-
     Query query = _queries.takeFirst();
     QList<NodeIntrospectionData> state = Introspect(query.first);
 
