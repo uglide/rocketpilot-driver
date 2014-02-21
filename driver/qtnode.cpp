@@ -41,7 +41,7 @@ QtNode::QtNode(QObject *obj, QtNode::Ptr parent)
 : object_(obj)
 , parent_(parent)
 {
-    node_name_ = SetName(obj);
+    SetName(obj);
     std::string parent_path = parent ? parent->GetPath() : "";
     full_path_ = parent_path + "/" + GetName();
 }
@@ -49,7 +49,7 @@ QtNode::QtNode(QObject *obj, QtNode::Ptr parent)
 QtNode::QtNode(QObject* obj)
 : object_(obj)
 {
-    node_name_ = SetName(obj);
+    SetName(obj);
     full_path_ = "/" + GetName();
 }
 
@@ -67,13 +67,13 @@ NodeIntrospectionData QtNode::GetIntrospectionData() const
     return data;
 }
 
-std::string QtNode::SetName(const QObject* object)
+void QtNode::SetName(const QObject* object)
 {
     QString name = object->metaObject()->className();
     // QML type names get mangled by Qt - they get _QML_N or _QMLTYPE_N appended.
     if (name.contains('_'))
         name = name.split('_').front();
-    return name.toStdString();
+    node_name_ = name.toStdString();
 }
 
 std::string QtNode::GetName() const

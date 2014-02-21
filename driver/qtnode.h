@@ -45,7 +45,7 @@ public:
     virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
     virtual xpathselect::NodeVector Children() const;
 private:
-    std::string SetName(const QObject* object);
+    void SetName(const QObject* object);
 
     QObject *object_;
     std::string full_path_;
