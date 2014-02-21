@@ -46,8 +46,6 @@ by the Free Software Foundation.
 QVariant IntrospectNode(QObject* obj);
 QString GetNodeName(QObject* obj);
 QStringList GetNodeChildNames(QObject* obj);
-void AddCustomProperties(QObject* obj, QVariantMap& properties);
-
 
 QVariant GetGlobalRect(QObject* obj);
 QVariant GetChildrenNames(QObject* obj);
@@ -201,11 +199,6 @@ QVariant GetNodeProperty(QObject* obj, const std::string& property_name)
     }
 
     return QVariant(QVariant::Invalid);
-}
-
-void AddCustomProperties(QObject* obj, QVariantMap &properties)
-{
-    properties["globalRect"] = GetGlobalRect(obj);
 }
 
 QVariant GetChildrenNames(QObject* obj)
