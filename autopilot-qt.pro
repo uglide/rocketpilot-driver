@@ -1,4 +1,3 @@
-CONFIG += debug
 TEMPLATE = subdirs
 
 # only build the main lib once, with the qt5 driver

@@ -536,12 +536,6 @@ void tst_Introspection::test_get_node_property()
     QVERIFY(property.isValid() == true);
     QVERIFY(unpacked_property.isValid() == true);
     QVERIFY(unpacked_property.toBool() == false);
-
-    // property = GetNodeProperty(m_object, "globalRect");
-    // unpacked_property = qvariant_cast<QVariantList>(property).at(1);
-    // QVERIFY(property.isValid() == true);
-    // QVERIFY(unpacked_property.isValid() == true);
-    // QVERIFY(unpacked_property.toFloat() == 5);
 }
 
 QTEST_MAIN(tst_Introspection)
