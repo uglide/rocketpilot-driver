@@ -247,10 +247,15 @@ QVariant GetGlobalRect(QObject* obj)
     else if (QQuickItem *i = qobject_cast<QQuickItem*>(obj))
     {
         QQuickWindow *view = i->window();
-        QRectF bounding_rect = i->boundingRect();
-        bounding_rect = i->mapRectToScene(bounding_rect);
-        QRect global_rect = QRect(view->mapToGlobal(bounding_rect.toRect().topLeft()), bounding_rect.size().toSize());
-        return PackProperty(global_rect);
+        if(view) {
+            QRectF bounding_rect = i->boundingRect();
+            bounding_rect = i->mapRectToScene(bounding_rect);
+            QRect global_rect = QRect(
+                view->mapToGlobal(bounding_rect.toRect().topLeft()), bounding_rect.size().toSize()
+                );
+
+            return PackProperty(global_rect);
+        }
     }
 #endif
 

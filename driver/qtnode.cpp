@@ -174,18 +174,31 @@ xpathselect::NodeVector QtNode::Children() const
         children.push_back(std::make_shared<QtNode>(view->rootObject(), shared_from_this()));
     }
 
+    QList<int32_t> visited_object_ids;
     QQuickItem* item = qobject_cast<QQuickItem*>(object_);
     if (item) {
         foreach (QQuickItem *childItem, item->childItems()) {
             if (childItem->parentItem() == item) {
-                children.push_back(std::make_shared<QtNode>(childItem, shared_from_this()));
+                auto node_obj = std::make_shared<QtNode>(childItem, shared_from_this());
+                visited_object_ids.append(node_obj->GetId());
+                children.push_back(node_obj);
+            }
+        }
+
+        foreach (QObject *child, item->children()) {
+            if (child->parent() == item) {
+                auto node_obj = std::make_shared<QtNode>(child, shared_from_this());
+                if(!visited_object_ids.contains(node_obj->GetId()))
+                    children.push_back(node_obj);
             }
         }
     }
-    foreach (QObject *child, object_->children())
+    else
     {
-        if (child->parent() == object_) {
-            children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
+        foreach (QObject *child, object_->children())
+        {
+            if (child->parent() == object_)
+                children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
         }
     }
 #else
