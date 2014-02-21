@@ -232,7 +232,8 @@ QVariant GetGlobalRect(QObject* obj)
     else if (QQuickItem *i = qobject_cast<QQuickItem*>(obj))
     {
         QQuickWindow *view = i->window();
-        if(view) {
+        if(view)
+        {
             QRectF bounding_rect = i->boundingRect();
             bounding_rect = i->mapRectToScene(bounding_rect);
             QRect global_rect = QRect(
