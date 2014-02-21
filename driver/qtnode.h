@@ -48,7 +48,7 @@ public:
 private:
     QObject *object_;
     std::string full_path_;
-    mutable std::string node_name_;
+    std::string node_name_;
     Ptr parent_;
 };
 
