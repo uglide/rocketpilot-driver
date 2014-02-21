@@ -109,6 +109,7 @@ bool QtNode::MatchStringProperty(const std::string& name, const std::string& val
     if(!property.isValid())
         return false;
 
+    // Need the value not the object type id
     QVariant object_value = qvariant_cast<QVariantList>(property).at(1);
     QVariant check_value(QString::fromStdString(value));
     if (check_value.canConvert(object_value.type()))
@@ -130,6 +131,7 @@ bool QtNode::MatchIntegerProperty(const std::string& name, int32_t value) const
     if(!property.isValid())
         return false;
 
+    // Need the value not the object type id
     QVariant object_value = qvariant_cast<QVariantList>(property).at(1);
     QVariant check_value(value);
     if (check_value.canConvert(object_value.type()))
@@ -148,6 +150,7 @@ bool QtNode::MatchBooleanProperty(const std::string& name, bool value) const
     if(!property.isValid())
         return false;
 
+    // Need the value not the object type id
     QVariant object_value = qvariant_cast<QVariantList>(property).at(1);
     QVariant check_value(value);
 
