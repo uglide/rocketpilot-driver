@@ -46,7 +46,6 @@ by the Free Software Foundation.
 QVariant IntrospectNode(QObject* obj);
 QString GetNodeName(QObject* obj);
 QStringList GetNodeChildNames(QObject* obj);
-
 QVariant GetGlobalRect(QObject* obj);
 QVariant GetChildrenNames(QObject* obj);
 
@@ -129,7 +128,7 @@ QVariantMap GetNodeProperties(QObject* obj)
             QMetaProperty prop = meta->property(i);
             if (!prop.isValid())
             {
-                qDebug() << "Property at index " << i << " is not valid!";
+                qDebug() << "Property at index" << i << "is not valid!";
                 continue;
             }
             QVariant object_property = PackProperty(prop.read(obj));
@@ -191,7 +190,7 @@ QVariant GetNodeProperty(QObject* obj, const std::string& property_name)
         }
     }
 
-    return QVariant(QVariant::Invalid);
+    return QVariant();
 }
 
 QVariant GetChildrenNames(QObject* obj)
@@ -200,7 +199,7 @@ QVariant GetChildrenNames(QObject* obj)
     if (!children.empty())
         return PackProperty(children);
     else
-        return QVariant(QVariant::Invalid);
+        return QVariant();
 }
 
 QVariant GetGlobalRect(QObject* obj)
@@ -246,7 +245,7 @@ QVariant GetGlobalRect(QObject* obj)
 #endif
 
     // Default to returning invalid QVariant
-    return QVariant(QVariant::Invalid);
+    return QVariant();
 }
 
 QVariant PackProperty(QVariant const& prop)
