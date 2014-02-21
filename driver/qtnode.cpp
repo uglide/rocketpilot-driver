@@ -17,8 +17,6 @@
 #endif
 #include <QDBusArgument>
 
-std::string GetUsableNameFromObject(const QObject* object);
-
 // Marshall the NodeIntrospectionData data into a D-Bus argument
 QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
 {
@@ -37,22 +35,13 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospection
     return argument;
 }
 
-std::string GetUsableNameFromObject(const QObject* object)
-{
-    QString name = object->metaObject()->className();
-    // QML type names get mangled by Qt - they get _QML_N or _QMLTYPE_N appended.
-    if (name.contains('_'))
-        name = name.split('_').front();
-    return name.toStdString();
-}
-
 const QByteArray AP_ID_NAME("_autopilot_id");
 
 QtNode::QtNode(QObject *obj, QtNode::Ptr parent)
 : object_(obj)
 , parent_(parent)
 {
-    node_name_ = GetUsableNameFromObject(obj);
+    node_name_ = SetName(obj);
     std::string parent_path = parent ? parent->GetPath() : "";
     full_path_ = parent_path + "/" + GetName();
 }
@@ -60,7 +49,7 @@ QtNode::QtNode(QObject *obj, QtNode::Ptr parent)
 QtNode::QtNode(QObject* obj)
 : object_(obj)
 {
-    node_name_ = GetUsableNameFromObject(obj);
+    node_name_ = SetName(obj);
     full_path_ = "/" + GetName();
 }
 
@@ -76,6 +65,15 @@ NodeIntrospectionData QtNode::GetIntrospectionData() const
     data.state = GetNodeProperties(object_);
     data.state["id"] = PackProperty(GetId());
     return data;
+}
+
+std::string QtNode::SetName(const QObject* object)
+{
+    QString name = object->metaObject()->className();
+    // QML type names get mangled by Qt - they get _QML_N or _QMLTYPE_N appended.
+    if (name.contains('_'))
+        name = name.split('_').front();
+    return name.toStdString();
 }
 
 std::string QtNode::GetName() const
