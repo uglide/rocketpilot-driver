@@ -46,7 +46,8 @@ by the Free Software Foundation.
 QVariant IntrospectNode(QObject* obj);
 QString GetNodeName(QObject* obj);
 QStringList GetNodeChildNames(QObject* obj);
-void AddCustomProperties(QObject* obj, QVariantMap& properties);
+QVariant GetGlobalRect(QObject* obj);
+QVariant GetChildrenNames(QObject* obj);
 
 QList<NodeIntrospectionData> Introspect(QString const& query_string)
 {
@@ -58,7 +59,6 @@ QList<NodeIntrospectionData> Introspect(QString const& query_string)
     }
 
     return state;
-
 }
 
 
@@ -128,7 +128,7 @@ QVariantMap GetNodeProperties(QObject* obj)
             QMetaProperty prop = meta->property(i);
             if (!prop.isValid())
             {
-                qDebug() << "Property at index" << i << "Is not valid!";
+                qDebug() << "Property at index" << i << "is not valid!";
                 continue;
             }
             QVariant object_property = PackProperty(prop.read(obj));
@@ -150,18 +150,59 @@ QVariantMap GetNodeProperties(QObject* obj)
         meta = meta->superClass();
     } while(meta);
 
-    AddCustomProperties(obj, object_properties);
+    QVariant global_rect_property = GetNodeProperty(obj, "globalRect");
+    if(global_rect_property.isValid())
+        object_properties["globalRect"] = global_rect_property;
 
     // add the 'Children' pseudo-property:
-    QStringList children = GetNodeChildNames(obj);
-    if (!children.empty())
-        object_properties["Children"] = PackProperty(children);
+    QVariant children_property = GetNodeProperty(obj, "Children");
+    if(children_property.isValid())
+        object_properties["Children"] = children_property;
 
     return object_properties;
 }
 
+QVariant GetNodeProperty(QObject* obj, const std::string& property_name)
+{
+    if(property_name == "globalRect")
+        return GetGlobalRect(obj);
 
-void AddCustomProperties(QObject* obj, QVariantMap &properties)
+    if(property_name == "Children")
+        return GetChildrenNames(obj);
+
+    QVariant dynamic_property = obj->property(property_name.c_str());
+    if (dynamic_property.isValid())
+    {
+        return PackProperty(dynamic_property);
+    }
+    else
+    {
+        const QMetaObject* meta = obj->metaObject();
+        int property_index = meta->indexOfProperty(property_name.c_str());
+        if(property_index != -1)
+        {
+            QMetaProperty prop = meta->property(property_index);
+            if(prop.isValid())
+                return PackProperty(prop.read(obj));
+            else
+                qDebug() << "Property " << QString::fromStdString(property_name)
+                         << " is not valid.";
+        }
+    }
+
+    return QVariant();
+}
+
+QVariant GetChildrenNames(QObject* obj)
+{
+    QStringList children = GetNodeChildNames(obj);
+    if (!children.empty())
+        return PackProperty(children);
+    else
+        return QVariant();
+}
+
+QVariant GetGlobalRect(QObject* obj)
 {
     // Add any custom properties we need to the given QObject.
     // Add GlobalRect support for QWidget-derived classes
@@ -170,7 +211,7 @@ void AddCustomProperties(QObject* obj, QVariantMap &properties)
     {
         QRect r = w->rect();
         r = QRect(w->mapToGlobal(r.topLeft()), r.size());
-        properties["globalRect"] = PackProperty(r);
+        return PackProperty(r);
     }
     // ...and support for QGraphicsItem-derived classes.
     else if (QGraphicsItem *i = qobject_cast<QGraphicsItem*>(obj))
@@ -184,19 +225,28 @@ void AddCustomProperties(QObject* obj, QVariantMap &properties)
         QRect global_rect = QRect(
                     view->mapToGlobal(scene_rect.topLeft()),
                     scene_rect.size());
-        properties["globalRect"] = PackProperty(global_rect);
+        return PackProperty(global_rect);
     }
 #ifdef QT5_SUPPORT
     // ... and support for QQuickItems (aka. Qt5 Declarative items)
     else if (QQuickItem *i = qobject_cast<QQuickItem*>(obj))
     {
         QQuickWindow *view = i->window();
-        QRectF bounding_rect = i->boundingRect();
-        bounding_rect = i->mapRectToScene(bounding_rect);
-        QRect global_rect = QRect(view->mapToGlobal(bounding_rect.toRect().topLeft()), bounding_rect.size().toSize());
-        properties["globalRect"] = PackProperty(global_rect);
+        if(view)
+        {
+            QRectF bounding_rect = i->boundingRect();
+            bounding_rect = i->mapRectToScene(bounding_rect);
+            QRect global_rect = QRect(
+                view->mapToGlobal(bounding_rect.toRect().topLeft()), bounding_rect.size().toSize()
+                );
+
+            return PackProperty(global_rect);
+        }
     }
 #endif
+
+    // Default to returning invalid QVariant
+    return QVariant();
 }
 
 QVariant PackProperty(QVariant const& prop)
