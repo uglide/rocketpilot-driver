@@ -55,7 +55,3 @@ class MainWindowQt5(object):
         if mousearea is None:
             logger.error("*** select_single(\"QQuickMouseArea\") failed ***")
         return mousearea
-
-    def get_non_visual_component(self):
-        return self.app.select_single(objectName="listModelTest")
-

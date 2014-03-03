@@ -56,8 +56,4 @@ Item {
 
         onClicked: rect.color = "red"
     }
-
-    ListModel {
-        objectName: "listModelTest"
-    }
 }
