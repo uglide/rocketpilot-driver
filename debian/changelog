@@ -1,3 +1,18 @@
+autopilot-qt (1.4+14.04.20140303-0ubuntu1) trusty; urgency=low
+
+  [ Thomi Richards ]
+  * Export QObject children of Qml items. (LP: #1269578)
+
+  [ Timo Jyrinki ]
+  * Fix tab/space whitespace in debian/control.
+
+  [ Christopher Lee ]
+  * Backing out recent change that introduces issues on devices.
+  * Re-implement (w/ fixes) exporting QObject children of Qml items
+    (including non-visual items). (LP: #1269578)
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Mon, 03 Mar 2014 04:42:27 +0000
+
 autopilot-qt (1.4+14.04.20131106.1-0ubuntu1) trusty; urgency=low
 
   [ Thomi Richards ]
