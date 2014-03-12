@@ -18,22 +18,22 @@
 #include <QDBusArgument>
 
 // Marshall the NodeIntrospectionData data into a D-Bus argument
-QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
-{
-    argument.beginStructure();
-    argument << node_data.object_path << node_data.state;
-    argument.endStructure();
-    return argument;
-}
+ QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
+ {
+     argument.beginStructure();
+     argument << node_data.object_path << node_data.state;
+     argument.endStructure();
+     return argument;
+ }
 
-// Retrieve the NodeIntrospectionData data from the D-Bus argument
-const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospectionData &node_data)
-{
-    argument.beginStructure();
-    argument >> node_data.object_path >> node_data.state;
-    argument.endStructure();
-    return argument;
-}
+ // Retrieve the NodeIntrospectionData data from the D-Bus argument
+ const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospectionData &node_data)
+ {
+     argument.beginStructure();
+     argument >> node_data.object_path >> node_data.state;
+     argument.endStructure();
+     return argument;
+ }
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
@@ -41,7 +41,6 @@ QtNode::QtNode(QObject *obj, QtNode::Ptr parent)
 : object_(obj)
 , parent_(parent)
 {
-    SetName(obj);
     std::string parent_path = parent ? parent->GetPath() : "";
     full_path_ = parent_path + "/" + GetName();
 }
@@ -49,7 +48,6 @@ QtNode::QtNode(QObject *obj, QtNode::Ptr parent)
 QtNode::QtNode(QObject* obj)
 : object_(obj)
 {
-    SetName(obj);
     full_path_ = "/" + GetName();
 }
 
@@ -67,18 +65,15 @@ NodeIntrospectionData QtNode::GetIntrospectionData() const
     return data;
 }
 
-void QtNode::SetName(const QObject* object)
-{
-    QString name = object->metaObject()->className();
-    // QML type names get mangled by Qt - they get _QML_N or _QMLTYPE_N appended.
-    if (name.contains('_'))
-        name = name.split('_').front();
-    node_name_ = name.toStdString();
-}
-
 std::string QtNode::GetName() const
 {
-    return node_name_;
+    QString name = object_->metaObject()->className();
+
+    // QML type names get mangled by Qt - they get _QML_N or _QMLTYPE_N appended.
+    //
+    if (name.contains('_'))
+        name = name.split('_').front();
+    return name.toStdString();
 }
 
 std::string QtNode::GetPath() const
@@ -104,13 +99,13 @@ int32_t QtNode::GetId() const
 
 bool QtNode::MatchStringProperty(const std::string& name, const std::string& value) const
 {
-    QVariant property = GetNodeProperty(object_, name);
+    QVariantMap properties = GetNodeProperties(object_);
 
-    if(!property.isValid())
+    QString qname = QString::fromStdString(name);
+    if (! properties.contains(qname))
         return false;
 
-    // Need the value not the object type id
-    QVariant object_value = qvariant_cast<QVariantList>(property).at(1);
+    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
     QVariant check_value(QString::fromStdString(value));
     if (check_value.canConvert(object_value.type()))
     {
@@ -126,13 +121,13 @@ bool QtNode::MatchIntegerProperty(const std::string& name, int32_t value) const
     if (name == "id")
         return value == GetId();
 
-    QVariant property = GetNodeProperty(object_, name);
+    QVariantMap properties = GetNodeProperties(object_);
 
-    if(!property.isValid())
+    QString qname = QString::fromStdString(name);
+    if (! properties.contains(qname))
         return false;
 
-    // Need the value not the object type id
-    QVariant object_value = qvariant_cast<QVariantList>(property).at(1);
+    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
     QVariant check_value(value);
     if (check_value.canConvert(object_value.type()))
     {
@@ -145,13 +140,13 @@ bool QtNode::MatchIntegerProperty(const std::string& name, int32_t value) const
 
 bool QtNode::MatchBooleanProperty(const std::string& name, bool value) const
 {
-    QVariant property = GetNodeProperty(object_, name);
+    QVariantMap properties = GetNodeProperties(object_);
 
-    if(!property.isValid())
+    QString qname = QString::fromStdString(name);
+    if (! properties.contains(qname))
         return false;
 
-    // Need the value not the object type id
-    QVariant object_value = qvariant_cast<QVariantList>(property).at(1);
+    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
     QVariant check_value(value);
 
     if (check_value.canConvert(object_value.type()))

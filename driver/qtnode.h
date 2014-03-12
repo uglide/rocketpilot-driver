@@ -37,6 +37,7 @@ public:
 
     virtual NodeIntrospectionData GetIntrospectionData() const;
 
+
     virtual std::string GetName() const;
     virtual std::string GetPath() const;
     virtual int32_t GetId() const;
@@ -45,11 +46,8 @@ public:
     virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
     virtual xpathselect::NodeVector Children() const;
 private:
-    void SetName(const QObject* object);
-
     QObject *object_;
     std::string full_path_;
-    std::string node_name_;
     Ptr parent_;
 };
 
