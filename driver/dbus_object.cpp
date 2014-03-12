@@ -303,3 +303,4 @@ void DBusObject::ProcessQuery()
 
     QDBusConnection::sessionBus().send(msg);
 }
+

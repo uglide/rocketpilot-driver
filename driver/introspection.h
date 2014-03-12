@@ -26,10 +26,5 @@ QVariant PackProperty(QVariant const& prop);
 /// given QObject.
 QVariantMap GetNodeProperties(QObject* obj);
 
-/// Return a QVariant containing the requested property
-/// "property_name" or an invalid QVariant if the property is not
-/// found.
-QVariant GetNodeProperty(QObject* obj, const std::string& property_name);
-
 
 #endif
