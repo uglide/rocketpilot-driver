@@ -1,3 +1,9 @@
+autopilot-qt (1.4+14.04.20140312-0ubuntu1) trusty; urgency=low
+
+  * New rebuild forced
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 12 Mar 2014 13:51:28 +0000
+
 autopilot-qt (1.4+14.04.20140303.is.1.4+14.04.20131106.1-0ubuntu1) trusty; urgency=medium
 
   * Revert to previous version as it creates some AP tests to fail.
