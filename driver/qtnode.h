@@ -46,7 +46,7 @@ private:
 /// QObjectNode wraps a single QObject pointer. It derives from
 /// xpathselect::Node (DBusNode) and, like that class, is designed to be
 /// allocated on the heap and stored in a std::shared_ptr.
-class QObjectNode : public DBusNode
+class QObjectNode : public DBusNode, public std::enable_shared_from_this<QObjectNode>
 {
 public:
     QObjectNode(QObject* object, Ptr parent);
@@ -71,7 +71,7 @@ private:
     QObject *object_;
 };
 
-class QModelIndexNode : public DBusNode
+class QModelIndexNode : public DBusNode, public std::enable_shared_from_this<QModelIndexNode>
 {
 public:
     QModelIndexNode(QModelIndex index, Ptr parent);
@@ -96,7 +96,7 @@ private:
     QModelIndex index_;
 };
 
-class QStandardItemNode : public DBusNode
+class QStandardItemNode : public DBusNode, public std::enable_shared_from_this<QStandardItemNode>
 {
 public:
     QStandardItemNode(QStandardItem *item, Ptr parent);
@@ -121,7 +121,7 @@ private:
     QStandardItem *item_;
 };
 
-class QTableWidgetItemNode : public DBusNode
+class QTableWidgetItemNode : public DBusNode, public std::enable_shared_from_this<QTableWidgetItemNode>
 {
 public:
     QTableWidgetItemNode(QTableWidgetItem *item, Ptr parent);
