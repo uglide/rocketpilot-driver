@@ -33,10 +33,6 @@ public:
     virtual ~DBusNode() {}
 
     virtual NodeIntrospectionData GetIntrospectionData() const=0;
-
-private:
-    std::string full_path_;
-    Ptr parent_;
 };
 
 /// Specialist class for all QObject object nodes.
@@ -49,7 +45,7 @@ private:
 class QObjectNode : public DBusNode, public std::enable_shared_from_this<QObjectNode>
 {
 public:
-    QObjectNode(QObject* object, Ptr parent);
+    QObjectNode(QObject* object, DBusNode::Ptr parent);
     explicit QObjectNode(QObject* object);
 
     QObject* getWrappedObject() const;
@@ -69,6 +65,8 @@ public:
 
 private:
     QObject *object_;
+    std::string full_path_;
+    DBusNode::Ptr parent_;
 };
 
 class QModelIndexNode : public DBusNode, public std::enable_shared_from_this<QModelIndexNode>
@@ -76,8 +74,6 @@ class QModelIndexNode : public DBusNode, public std::enable_shared_from_this<QMo
 public:
     QModelIndexNode(QModelIndex index, Ptr parent);
     explicit QModelIndexNode(QModelIndex index);
-
-    QModelIndex getWrappedObject() const;
 
     // DBusNode
     virtual NodeIntrospectionData GetIntrospectionData() const;
@@ -94,6 +90,8 @@ public:
 
 private:
     QModelIndex index_;
+    std::string full_path_;
+    DBusNode::Ptr parent_;
 };
 
 class QStandardItemNode : public DBusNode, public std::enable_shared_from_this<QStandardItemNode>
@@ -101,8 +99,6 @@ class QStandardItemNode : public DBusNode, public std::enable_shared_from_this<Q
 public:
     QStandardItemNode(QStandardItem *item, Ptr parent);
     explicit QStandardItemNode(QStandardItem *item);
-
-    QStandardItem* getWrappedObject() const;
 
     // DBusNode
     virtual NodeIntrospectionData GetIntrospectionData() const;
@@ -119,6 +115,8 @@ public:
 
 private:
     QStandardItem *item_;
+    std::string full_path_;
+    DBusNode::Ptr parent_;
 };
 
 class QTableWidgetItemNode : public DBusNode, public std::enable_shared_from_this<QTableWidgetItemNode>
@@ -126,8 +124,6 @@ class QTableWidgetItemNode : public DBusNode, public std::enable_shared_from_thi
 public:
     QTableWidgetItemNode(QTableWidgetItem *item, Ptr parent);
     explicit QTableWidgetItemNode(QTableWidgetItem *item);
-
-    QTableWidgetItem* getWrappedObject() const;
 
     // DBusNode
     virtual NodeIntrospectionData GetIntrospectionData() const;
@@ -144,38 +140,8 @@ public:
 
 private:
     QTableWidgetItem *item_;
-};
-
-/// Base class for all Qt-based object nodes.
-///
-/// QtNode wraps a single QObject pointer. It derives from xpathselect::Node and,
-/// like that class, is designed to be allocated on the heap and stored in a
-/// std::shared_ptr.
-class QtNode: public xpathselect::Node, public std::enable_shared_from_this<QtNode>
-{
-public:
-    typedef std::shared_ptr<const QtNode> Ptr;
-
-    QtNode(QObject* object, Ptr parent);
-    explicit QtNode(QObject* object);
-
-    QObject* getWrappedObject() const;
-    xpathselect::Node::Ptr GetParent() const;
-
-    virtual NodeIntrospectionData GetIntrospectionData() const;
-
-
-    virtual std::string GetName() const;
-    virtual std::string GetPath() const;
-    virtual int32_t GetId() const;
-    virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
-    virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
-    virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
-    virtual xpathselect::NodeVector Children() const;
-private:
-    QObject *object_;
     std::string full_path_;
-    Ptr parent_;
+    DBusNode::Ptr parent_;
 };
 
 #endif // QTNODE_H

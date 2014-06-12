@@ -23,15 +23,15 @@ by the Free Software Foundation.
 #include <QDBusConnection>
 #include <QThread>
 
-QtNode::Ptr GetNodeWithId(int object_id)
+DBusNode::Ptr GetNodeWithId(int object_id)
 {
     QString query = QString("//*[id=%1]").arg(object_id);
-    QList<QtNode::Ptr> objects = GetNodesThatMatchQuery(query);
+    QList<DBusNode::Ptr> objects = GetNodesThatMatchQuery(query);
 
     if (objects.isEmpty())
     {
         qWarning() << "No Object with with id" << object_id << "found in object tree.";
-        return QtNode::Ptr();
+        return DBusNode::Ptr();
     }
 
     return objects.at(0);
@@ -64,7 +64,8 @@ void DBusObject::RegisterSignalInterest(int object_id, QString signal_name)
         return;
     }
 
-    QtNode::Ptr node = GetNodeWithId(object_id);
+    std::shared_ptr<const QObjectNode> node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
+
     if (! node)
     {
         qWarning() << "Unable to register signal interest.";
@@ -125,7 +126,7 @@ void DBusObject::GetSignalEmissions(int object_id, QString signal_name, const QD
 
 void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
 {
-    QtNode::Ptr node = GetNodeWithId(object_id);
+    std::shared_ptr<const QObjectNode> node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
     QDBusMessage reply = message.createReply();
     if (! node)
     {
@@ -163,7 +164,7 @@ void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
 void DBusObject::ListMethods(int object_id, const QDBusMessage &message)
 {
     QDBusMessage reply = message.createReply();
-    QtNode::Ptr node = GetNodeWithId(object_id);
+    std::shared_ptr<const QObjectNode> node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
     if (! node)
     {
         qWarning() << "No Object found while listing methods.";
@@ -201,7 +202,7 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
 {
     Q_UNUSED(message);
 
-    QtNode::Ptr node = GetNodeWithId(object_id);
+    std::shared_ptr<const QObjectNode> node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
     if (! node)
     {
         qWarning() << "No Object found.";
@@ -303,4 +304,3 @@ void DBusObject::ProcessQuery()
 
     QDBusConnection::sessionBus().send(msg);
 }
-
