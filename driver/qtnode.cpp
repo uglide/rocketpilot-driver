@@ -17,6 +17,10 @@
 #endif
 #include <QDBusArgument>
 
+#include <QTableWidget>
+
+void GetTableWidgetChildren(QObject* table_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+
 // Marshall the NodeIntrospectionData data into a D-Bus argument
  QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
  {
@@ -34,6 +38,22 @@
      argument.endStructure();
      return argument;
  }
+
+void GetTableWidgetChildren(QObject *table_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+{
+    QTableWidget* table = qobject_cast<QTableWidget *>(table_obj);
+    if(! table) {
+        qDebug() << "! Unable to cast object to QTreeView (even though it apparently inherits from it)";
+    }
+
+    QList<QTableWidgetItem *> tablewidgetitems = table->findItems("*", Qt::MatchWildcard|Qt::MatchRecursive);
+    foreach (QTableWidgetItem *item, tablewidgetitems){
+        // std::make_shared<QTableWidgetItemNode>(item, this->shared_from_this())
+        children.push_back(
+            std::make_shared<QTableWidgetItemNode>(item, parent)
+            );
+    }
+}
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
@@ -162,6 +182,12 @@ xpathselect::NodeVector QObjectNode::Children() const
 {
     xpathselect::NodeVector children;
 
+    // Do special children handling if needed.
+    if(object_->inherits("QTableWidget"))
+    {
+        GetTableWidgetChildren(object_, children, shared_from_this());
+    }
+
 #ifdef QT5_SUPPORT
     // Qt5's hierarchy for QML has changed a bit:
     // - On top there's a QQuickView which holds all the QQuick items
@@ -218,4 +244,99 @@ xpathselect::NodeVector QObjectNode::Children() const
 xpathselect::Node::Ptr QObjectNode::GetParent() const
 {
     return parent_;
+}
+
+
+// QTableWidgetItemNode
+QTableWidgetItemNode::QTableWidgetItemNode(QTableWidgetItem *item, DBusNode::Ptr parent)
+    : item_(item)
+    , parent_(parent)
+{
+    std::string parent_path = parent ? parent->GetPath() : "";
+    full_path_ = parent_path + "/" + GetName();
+}
+
+QTableWidgetItemNode::QTableWidgetItemNode(QTableWidgetItem *item)
+    : item_(item)
+{
+    full_path_ = "/" + GetName();
+}
+
+NodeIntrospectionData QTableWidgetItemNode::GetIntrospectionData() const
+{
+    NodeIntrospectionData data;
+    data.object_path = QString::fromStdString(GetPath());
+    data.state = GetProperties();
+    data.state["id"] = PackProperty(GetId());
+    return data;
+}
+
+QVariantMap QTableWidgetItemNode::GetProperties() const
+{
+
+    QVariantMap properties;
+
+    QTableWidget* parent = item_->tableWidget();
+    QRect cellrect = parent->visualItemRect(item_);
+    QRect r = QRect(parent->mapToGlobal(cellrect.topLeft()), cellrect.size());
+    properties["globalRect"] = PackProperty(r);
+
+    properties["text"] = PackProperty(item_->text());
+    properties["toolTip"] = PackProperty(item_->toolTip());
+    properties["icon"] = item_->icon().isNull() ? PackProperty("") : PackProperty(item_->icon());
+    properties["whatsThis"] = PackProperty(item_->whatsThis());
+    properties["row"] = PackProperty(item_->row());
+    properties["isSelected"] = PackProperty(item_->isSelected());
+    properties["column"] = PackProperty(item_->column());
+
+    return properties;
+}
+
+xpathselect::Node::Ptr QTableWidgetItemNode::GetParent() const
+{
+    return parent_;
+}
+
+std::string QTableWidgetItemNode::GetName() const
+{
+    return "QTableWidgetItem";
+}
+
+std::string QTableWidgetItemNode::GetPath() const
+{
+    return full_path_;
+}
+
+int32_t QTableWidgetItemNode::GetId() const
+{
+    // return (int32_t)((qintptr)item_);
+    return static_cast<int32_t>(reinterpret_cast<qptrdiff>(item_));
+}
+
+bool QTableWidgetItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
+{
+    Q_UNUSED(name);
+    Q_UNUSED(value);
+    return false;
+}
+
+bool QTableWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+{
+    if (name == "id")
+        return value == GetId();
+    return false;
+}
+
+bool QTableWidgetItemNode::MatchBooleanProperty(const std::string& name, bool value) const
+{
+    Q_UNUSED(name);
+    Q_UNUSED(value);
+    return false;
+}
+
+xpathselect::NodeVector QTableWidgetItemNode::Children() const
+{
+    // Doesn't have any children.
+    xpathselect::NodeVector children;
+    return children;
 }

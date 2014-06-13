@@ -122,7 +122,7 @@ private:
 class QTableWidgetItemNode : public DBusNode, public std::enable_shared_from_this<QTableWidgetItemNode>
 {
 public:
-    QTableWidgetItemNode(QTableWidgetItem *item, Ptr parent);
+    QTableWidgetItemNode(QTableWidgetItem *item, DBusNode::Ptr parent);
     explicit QTableWidgetItemNode(QTableWidgetItem *item);
 
     // DBusNode
@@ -139,6 +139,8 @@ public:
     virtual xpathselect::NodeVector Children() const;
 
 private:
+    QVariantMap GetProperties() const;
+
     QTableWidgetItem *item_;
     std::string full_path_;
     DBusNode::Ptr parent_;
