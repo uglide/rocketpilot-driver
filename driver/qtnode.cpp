@@ -17,9 +17,16 @@
 #endif
 #include <QDBusArgument>
 
+#include <QAbstractProxyModel>
+#include <QStandardItemModel>
 #include <QTableWidget>
+#include <QTreeView>
+
+const QByteArray AP_ID_NAME("_autopilot_id");
 
 void GetTableWidgetChildren(QObject* table_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+QStandardItemModel* AttemptGetStandardItemModel(QAbstractItemModel* target_model);
 
 // Marshall the NodeIntrospectionData data into a D-Bus argument
  QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
@@ -43,7 +50,7 @@ void GetTableWidgetChildren(QObject *table_obj, xpathselect::NodeVector& childre
 {
     QTableWidget* table = qobject_cast<QTableWidget *>(table_obj);
     if(! table) {
-        qDebug() << "! Unable to cast object to QTreeView (even though it apparently inherits from it)";
+        qDebug() << "! Unable to cast object to QTableWidget (even though it apparently inherits from it)";
     }
 
     QList<QTableWidgetItem *> tablewidgetitems = table->findItems("*", Qt::MatchWildcard|Qt::MatchRecursive);
@@ -55,7 +62,50 @@ void GetTableWidgetChildren(QObject *table_obj, xpathselect::NodeVector& childre
     }
 }
 
-const QByteArray AP_ID_NAME("_autopilot_id");
+// Attempts to cast the supplied model to a QStandardItemModel
+// (checking also for proxy models).
+// Returns null/0 if unable to do so.
+QStandardItemModel* AttemptGetStandardItemModel(QAbstractItemModel* target_model)
+{
+    QStandardItemModel* model = qobject_cast<QStandardItemModel *>(target_model);
+    if(!model) {
+        QAbstractProxyModel* abstract_model = qobject_cast<QAbstractProxyModel*>(target_model);
+        if(abstract_model) {
+            model = qobject_cast<QStandardItemModel *>(abstract_model->sourceModel());
+        }
+    }
+
+    return model;
+}
+
+void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+{
+    QTreeView* tree_view = qobject_cast<QTreeView *>(tree_obj);
+    if(! tree_view) {
+        qDebug() << "! Unable to cast object to QTreeView (even though it apparently inherits from it)";
+    }
+    // Can we get a QStandardItemModel or do we need to use a QAbstractItemModel
+    QStandardItemModel* standard_model = AttemptGetStandardItemModel(tree_view->model());
+    if(standard_model)
+    {
+        for(int c=0; c < standard_model->columnCount(); ++c) {
+            for(int r=0; r < standard_model->rowCount(); ++r) {
+                children.push_back(
+                    std::make_shared<QStandardItemNode>(
+                        standard_model->item(r, c),
+                        tree_view,
+                        parent)
+                    );
+            }
+        }
+    }
+    else
+    {
+        // Do the work with a QAbstractItemModel. This could probably
+        // be separated out as QAbstractItemModels deal with
+        // QModelIndexes etc.
+    }
+}
 
 QObjectNode::QObjectNode(QObject *obj, DBusNode::Ptr parent)
 : object_(obj)
@@ -187,6 +237,10 @@ xpathselect::NodeVector QObjectNode::Children() const
     {
         GetTableWidgetChildren(object_, children, shared_from_this());
     }
+    else if(object_->inherits("QTreeView"))
+    {
+        GetTreeViewChildren(object_, children, shared_from_this());
+    }
 
 #ifdef QT5_SUPPORT
     // Qt5's hierarchy for QML has changed a bit:
@@ -246,6 +300,109 @@ xpathselect::Node::Ptr QObjectNode::GetParent() const
     return parent_;
 }
 
+// QStandardItemNode
+QStandardItemNode::QStandardItemNode(QStandardItem *item, QTreeView* parent_view, DBusNode::Ptr parent)
+    : item_(item)
+    , parent_view_(parent_view)
+    , parent_(parent)
+{
+    std::string parent_path = parent ? parent->GetPath() : "";
+    full_path_ = parent_path + "/" + GetName();
+}
+
+QStandardItemNode::QStandardItemNode(QStandardItem *item, QTreeView* parent_view)
+    : item_(item)
+    , parent_view_(parent_view)
+{
+    full_path_ = "/" + GetName();
+}
+
+NodeIntrospectionData QStandardItemNode::GetIntrospectionData() const
+{
+    NodeIntrospectionData data;
+    data.object_path = QString::fromStdString(GetPath());
+    data.state = GetProperties();
+    data.state["id"] = PackProperty(GetId());
+    return data;
+}
+
+QVariantMap QStandardItemNode::GetProperties() const
+{
+    QVariantMap properties;
+    properties["text"] = PackProperty(item_->text());
+
+    QRect rect = parent_view_->visualRect(item_->index());
+    QRect global_rect(
+        parent_view_->viewport()->mapToGlobal(rect.topLeft()),
+        rect.size());
+
+    properties["globalRect"] = PackProperty(global_rect);
+    return properties;
+}
+
+xpathselect::Node::Ptr QStandardItemNode::GetParent() const
+{
+    return parent_;
+}
+
+std::string QStandardItemNode::GetName() const
+{
+    return "QStandardItem";
+}
+
+std::string QStandardItemNode::GetPath() const
+{
+    return full_path_;
+}
+
+int32_t QStandardItemNode::GetId() const
+{
+    return static_cast<int32_t>(reinterpret_cast<qptrdiff>(item_));
+}
+
+bool QStandardItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
+{
+    Q_UNUSED(name);
+    Q_UNUSED(value);
+    return false;
+}
+
+bool QStandardItemNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+{
+    if (name == "id")
+        return value == GetId();
+    return false;
+}
+
+bool QStandardItemNode::MatchBooleanProperty(const std::string& name, bool value) const
+{
+    Q_UNUSED(name);
+    Q_UNUSED(value);
+    return false;
+}
+
+xpathselect::NodeVector QStandardItemNode::Children() const
+{
+    xpathselect::NodeVector children;
+
+    // Might need to flatten the model of items within the tree itself
+    // as this can get confusing.
+    for(int c=0; c < item_->columnCount(); ++c) {
+        for(int r=0; r < item_->rowCount(); ++r) {
+            QStandardItem* child_item = item_->child(r, c);
+            children.push_back(
+                std::make_shared<QStandardItemNode>(
+                    child_item,
+                    parent_view_,
+                    this->shared_from_this()
+                    )
+                );
+        }
+    }
+
+    return children;
+}
+
 
 // QTableWidgetItemNode
 QTableWidgetItemNode::QTableWidgetItemNode(QTableWidgetItem *item, DBusNode::Ptr parent)
@@ -273,7 +430,6 @@ NodeIntrospectionData QTableWidgetItemNode::GetIntrospectionData() const
 
 QVariantMap QTableWidgetItemNode::GetProperties() const
 {
-
     QVariantMap properties;
 
     QTableWidget* parent = item_->tableWidget();

@@ -9,6 +9,7 @@
 #include <QModelIndex>
 class QTableWidgetItem;
 class QStandardItem;
+class QTreeView;
 
 /// A simple data structure representing the state of a single node:
 struct NodeIntrospectionData
@@ -72,7 +73,7 @@ private:
 class QModelIndexNode : public DBusNode, public std::enable_shared_from_this<QModelIndexNode>
 {
 public:
-    QModelIndexNode(QModelIndex index, Ptr parent);
+    QModelIndexNode(QModelIndex index, DBusNode::Ptr parent);
     explicit QModelIndexNode(QModelIndex index);
 
     // DBusNode
@@ -97,8 +98,8 @@ private:
 class QStandardItemNode : public DBusNode, public std::enable_shared_from_this<QStandardItemNode>
 {
 public:
-    QStandardItemNode(QStandardItem *item, Ptr parent);
-    explicit QStandardItemNode(QStandardItem *item);
+    QStandardItemNode(QStandardItem* item, QTreeView* parent_view, DBusNode::Ptr parent);
+    explicit QStandardItemNode(QStandardItem* item, QTreeView* parent_view);
 
     // DBusNode
     virtual NodeIntrospectionData GetIntrospectionData() const;
@@ -114,7 +115,10 @@ public:
     virtual xpathselect::NodeVector Children() const;
 
 private:
+    QVariantMap GetProperties() const;
+
     QStandardItem *item_;
+    QTreeView* parent_view_;
     std::string full_path_;
     DBusNode::Ptr parent_;
 };
