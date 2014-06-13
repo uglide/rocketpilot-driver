@@ -17,6 +17,7 @@
 #endif
 #include <QDBusArgument>
 
+#include <QAbstractItemView>
 #include <QAbstractProxyModel>
 #include <QStandardItemModel>
 #include <QTableWidget>
@@ -83,9 +84,11 @@ void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, D
     QTreeView* tree_view = qobject_cast<QTreeView *>(tree_obj);
     if(! tree_view) {
         qDebug() << "! Unable to cast object to QTreeView (even though it apparently inherits from it)";
+        return;
     }
     // Can we get a QStandardItemModel or do we need to use a QAbstractItemModel
-    QStandardItemModel* standard_model = AttemptGetStandardItemModel(tree_view->model());
+    // QStandardItemModel* standard_model = AttemptGetStandardItemModel(tree_view->model());
+    QStandardItemModel* standard_model = nullptr;
     if(standard_model)
     {
         for(int c=0; c < standard_model->columnCount(); ++c) {
@@ -101,9 +104,27 @@ void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, D
     }
     else
     {
+        QAbstractItemModel* abstract_model = qobject_cast<QAbstractItemModel *>(tree_view->model());
+        if(! abstract_model)
+        {
+            qDebug() << "! Unable to cast model to QAbstractItemModel (even though it's a QTreeView)";
+            return;
+        }
         // Do the work with a QAbstractItemModel. This could probably
         // be separated out as QAbstractItemModels deal with
         // QModelIndexes etc.
+
+        for(int c=0; c < abstract_model->columnCount(); ++c) {
+            for(int r=0; r < abstract_model->rowCount(); ++r) {
+                QModelIndex item = abstract_model->index(r, c);
+                children.push_back(
+                    std::make_shared<QModelIndexNode>(
+                        item,
+                        tree_view,
+                        parent)
+                    );
+            }
+        }
     }
 }
 
@@ -299,6 +320,116 @@ xpathselect::Node::Ptr QObjectNode::GetParent() const
 {
     return parent_;
 }
+
+// QModelIndexNode
+QModelIndexNode::QModelIndexNode(QModelIndex index, QAbstractItemView* view_parent, DBusNode::Ptr parent)
+    : index_(index)
+    , view_parent_(view_parent)
+    , parent_(parent)
+{
+    std::string parent_path = parent ? parent->GetPath() : "";
+    full_path_ = parent_path + "/" + GetName();
+}
+
+QModelIndexNode::QModelIndexNode(QModelIndex index, QAbstractItemView* view_parent)
+    : index_(index)
+    , view_parent_(view_parent)
+{
+    full_path_ = "/" + GetName();
+}
+
+NodeIntrospectionData QModelIndexNode::GetIntrospectionData() const
+{
+    NodeIntrospectionData data;
+    data.object_path = QString::fromStdString(GetPath());
+    data.state = GetProperties();
+    data.state["id"] = PackProperty(GetId());
+    return data;
+}
+
+QVariantMap QModelIndexNode::GetProperties() const
+{
+    // NOTE Consider using isValid or something similar.
+    QVariantMap properties;
+    // QAbstractItemModel* model = qobject_cast<QAbstractItemModel *>(view_parent_->model());
+    const QAbstractItemModel* model = index_.model();
+    if(model)
+    {
+        // Make an attempt to store the 'text' of a node to be user friendly-ish.
+        properties["text"] = PackProperty(model->data(index_));
+
+        const QHash<int, QByteArray> role_names = model->roleNames();
+        QMap<int, QVariant> item_data = model->itemData(index_);
+        foreach(int i, role_names.keys())
+        {
+            if(item_data.contains(i)) {
+                // properties["Role " + role_names[i]] = PackProperty(item_data[i]);
+                properties[role_names[i]] = PackProperty(item_data[i]);
+            }
+            else {
+                properties[role_names[i]] = PackProperty("");
+            }
+        }
+    }
+
+    QRect rect = view_parent_->visualRect(index_);
+    QRect global_rect(
+        view_parent_->viewport()->mapToGlobal(rect.topLeft()),
+        rect.size());
+    properties["globalRect"] = PackProperty(global_rect);
+
+    return properties;
+}
+
+xpathselect::Node::Ptr QModelIndexNode::GetParent() const
+{
+    return parent_;
+}
+
+std::string QModelIndexNode::GetName() const
+{
+    return "QModelIndex";
+}
+
+std::string QModelIndexNode::GetPath() const
+{
+    return full_path_;
+}
+
+int32_t QModelIndexNode::GetId() const
+{
+    // ahha, the rub. Need to use a hash here, but we might lose precision?
+    return qHash(index_);
+}
+
+bool QModelIndexNode::MatchStringProperty(const std::string& name, const std::string& value) const
+{
+    Q_UNUSED(name);
+    Q_UNUSED(value);
+    return false;
+}
+
+bool QModelIndexNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+{
+    if (name == "id")
+        return value == GetId();
+    return false;
+}
+
+bool QModelIndexNode::MatchBooleanProperty(const std::string& name, bool value) const
+{
+    Q_UNUSED(name);
+    Q_UNUSED(value);
+    return false;
+}
+
+xpathselect::NodeVector QModelIndexNode::Children() const
+{
+    // Doesn't have any children.
+    xpathselect::NodeVector children;
+    return children;
+}
+
 
 // QStandardItemNode
 QStandardItemNode::QStandardItemNode(QStandardItem *item, QTreeView* parent_view, DBusNode::Ptr parent)

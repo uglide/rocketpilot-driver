@@ -7,6 +7,8 @@
 #include <xpathselect/node.h>
 
 #include <QModelIndex>
+
+class QAbstractItemView;
 class QTableWidgetItem;
 class QStandardItem;
 class QTreeView;
@@ -73,8 +75,8 @@ private:
 class QModelIndexNode : public DBusNode, public std::enable_shared_from_this<QModelIndexNode>
 {
 public:
-    QModelIndexNode(QModelIndex index, DBusNode::Ptr parent);
-    explicit QModelIndexNode(QModelIndex index);
+    QModelIndexNode(QModelIndex index, QAbstractItemView* view_parent, DBusNode::Ptr parent);
+    explicit QModelIndexNode(QModelIndex index, QAbstractItemView* view_parent);
 
     // DBusNode
     virtual NodeIntrospectionData GetIntrospectionData() const;
@@ -90,7 +92,10 @@ public:
     virtual xpathselect::NodeVector Children() const;
 
 private:
+    QVariantMap GetProperties() const;
+
     QModelIndex index_;
+    QAbstractItemView* view_parent_;
     std::string full_path_;
     DBusNode::Ptr parent_;
 };
