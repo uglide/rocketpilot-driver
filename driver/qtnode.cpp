@@ -22,11 +22,13 @@
 #include <QStandardItemModel>
 #include <QTableWidget>
 #include <QTreeView>
+#include <QListView>
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
 void GetTableWidgetChildren(QObject* table_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetListViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 QStandardItemModel* AttemptGetStandardItemModel(QAbstractItemModel* target_model);
 
 // Marshall the NodeIntrospectionData data into a D-Bus argument
@@ -113,17 +115,65 @@ void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, D
         // Do the work with a QAbstractItemModel. This could probably
         // be separated out as QAbstractItemModels deal with
         // QModelIndexes etc.
-
         for(int c=0; c < abstract_model->columnCount(); ++c) {
             for(int r=0; r < abstract_model->rowCount(); ++r) {
-                QModelIndex item = abstract_model->index(r, c);
+                QModelIndex index = abstract_model->index(r, c);
                 children.push_back(
                     std::make_shared<QModelIndexNode>(
-                        item,
+                        index,
                         tree_view,
                         parent)
                     );
+
+                //WIP-----------------------------------------------
+                if(abstract_model->hasChildren(index)) {
+                    qDebug() << "> This index has children: ";
+                    // PrintAllElements(abstract_model, index);
+                    for(int c2=0; c2 < abstract_model->columnCount(index); ++c2) {
+                        for(int r2=0; r2 < abstract_model->rowCount(index); ++r2) {
+                            QModelIndex next_index = abstract_model->index(r2, c2, index);
+                            children.push_back(
+                                std::make_shared<QModelIndexNode>(
+                                    next_index,
+                                    tree_view,
+                                    parent)
+                                );
+                        }
+                    }
+                }
+                //--------------------------------------------------
             }
+        }
+    }
+}
+
+// This coul probably be wrapped up into an AbstractItemView as could
+// the above TreeView stuff
+void GetListViewChildren(QObject* list_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+{
+    QListView* list_view = qobject_cast<QListView *>(list_obj);
+    if(! list_view) {
+        qDebug() << "! Unable to cast object to QTreeView (even though it apparently inherits from it)";
+        return;
+    }
+
+    QAbstractItemModel* abstract_model = qobject_cast<QAbstractItemModel *>(list_view->model());
+
+    if(! abstract_model) {
+        qDebug() << "! Unable to cast model to QAbstractItemModel (even though it's a QTreeView)";
+        return;
+    }
+
+    for(int c=0; c < abstract_model->columnCount(); ++c) {
+        for(int r=0; r < abstract_model->rowCount(); ++r) {
+            QModelIndex index = abstract_model->index(r, c);
+
+            children.push_back(
+                std::make_shared<QModelIndexNode>(
+                    index,
+                    list_view,
+                    parent)
+                );
         }
     }
 }
@@ -262,6 +312,10 @@ xpathselect::NodeVector QObjectNode::Children() const
     {
         GetTreeViewChildren(object_, children, shared_from_this());
     }
+    else if(object_->inherits("QListView"))
+    {
+        GetListViewChildren(object_, children, shared_from_this());
+    }
 
 #ifdef QT5_SUPPORT
     // Qt5's hierarchy for QML has changed a bit:
@@ -356,17 +410,21 @@ QVariantMap QModelIndexNode::GetProperties() const
     if(model)
     {
         // Make an attempt to store the 'text' of a node to be user friendly-ish.
-        properties["text"] = PackProperty(model->data(index_));
+        QVariant text_property = PackProperty(model->data(index_));
+        if(text_property.isValid())
+            properties["text"] = text_property;
 
         const QHash<int, QByteArray> role_names = model->roleNames();
         QMap<int, QVariant> item_data = model->itemData(index_);
         foreach(int i, role_names.keys())
         {
             if(item_data.contains(i)) {
-                // properties["Role " + role_names[i]] = PackProperty(item_data[i]);
-                properties[role_names[i]] = PackProperty(item_data[i]);
+                QVariant property = PackProperty(item_data[i]);
+                if(property.isValid())
+                    properties[role_names[i]] = property;
             }
             else {
+                // Not sure if this should be set, should just not set it I think.
                 properties[role_names[i]] = PackProperty("");
             }
         }
