@@ -147,7 +147,7 @@ void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, D
 
                 //WIP-----------------------------------------------
                 if(abstract_model->hasChildren(index)) {
-                    qDebug() << "> This index has children: ";
+                    // qDebug() << "> This index has children: ";
                     // PrintAllElements(abstract_model, index);
                     for(int c2=0; c2 < abstract_model->columnCount(index); ++c2) {
                         for(int r2=0; r2 < abstract_model->rowCount(index); ++r2) {
