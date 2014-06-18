@@ -22,12 +22,14 @@
 #include <QStandardItemModel>
 #include <QTableWidget>
 #include <QTreeView>
+#include <QTreeWidget>
 #include <QListView>
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
 void GetTableWidgetChildren(QObject* table_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetTreeWidgetChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void GetListViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 QStandardItemModel* AttemptGetStandardItemModel(QAbstractItemModel* target_model);
 
@@ -165,6 +167,24 @@ void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, D
     }
 }
 
+void GetTreeWidgetChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+{
+    QTreeWidget* tree_widget = qobject_cast<QTreeWidget *>(tree_obj);
+    if(! tree_widget) {
+        qDebug() << "! Unable to cast object to QTreeWidget (even though it apparently inherits from it)";
+        return;
+    }
+
+    // Lets grab all the top-level elements, they can get their own childnren.
+    for(int i=0; i < tree_widget->topLevelItemCount(); ++i) {
+        children.push_back(
+            std::make_shared<QTreeWidgetItemNode>(
+                tree_widget->topLevelItem(i),
+                parent)
+            );
+    }
+}
+
 // This coul probably be wrapped up into an AbstractItemView as could
 // the above TreeView stuff
 void GetListViewChildren(QObject* list_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
@@ -294,6 +314,10 @@ xpathselect::NodeVector QObjectNode::Children() const
     if(object_->inherits("QTableWidget"))
     {
         GetTableWidgetChildren(object_, children, shared_from_this());
+    }
+    else if(object_->inherits("QTreeWidget"))
+    {
+        GetTreeWidgetChildren(object_, children, shared_from_this());
     }
     else if(object_->inherits("QTreeView"))
     {
@@ -688,5 +712,110 @@ xpathselect::NodeVector QTableWidgetItemNode::Children() const
 {
     // Doesn't have any children.
     xpathselect::NodeVector children;
+    return children;
+}
+
+// QTreeWidgetItemNode
+QTreeWidgetItemNode::QTreeWidgetItemNode(QTreeWidgetItem *item, DBusNode::Ptr parent)
+    : item_(item)
+    , parent_(parent)
+{
+    std::string parent_path = parent ? parent->GetPath() : "";
+    full_path_ = parent_path + "/" + GetName();
+}
+
+QTreeWidgetItemNode::QTreeWidgetItemNode(QTreeWidgetItem *item)
+    : item_(item)
+{
+    full_path_ = "/" + GetName();
+}
+
+NodeIntrospectionData QTreeWidgetItemNode::GetIntrospectionData() const
+{
+    NodeIntrospectionData data;
+    data.object_path = QString::fromStdString(GetPath());
+    data.state = GetProperties();
+    data.state["id"] = PackProperty(GetId());
+    return data;
+}
+
+QVariantMap QTreeWidgetItemNode::GetProperties() const
+{
+    QVariantMap properties;
+    QTreeWidget* parent = item_->treeWidget();
+    QRect cellrect = parent->visualItemRect(item_);
+    QRect r = QRect(parent->viewport()->mapToGlobal(cellrect.topLeft()), cellrect.size());
+    properties["globalRect"] = PackProperty(r);
+
+    properties["text"] = PackProperty(item_->text(0));
+    properties["columns"] = PackProperty(item_->columnCount());
+    properties["checkState"] = PackProperty(item_->checkState(0));
+
+    properties["isDisabled"] = PackProperty(item_->isDisabled());
+    properties["isExpanded"] = PackProperty(item_->isExpanded());
+    properties["isFirstColumnSpanned"] = PackProperty(item_->isFirstColumnSpanned());
+    properties["isHidden"] = PackProperty(item_->isHidden());
+    properties["isSelected"] = PackProperty(item_->isSelected());
+
+    return properties;
+}
+
+xpathselect::Node::Ptr QTreeWidgetItemNode::GetParent() const
+{
+    return parent_;
+}
+
+std::string QTreeWidgetItemNode::GetName() const
+{
+    return "QTreeWidgetItem";
+}
+
+std::string QTreeWidgetItemNode::GetPath() const
+{
+    return full_path_;
+}
+
+int32_t QTreeWidgetItemNode::GetId() const
+{
+    return static_cast<int32_t>(reinterpret_cast<qptrdiff>(item_));
+}
+
+bool QTreeWidgetItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
+{
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(QString::fromStdString(value));
+    return MatchProperty(properties, qname, qvalue);
+}
+
+bool QTreeWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+{
+    if (name == "id")
+        return value == GetId();
+
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(value);
+    return MatchProperty(properties, qname, qvalue);
+}
+
+bool QTreeWidgetItemNode::MatchBooleanProperty(const std::string& name, bool value) const
+{
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(value);
+    return MatchProperty(properties, qname, qvalue);
+}
+
+xpathselect::NodeVector QTreeWidgetItemNode::Children() const
+{
+    xpathselect::NodeVector children;
+
+    for(int i=0; i < item_->childCount(); ++i) {
+        children.push_back(
+            std::make_shared<QTreeWidgetItemNode>(item_->child(i),shared_from_this())
+            );
+    }
+
     return children;
 }
