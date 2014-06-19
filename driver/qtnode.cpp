@@ -110,6 +110,7 @@ void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, D
     }
     // Can we get a QStandardItemModel or do we need to use a QAbstractItemModel
     // QStandardItemModel* standard_model = AttemptGetStandardItemModel(tree_view->model());
+    // For now we're only supporting the QModelIndexNodes.
     QStandardItemModel* standard_model = nullptr;
     if(standard_model)
     {
@@ -541,8 +542,8 @@ QVariantMap QStandardItemNode::GetProperties() const
     QRect global_rect(
         parent_view_->viewport()->mapToGlobal(rect.topLeft()),
         rect.size());
-
     properties["globalRect"] = PackProperty(global_rect);
+
     return properties;
 }
 
