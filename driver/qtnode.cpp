@@ -33,6 +33,8 @@ void GetTreeWidgetChildren(QObject* tree_obj, xpathselect::NodeVector& children,
 void GetListViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 QStandardItemModel* AttemptGetStandardItemModel(QAbstractItemModel* target_model);
 
+void CollectAllIndexes(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
+
 bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QVariant& value);
 
 // Marshall the NodeIntrospectionData data into a D-Bus argument
@@ -83,6 +85,22 @@ QStandardItemModel* AttemptGetStandardItemModel(QAbstractItemModel* target_model
     }
 
     return model;
+}
+
+void CollectAllIndexes(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection)
+{
+    // Is there a decent way for me to determine infinite recursion.
+    // The interviews example breaks this code as it just continues creating new children.
+    for(int c=0; c < model->columnCount(index); ++c) {
+        for(int r=0; r < model->rowCount(index); ++r) {
+            QModelIndex new_index = model->index(r, c, index);
+            collection.push_back(new_index);
+            // actually the hashing should never be the same
+            if(qHash(new_index) != qHash(index)) {
+                CollectAllIndexes(new_index, model, collection);
+            }
+        }
+    }
 }
 
 bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QVariant& value)
@@ -136,34 +154,22 @@ void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, D
         // Do the work with a QAbstractItemModel. This could probably
         // be separated out as QAbstractItemModels deal with
         // QModelIndexes etc.
+        QModelIndexList all_of_them;
         for(int c=0; c < abstract_model->columnCount(); ++c) {
             for(int r=0; r < abstract_model->rowCount(); ++r) {
                 QModelIndex index = abstract_model->index(r, c);
+                all_of_them.push_back(index);
+                CollectAllIndexes(index, abstract_model, all_of_them);
+            }
+        }
+
+        foreach(QModelIndex idx, all_of_them) {
                 children.push_back(
                     std::make_shared<QModelIndexNode>(
-                        index,
+                        idx,
                         tree_view,
                         parent)
                     );
-
-                //WIP-----------------------------------------------
-                if(abstract_model->hasChildren(index)) {
-                    // qDebug() << "> This index has children: ";
-                    // PrintAllElements(abstract_model, index);
-                    for(int c2=0; c2 < abstract_model->columnCount(index); ++c2) {
-                        for(int r2=0; r2 < abstract_model->rowCount(index); ++r2) {
-                            QModelIndex next_index = abstract_model->index(r2, c2, index);
-                            children.push_back(
-                                std::make_shared<QModelIndexNode>(
-                                    next_index,
-                                    tree_view,
-                                    parent)
-                                );
-                        }
-                    }
-                }
-                //--------------------------------------------------
-            }
         }
     }
 }
@@ -203,17 +209,22 @@ void GetListViewChildren(QObject* list_obj, xpathselect::NodeVector& children, D
         return;
     }
 
+    QModelIndexList all_of_them;
     for(int c=0; c < abstract_model->columnCount(); ++c) {
         for(int r=0; r < abstract_model->rowCount(); ++r) {
             QModelIndex index = abstract_model->index(r, c);
-
-            children.push_back(
-                std::make_shared<QModelIndexNode>(
-                    index,
-                    list_view,
-                    parent)
-                );
+            all_of_them.push_back(index);
+            CollectAllIndexes(index, abstract_model, all_of_them);
         }
+    }
+
+    foreach(QModelIndex idx, all_of_them) {
+        children.push_back(
+            std::make_shared<QModelIndexNode>(
+                idx,
+                list_view,
+                parent)
+            );
     }
 }
 
