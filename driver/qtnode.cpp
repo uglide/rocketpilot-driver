@@ -311,6 +311,7 @@ xpathselect::NodeVector QObjectNode::Children() const
     xpathselect::NodeVector children;
 
     // Do special children handling if needed.
+    // Because QTreeWidget inherits from QTreeView check for it first.
     if(object_->inherits("QTableWidget"))
     {
         GetTableWidgetChildren(object_, children, shared_from_this());
