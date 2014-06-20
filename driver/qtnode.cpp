@@ -210,11 +210,18 @@ void GetListViewChildren(QObject* list_obj, xpathselect::NodeVector& children, D
     }
 
     QModelIndexList all_of_them;
-    for(int c=0; c < abstract_model->columnCount(); ++c) {
-        for(int r=0; r < abstract_model->rowCount(); ++r) {
-            QModelIndex index = abstract_model->index(r, c);
-            all_of_them.push_back(index);
-            CollectAllIndexes(index, abstract_model, all_of_them);
+    QModelIndex root_index = list_view->rootIndex();
+    if(root_index.isValid()) {
+        // The root item is the parent item to the view's toplevel items
+        CollectAllIndexes(root_index, abstract_model, all_of_them);
+    }
+    else {
+        for(int c=0; c < abstract_model->columnCount(); ++c) {
+            for(int r=0; r < abstract_model->rowCount(); ++r) {
+                QModelIndex index = abstract_model->index(r, c);
+                all_of_them.push_back(index);
+                CollectAllIndexes(index, abstract_model, all_of_them);
+            }
         }
     }
 
