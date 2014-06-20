@@ -10,7 +10,6 @@
 
 class QAbstractItemView;
 class QTableWidgetItem;
-class QStandardItem;
 class QTreeView;
 class QTreeWidgetItem;
 
@@ -97,34 +96,6 @@ private:
 
     QModelIndex index_;
     QAbstractItemView* view_parent_;
-    std::string full_path_;
-    DBusNode::Ptr parent_;
-};
-
-class QStandardItemNode : public DBusNode, public std::enable_shared_from_this<QStandardItemNode>
-{
-public:
-    QStandardItemNode(QStandardItem* item, QTreeView* parent_view, DBusNode::Ptr parent);
-    explicit QStandardItemNode(QStandardItem* item, QTreeView* parent_view);
-
-    // DBusNode
-    virtual NodeIntrospectionData GetIntrospectionData() const;
-
-    // xpathselect::Node
-    xpathselect::Node::Ptr GetParent() const;
-    virtual std::string GetName() const;
-    virtual std::string GetPath() const;
-    virtual int32_t GetId() const;
-    virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
-    virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
-    virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
-    virtual xpathselect::NodeVector Children() const;
-
-private:
-    QVariantMap GetProperties() const;
-
-    QStandardItem *item_;
-    QTreeView* parent_view_;
     std::string full_path_;
     DBusNode::Ptr parent_;
 };
