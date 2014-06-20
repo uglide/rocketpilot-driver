@@ -571,7 +571,6 @@ std::string QTableWidgetItemNode::GetPath() const
 
 int32_t QTableWidgetItemNode::GetId() const
 {
-    // return (int32_t)((qintptr)item_);
     return static_cast<int32_t>(reinterpret_cast<qptrdiff>(item_));
 }
 
