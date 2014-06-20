@@ -163,13 +163,17 @@ void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, D
             }
         }
 
-        foreach(QModelIndex idx, all_of_them) {
+        foreach(QModelIndex idx, all_of_them)
+        {
+            if(index.isValid())
+            {
                 children.push_back(
                     std::make_shared<QModelIndexNode>(
                         idx,
                         tree_view,
                         parent)
                     );
+            }
         }
     }
 }
@@ -435,7 +439,6 @@ QVariantMap QModelIndexNode::GetProperties() const
 {
     // NOTE Consider using isValid or something similar.
     QVariantMap properties;
-    // QAbstractItemModel* model = qobject_cast<QAbstractItemModel *>(view_parent_->model());
     const QAbstractItemModel* model = index_.model();
     if(model)
     {
@@ -444,6 +447,7 @@ QVariantMap QModelIndexNode::GetProperties() const
         if(text_property.isValid())
             properties["text"] = text_property;
 
+        // Include any Role data (mung the role name with added "Role")
         const QHash<int, QByteArray> role_names = model->roleNames();
         QMap<int, QVariant> item_data = model->itemData(index_);
         foreach(int i, role_names.keys())
@@ -451,11 +455,11 @@ QVariantMap QModelIndexNode::GetProperties() const
             if(item_data.contains(i)) {
                 QVariant property = PackProperty(item_data[i]);
                 if(property.isValid())
-                    properties[role_names[i]] = property;
+                    properties[role_names[i]+"Role"] = property;
             }
             else {
                 // Not sure if this should be set, should just not set it I think.
-                properties[role_names[i]] = PackProperty("");
+                properties[role_names[i]+"Role"] = PackProperty("");
             }
         }
     }
@@ -464,6 +468,8 @@ QVariantMap QModelIndexNode::GetProperties() const
     QRect global_rect(
         view_parent_->viewport()->mapToGlobal(rect.topLeft()),
         rect.size());
+    QRect viewport_contents = view_parent_->viewport()->contentsRect();
+    properties["onScreen"] = PackProperty(viewport_contents.contains(rect));
     properties["globalRect"] = PackProperty(global_rect);
 
     return properties;
