@@ -17,6 +17,25 @@
 #endif
 #include <QDBusArgument>
 
+#include <QAbstractItemView>
+#include <QAbstractProxyModel>
+#include <QTableWidget>
+#include <QTreeView>
+#include <QTreeWidget>
+#include <QListView>
+
+const QByteArray AP_ID_NAME("_autopilot_id");
+
+void GetTableWidgetChildren(QObject* table_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetTreeWidgetChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetListViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+
+void CollectAllIndexes(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
+QVariant SafePackProperty(QVariant const& prop);
+
+bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QVariant& value);
+
 // Marshall the NodeIntrospectionData data into a D-Bus argument
  QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
  {
@@ -35,7 +54,167 @@
      return argument;
  }
 
-const QByteArray AP_ID_NAME("_autopilot_id");
+void GetTableWidgetChildren(QObject *table_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+{
+    QTableWidget* table = qobject_cast<QTableWidget *>(table_obj);
+    if(! table) {
+        qDebug() << "Unable to cast object to QTableWidget (even though it apparently inherits from it)";
+    }
+
+    QList<QTableWidgetItem *> tablewidgetitems = table->findItems("*", Qt::MatchWildcard|Qt::MatchRecursive);
+    foreach (QTableWidgetItem *item, tablewidgetitems){
+        // std::make_shared<QTableWidgetItemNode>(item, this->shared_from_this())
+        children.push_back(
+            std::make_shared<QTableWidgetItemNode>(item, parent)
+            );
+    }
+}
+
+void CollectAllIndexes(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection)
+{
+    // Is there a decent way for me to determine infinite recursion.
+    // The interviews example breaks this code as it just continues creating new children.
+    for(int c=0; c < model->columnCount(index); ++c) {
+        for(int r=0; r < model->rowCount(index); ++r) {
+            QModelIndex new_index = model->index(r, c, index);
+            collection.push_back(new_index);
+            // actually the hashing should never be the same
+            if(qHash(new_index) != qHash(index)) {
+                CollectAllIndexes(new_index, model, collection);
+            }
+        }
+    }
+}
+
+// Pack property, but return a default blank if the packed property is invalid.
+QVariant SafePackProperty(QVariant const& prop)
+{
+    static QVariant blank_default = PackProperty("");
+
+    QVariant property_attempt = PackProperty(prop);
+    if(property_attempt.isValid())
+        return property_attempt;
+    else
+        return blank_default;
+}
+
+bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QVariant& value)
+{
+    if (! packed_properties.contains(name))
+        return false;
+
+    // Because the properties are packed, we need the value, not the type.
+    QVariant object_value = qvariant_cast<QVariantList>(packed_properties[name]).at(1);
+    if (value.canConvert(object_value.type()))
+    {
+        value.convert(object_value.type());
+        return value == object_value;
+    }
+    return false;
+}
+
+
+void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+{
+    QTreeView* tree_view = qobject_cast<QTreeView *>(tree_obj);
+    if(! tree_view) {
+        qDebug() << "Unable to cast object to QTreeView (even though it apparently inherits from it)";
+        return;
+    }
+
+    QAbstractItemModel* abstract_model = tree_view->model();
+    if(! abstract_model)
+    {
+        qDebug() << "Unable to retrieve model for QTreeView";
+        return;
+    }
+
+    QModelIndexList all_of_them;
+    for(int c=0; c < abstract_model->columnCount(); ++c) {
+        for(int r=0; r < abstract_model->rowCount(); ++r) {
+            QModelIndex index = abstract_model->index(r, c);
+            all_of_them.push_back(index);
+            CollectAllIndexes(index, abstract_model, all_of_them);
+        }
+    }
+
+    foreach(QModelIndex index, all_of_them)
+    {
+        if(index.isValid())
+        {
+            children.push_back(
+                std::make_shared<QModelIndexNode>(
+                    index,
+                    tree_view,
+                    parent)
+                );
+        }
+    }
+}
+
+void GetTreeWidgetChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+{
+    QTreeWidget* tree_widget = qobject_cast<QTreeWidget *>(tree_obj);
+    if(! tree_widget) {
+        qDebug() << "Unable to cast object to QTreeWidget (even though it apparently inherits from it)";
+        return;
+    }
+
+    // Lets grab all the top-level elements, they can get their own childnren.
+    for(int i=0; i < tree_widget->topLevelItemCount(); ++i) {
+        children.push_back(
+            std::make_shared<QTreeWidgetItemNode>(
+                tree_widget->topLevelItem(i),
+                parent)
+            );
+    }
+}
+
+// This coul probably be wrapped up into an AbstractItemView as could
+// the above TreeView stuff
+void GetListViewChildren(QObject* list_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+{
+    QListView* list_view = qobject_cast<QListView *>(list_obj);
+    if(! list_view) {
+        qDebug() << "Unable to cast object to QTreeView (even though it apparently inherits from it)";
+        return;
+    }
+
+    QAbstractItemModel* abstract_model = list_view->model();
+
+    if(! abstract_model) {
+        qDebug() << "Unable to retrieve model for QTreeView";
+        return;
+    }
+
+    QModelIndexList all_of_them;
+    QModelIndex root_index = list_view->rootIndex();
+    if(root_index.isValid()) {
+        // The root item is the parent item to the view's toplevel items
+        CollectAllIndexes(root_index, abstract_model, all_of_them);
+    }
+    else {
+        for(int c=0; c < abstract_model->columnCount(); ++c) {
+            for(int r=0; r < abstract_model->rowCount(); ++r) {
+                QModelIndex index = abstract_model->index(r, c);
+                all_of_them.push_back(index);
+                CollectAllIndexes(index, abstract_model, all_of_them);
+            }
+        }
+    }
+
+    foreach(QModelIndex index, all_of_them) {
+        if(index.isValid())
+        {
+            children.push_back(
+                std::make_shared<QModelIndexNode>(
+                    index,
+                    list_view,
+                    parent)
+                );
+        }
+    }
+}
 
 QObjectNode::QObjectNode(QObject *obj, DBusNode::Ptr parent)
 : object_(obj)
@@ -102,18 +281,8 @@ bool QObjectNode::MatchStringProperty(const std::string& name, const std::string
     QVariantMap properties = GetNodeProperties(object_);
 
     QString qname = QString::fromStdString(name);
-    if (! properties.contains(qname))
-        return false;
-
-    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
-    QVariant check_value(QString::fromStdString(value));
-    if (check_value.canConvert(object_value.type()))
-    {
-        check_value.convert(object_value.type());
-        return check_value == object_value;
-    }
-
-    return false;
+    QVariant qvalue = QVariant(QString::fromStdString(value));
+    return MatchProperty(properties, qname, qvalue);
 }
 
 bool QObjectNode::MatchIntegerProperty(const std::string& name, int32_t value) const
@@ -124,18 +293,8 @@ bool QObjectNode::MatchIntegerProperty(const std::string& name, int32_t value) c
     QVariantMap properties = GetNodeProperties(object_);
 
     QString qname = QString::fromStdString(name);
-    if (! properties.contains(qname))
-        return false;
-
-    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
-    QVariant check_value(value);
-    if (check_value.canConvert(object_value.type()))
-    {
-        check_value.convert(object_value.type());
-        return check_value == object_value;
-    }
-
-    return false;
+    QVariant qvalue = QVariant(value);
+    return MatchProperty(properties, qname, qvalue);
 }
 
 bool QObjectNode::MatchBooleanProperty(const std::string& name, bool value) const
@@ -143,24 +302,32 @@ bool QObjectNode::MatchBooleanProperty(const std::string& name, bool value) cons
     QVariantMap properties = GetNodeProperties(object_);
 
     QString qname = QString::fromStdString(name);
-    if (! properties.contains(qname))
-        return false;
-
-    QVariant object_value = qvariant_cast<QVariantList>(properties[qname]).at(1);
-    QVariant check_value(value);
-
-    if (check_value.canConvert(object_value.type()))
-    {
-        check_value.convert(object_value.type());
-        return check_value == object_value;
-    }
-
-    return false;
+    QVariant qvalue = QVariant(value);
+    return MatchProperty(properties, qname, qvalue);
 }
 
 xpathselect::NodeVector QObjectNode::Children() const
 {
     xpathselect::NodeVector children;
+
+    // Do special children handling if needed.
+    // Because QTreeWidget inherits from QTreeView check for it first.
+    if(object_->inherits("QTableWidget"))
+    {
+        GetTableWidgetChildren(object_, children, shared_from_this());
+    }
+    else if(object_->inherits("QTreeWidget"))
+    {
+        GetTreeWidgetChildren(object_, children, shared_from_this());
+    }
+    else if(object_->inherits("QTreeView"))
+    {
+        GetTreeViewChildren(object_, children, shared_from_this());
+    }
+    else if(object_->inherits("QListView"))
+    {
+        GetListViewChildren(object_, children, shared_from_this());
+    }
 
 #ifdef QT5_SUPPORT
     // Qt5's hierarchy for QML has changed a bit:
@@ -218,4 +385,330 @@ xpathselect::NodeVector QObjectNode::Children() const
 xpathselect::Node::Ptr QObjectNode::GetParent() const
 {
     return parent_;
+}
+
+// QModelIndexNode
+QModelIndexNode::QModelIndexNode(QModelIndex index, QAbstractItemView* parent_view, DBusNode::Ptr parent)
+    : index_(index)
+    , parent_view_(parent_view)
+    , parent_(parent)
+{
+    std::string parent_path = parent ? parent->GetPath() : "";
+    full_path_ = parent_path + "/" + GetName();
+}
+
+QModelIndexNode::QModelIndexNode(QModelIndex index, QAbstractItemView* parent_view)
+    : index_(index)
+    , parent_view_(parent_view)
+{
+    full_path_ = "/" + GetName();
+}
+
+NodeIntrospectionData QModelIndexNode::GetIntrospectionData() const
+{
+    NodeIntrospectionData data;
+    data.object_path = QString::fromStdString(GetPath());
+    data.state = GetProperties();
+    data.state["id"] = PackProperty(GetId());
+    return data;
+}
+
+QVariantMap QModelIndexNode::GetProperties() const
+{
+    QVariantMap properties;
+    const QAbstractItemModel* model = index_.model();
+    if(model)
+    {
+        // Make an attempt to store the 'text' of a node to be user friendly-ish.
+        QVariant text_property = PackProperty(model->data(index_));
+        if(text_property.isValid())
+            properties["text"] = text_property;
+        else
+            properties["text"] = PackProperty("");
+
+        // Include any Role data (mung the role name with added "Role")
+        const QHash<int, QByteArray> role_names = model->roleNames();
+        QMap<int, QVariant> item_data = model->itemData(index_);
+        foreach(int name, role_names.keys())
+        {
+            if(item_data.contains(name)) {
+                QVariant property = PackProperty(item_data[name]);
+                if(property.isValid())
+                    properties[role_names[name]+"Role"] = property;
+            }
+            else {
+                // Not sure if this should be set as blank or left.
+                properties[role_names[name]+"Role"] = PackProperty("");
+            }
+        }
+    }
+
+    QRect rect = parent_view_->visualRect(index_);
+    QRect global_rect(
+        parent_view_->viewport()->mapToGlobal(rect.topLeft()),
+        rect.size());
+    QRect viewport_contents = parent_view_->viewport()->contentsRect();
+    properties["onScreen"] = PackProperty(viewport_contents.contains(rect));
+    properties["globalRect"] = PackProperty(global_rect);
+
+    return properties;
+}
+
+xpathselect::Node::Ptr QModelIndexNode::GetParent() const
+{
+    return parent_;
+}
+
+std::string QModelIndexNode::GetName() const
+{
+    return "QModelIndex";
+}
+
+std::string QModelIndexNode::GetPath() const
+{
+    return full_path_;
+}
+
+int32_t QModelIndexNode::GetId() const
+{
+    // ahha, the rub. Need to use a hash here, but we might lose precision?
+    return qHash(index_);
+}
+
+bool QModelIndexNode::MatchStringProperty(const std::string& name, const std::string& value) const
+{
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(QString::fromStdString(value));
+    return MatchProperty(properties, qname, qvalue);
+}
+
+bool QModelIndexNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+{
+    if (name == "id")
+        return value == GetId();
+
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(value);
+    return MatchProperty(properties, qname, qvalue);
+}
+
+bool QModelIndexNode::MatchBooleanProperty(const std::string& name, bool value) const
+{
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(value);
+    return MatchProperty(properties, qname, qvalue);
+}
+
+xpathselect::NodeVector QModelIndexNode::Children() const
+{
+    // Doesn't have any children.
+    xpathselect::NodeVector children;
+    return children;
+}
+
+// QTableWidgetItemNode
+QTableWidgetItemNode::QTableWidgetItemNode(QTableWidgetItem *item, DBusNode::Ptr parent)
+    : item_(item)
+    , parent_(parent)
+{
+    std::string parent_path = parent ? parent->GetPath() : "";
+    full_path_ = parent_path + "/" + GetName();
+}
+
+QTableWidgetItemNode::QTableWidgetItemNode(QTableWidgetItem *item)
+    : item_(item)
+{
+    full_path_ = "/" + GetName();
+}
+
+NodeIntrospectionData QTableWidgetItemNode::GetIntrospectionData() const
+{
+    NodeIntrospectionData data;
+    data.object_path = QString::fromStdString(GetPath());
+    data.state = GetProperties();
+    data.state["id"] = PackProperty(GetId());
+    return data;
+}
+
+QVariantMap QTableWidgetItemNode::GetProperties() const
+{
+    QVariantMap properties;
+
+    QTableWidget* parent = item_->tableWidget();
+    QRect cellrect = parent->visualItemRect(item_);
+    QRect r = QRect(parent->mapToGlobal(cellrect.topLeft()), cellrect.size());
+    properties["globalRect"] = PackProperty(r);
+
+    properties["text"] = SafePackProperty(PackProperty(item_->text()));
+    properties["toolTip"] = SafePackProperty(PackProperty(item_->toolTip()));
+    // safePackProperty(item_->icon().isNull() ? PackProperty("") : PackProperty(item_->icon()));
+    properties["icon"] = SafePackProperty(PackProperty(item_->icon()));
+    properties["whatsThis"] = SafePackProperty(PackProperty(item_->whatsThis()));
+    properties["row"] = SafePackProperty(PackProperty(item_->row()));
+    properties["isSelected"] = SafePackProperty(PackProperty(item_->isSelected()));
+    properties["column"] = SafePackProperty(PackProperty(item_->column()));
+
+    return properties;
+}
+
+xpathselect::Node::Ptr QTableWidgetItemNode::GetParent() const
+{
+    return parent_;
+}
+
+std::string QTableWidgetItemNode::GetName() const
+{
+    return "QTableWidgetItem";
+}
+
+std::string QTableWidgetItemNode::GetPath() const
+{
+    return full_path_;
+}
+
+int32_t QTableWidgetItemNode::GetId() const
+{
+    return static_cast<int32_t>(reinterpret_cast<qptrdiff>(item_));
+}
+
+bool QTableWidgetItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
+{
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(QString::fromStdString(value));
+    return MatchProperty(properties, qname, qvalue);
+}
+
+bool QTableWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+{
+    if (name == "id")
+        return value == GetId();
+
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(value);
+    return MatchProperty(properties, qname, qvalue);
+}
+
+bool QTableWidgetItemNode::MatchBooleanProperty(const std::string& name, bool value) const
+{
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(value);
+    return MatchProperty(properties, qname, qvalue);
+}
+
+xpathselect::NodeVector QTableWidgetItemNode::Children() const
+{
+    // Doesn't have any children.
+    xpathselect::NodeVector children;
+    return children;
+}
+
+// QTreeWidgetItemNode
+QTreeWidgetItemNode::QTreeWidgetItemNode(QTreeWidgetItem *item, DBusNode::Ptr parent)
+    : item_(item)
+    , parent_(parent)
+{
+    std::string parent_path = parent ? parent->GetPath() : "";
+    full_path_ = parent_path + "/" + GetName();
+}
+
+QTreeWidgetItemNode::QTreeWidgetItemNode(QTreeWidgetItem *item)
+    : item_(item)
+{
+    full_path_ = "/" + GetName();
+}
+
+NodeIntrospectionData QTreeWidgetItemNode::GetIntrospectionData() const
+{
+    NodeIntrospectionData data;
+    data.object_path = QString::fromStdString(GetPath());
+    data.state = GetProperties();
+    data.state["id"] = PackProperty(GetId());
+    return data;
+}
+
+QVariantMap QTreeWidgetItemNode::GetProperties() const
+{
+    QVariantMap properties;
+    QTreeWidget* parent = item_->treeWidget();
+    QRect cellrect = parent->visualItemRect(item_);
+    QRect r = QRect(parent->viewport()->mapToGlobal(cellrect.topLeft()), cellrect.size());
+    properties["globalRect"] = PackProperty(r);
+
+    properties["text"] = SafePackProperty(item_->text(0));
+    properties["columns"] = SafePackProperty(item_->columnCount());
+    properties["checkState"] = SafePackProperty(item_->checkState(0));
+
+    properties["isDisabled"] = SafePackProperty(item_->isDisabled());
+    properties["isExpanded"] = SafePackProperty(item_->isExpanded());
+    properties["isFirstColumnSpanned"] = SafePackProperty(item_->isFirstColumnSpanned());
+    properties["isHidden"] = SafePackProperty(item_->isHidden());
+    properties["isSelected"] = SafePackProperty(item_->isSelected());
+
+    return properties;
+}
+
+xpathselect::Node::Ptr QTreeWidgetItemNode::GetParent() const
+{
+    return parent_;
+}
+
+std::string QTreeWidgetItemNode::GetName() const
+{
+    return "QTreeWidgetItem";
+}
+
+std::string QTreeWidgetItemNode::GetPath() const
+{
+    return full_path_;
+}
+
+int32_t QTreeWidgetItemNode::GetId() const
+{
+    return static_cast<int32_t>(reinterpret_cast<qptrdiff>(item_));
+}
+
+bool QTreeWidgetItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
+{
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(QString::fromStdString(value));
+    return MatchProperty(properties, qname, qvalue);
+}
+
+bool QTreeWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+{
+    if (name == "id")
+        return value == GetId();
+
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(value);
+    return MatchProperty(properties, qname, qvalue);
+}
+
+bool QTreeWidgetItemNode::MatchBooleanProperty(const std::string& name, bool value) const
+{
+    QVariantMap properties = GetProperties();
+    QString qname = QString::fromStdString(name);
+    QVariant qvalue = QVariant(value);
+    return MatchProperty(properties, qname, qvalue);
+}
+
+xpathselect::NodeVector QTreeWidgetItemNode::Children() const
+{
+    xpathselect::NodeVector children;
+
+    for(int i=0; i < item_->childCount(); ++i) {
+        children.push_back(
+            std::make_shared<QTreeWidgetItemNode>(item_->child(i),shared_from_this())
+            );
+    }
+
+    return children;
 }
