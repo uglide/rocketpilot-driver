@@ -37,7 +37,7 @@
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
-QtNode::QtNode(QObject *obj, QtNode::Ptr parent)
+QObjectNode::QObjectNode(QObject *obj, DBusNode::Ptr parent)
 : object_(obj)
 , parent_(parent)
 {
@@ -45,18 +45,18 @@ QtNode::QtNode(QObject *obj, QtNode::Ptr parent)
     full_path_ = parent_path + "/" + GetName();
 }
 
-QtNode::QtNode(QObject* obj)
+QObjectNode::QObjectNode(QObject* obj)
 : object_(obj)
 {
     full_path_ = "/" + GetName();
 }
 
-QObject* QtNode::getWrappedObject() const
+QObject* QObjectNode::getWrappedObject() const
 {
     return object_;
 }
 
-NodeIntrospectionData QtNode::GetIntrospectionData() const
+NodeIntrospectionData QObjectNode::GetIntrospectionData() const
 {
     NodeIntrospectionData data;
     data.object_path = QString::fromStdString(GetPath());
@@ -65,7 +65,7 @@ NodeIntrospectionData QtNode::GetIntrospectionData() const
     return data;
 }
 
-std::string QtNode::GetName() const
+std::string QObjectNode::GetName() const
 {
     QString name = object_->metaObject()->className();
 
@@ -76,12 +76,12 @@ std::string QtNode::GetName() const
     return name.toStdString();
 }
 
-std::string QtNode::GetPath() const
+std::string QObjectNode::GetPath() const
 {
     return full_path_;
 }
 
-int32_t QtNode::GetId() const
+int32_t QObjectNode::GetId() const
 {
     // Note: This method is used to assign ids to both the root node (with a QApplication object) and
     // child nodes. This used to be separate code, but now that we export QApplication properties,
@@ -97,7 +97,7 @@ int32_t QtNode::GetId() const
     return qvariant_cast<int32_t>(object_->property(AP_ID_NAME));
 }
 
-bool QtNode::MatchStringProperty(const std::string& name, const std::string& value) const
+bool QObjectNode::MatchStringProperty(const std::string& name, const std::string& value) const
 {
     QVariantMap properties = GetNodeProperties(object_);
 
@@ -116,7 +116,7 @@ bool QtNode::MatchStringProperty(const std::string& name, const std::string& val
     return false;
 }
 
-bool QtNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+bool QObjectNode::MatchIntegerProperty(const std::string& name, int32_t value) const
 {
     if (name == "id")
         return value == GetId();
@@ -138,7 +138,7 @@ bool QtNode::MatchIntegerProperty(const std::string& name, int32_t value) const
     return false;
 }
 
-bool QtNode::MatchBooleanProperty(const std::string& name, bool value) const
+bool QObjectNode::MatchBooleanProperty(const std::string& name, bool value) const
 {
     QVariantMap properties = GetNodeProperties(object_);
 
@@ -158,7 +158,7 @@ bool QtNode::MatchBooleanProperty(const std::string& name, bool value) const
     return false;
 }
 
-xpathselect::NodeVector QtNode::Children() const
+xpathselect::NodeVector QObjectNode::Children() const
 {
     xpathselect::NodeVector children;
 
@@ -170,21 +170,21 @@ xpathselect::NodeVector QtNode::Children() const
 
     QQuickView *view = qobject_cast<QQuickView*>(object_);
     if (view && view->rootObject() != 0) {
-        children.push_back(std::make_shared<QtNode>(view->rootObject(), shared_from_this()));
+        children.push_back(std::make_shared<QObjectNode>(view->rootObject(), shared_from_this()));
     }
 
     QQuickItem* item = qobject_cast<QQuickItem*>(object_);
     if (item) {
         foreach (QQuickItem *childItem, item->childItems()) {
             if (childItem->parentItem() == item) {
-                children.push_back(std::make_shared<QtNode>(childItem, shared_from_this()));
+                children.push_back(std::make_shared<QObjectNode>(childItem, shared_from_this()));
             }
         }
     } else {
         foreach (QObject *child, object_->children())
         {
             if (child->parent() == object_)
-                children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
+                children.push_back(std::make_shared<QObjectNode>(child, shared_from_this()));
         }
     }
 
@@ -192,7 +192,7 @@ xpathselect::NodeVector QtNode::Children() const
     foreach (QObject *child, object_->children())
     {
         if (child->parent() == object_)
-            children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
+            children.push_back(std::make_shared<QObjectNode>(child, shared_from_this()));
     }
 
     // If our wrapped object is a QGraphicsScene, we need to explicitly grab any child graphics
@@ -206,7 +206,7 @@ xpathselect::NodeVector QtNode::Children() const
         {
             QGraphicsObject *obj = item->toGraphicsObject();
             if (obj && ! obj->parent())
-                children.push_back(std::make_shared<QtNode>(obj, shared_from_this()));
+                children.push_back(std::make_shared<QObjectNode>(obj, shared_from_this()));
         }
     }
 #endif
@@ -215,7 +215,7 @@ xpathselect::NodeVector QtNode::Children() const
 }
 
 
-xpathselect::Node::Ptr QtNode::GetParent() const
+xpathselect::Node::Ptr QObjectNode::GetParent() const
 {
     return parent_;
 }

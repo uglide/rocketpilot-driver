@@ -7,7 +7,7 @@
 #include <QDebug>
 
 RootNode::RootNode(QCoreApplication* application)
-    : QtNode(application)
+    : QObjectNode(application)
     , application_(application)
 {
 }
@@ -49,6 +49,6 @@ xpathselect::NodeVector RootNode::Children() const
 {
     xpathselect::NodeVector children;
     foreach(QObject* child, children_)
-        children.push_back(std::make_shared<QtNode>(child, shared_from_this()));
+        children.push_back(std::make_shared<QObjectNode>(child, shared_from_this()));
     return children;
 }
