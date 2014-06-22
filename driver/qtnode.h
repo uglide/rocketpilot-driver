@@ -6,6 +6,10 @@
 #include <QDBusArgument>
 #include <xpathselect/node.h>
 
+#include <QModelIndex>
+class QTableWidgetItem;
+class QStandardItem;
+
 /// A simple data structure representing the state of a single node:
 struct NodeIntrospectionData
 {
@@ -61,6 +65,81 @@ public:
 
 private:
     QObject *object_;
+    std::string full_path_;
+    DBusNode::Ptr parent_;
+};
+
+class QModelIndexNode : public DBusNode, public std::enable_shared_from_this<QModelIndexNode>
+{
+public:
+    QModelIndexNode(QModelIndex index, Ptr parent);
+    explicit QModelIndexNode(QModelIndex index);
+
+    // DBusNode
+    virtual NodeIntrospectionData GetIntrospectionData() const;
+
+    // xpathselect::Node
+    xpathselect::Node::Ptr GetParent() const;
+    virtual std::string GetName() const;
+    virtual std::string GetPath() const;
+    virtual int32_t GetId() const;
+    virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
+    virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
+    virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
+    virtual xpathselect::NodeVector Children() const;
+
+private:
+    QModelIndex index_;
+    std::string full_path_;
+    DBusNode::Ptr parent_;
+};
+
+class QStandardItemNode : public DBusNode, public std::enable_shared_from_this<QStandardItemNode>
+{
+public:
+    QStandardItemNode(QStandardItem *item, Ptr parent);
+    explicit QStandardItemNode(QStandardItem *item);
+
+    // DBusNode
+    virtual NodeIntrospectionData GetIntrospectionData() const;
+
+    // xpathselect::Node
+    xpathselect::Node::Ptr GetParent() const;
+    virtual std::string GetName() const;
+    virtual std::string GetPath() const;
+    virtual int32_t GetId() const;
+    virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
+    virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
+    virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
+    virtual xpathselect::NodeVector Children() const;
+
+private:
+    QStandardItem *item_;
+    std::string full_path_;
+    DBusNode::Ptr parent_;
+};
+
+class QTableWidgetItemNode : public DBusNode, public std::enable_shared_from_this<QTableWidgetItemNode>
+{
+public:
+    QTableWidgetItemNode(QTableWidgetItem *item, Ptr parent);
+    explicit QTableWidgetItemNode(QTableWidgetItem *item);
+
+    // DBusNode
+    virtual NodeIntrospectionData GetIntrospectionData() const;
+
+    // xpathselect::Node
+    xpathselect::Node::Ptr GetParent() const;
+    virtual std::string GetName() const;
+    virtual std::string GetPath() const;
+    virtual int32_t GetId() const;
+    virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
+    virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
+    virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
+    virtual xpathselect::NodeVector Children() const;
+
+private:
+    QTableWidgetItem *item_;
     std::string full_path_;
     DBusNode::Ptr parent_;
 };
