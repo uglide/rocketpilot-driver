@@ -41,6 +41,8 @@ public:
 class QObjectNode : public DBusNode, public std::enable_shared_from_this<QObjectNode>
 {
 public:
+    typedef std::shared_ptr<const QObjectNode> Ptr;
+
     QObjectNode(QObject* object, DBusNode::Ptr parent);
     explicit QObjectNode(QObject* object);
 

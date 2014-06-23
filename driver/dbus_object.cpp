@@ -64,7 +64,7 @@ void DBusObject::RegisterSignalInterest(int object_id, QString signal_name)
         return;
     }
 
-    std::shared_ptr<const QObjectNode> node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
+    QObjectNode::Ptr node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
 
     if (! node)
     {
@@ -126,7 +126,7 @@ void DBusObject::GetSignalEmissions(int object_id, QString signal_name, const QD
 
 void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
 {
-    std::shared_ptr<const QObjectNode> node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
+    QObjectNode::Ptr node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
     QDBusMessage reply = message.createReply();
     if (! node)
     {
@@ -164,7 +164,7 @@ void DBusObject::ListSignals(int object_id, const QDBusMessage& message)
 void DBusObject::ListMethods(int object_id, const QDBusMessage &message)
 {
     QDBusMessage reply = message.createReply();
-    std::shared_ptr<const QObjectNode> node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
+    QObjectNode::Ptr node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
     if (! node)
     {
         qWarning() << "No Object found while listing methods.";
@@ -202,7 +202,7 @@ void DBusObject::InvokeMethod(int object_id, QString method_name, QVariantList a
 {
     Q_UNUSED(message);
 
-    std::shared_ptr<const QObjectNode> node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
+    QObjectNode::Ptr node = std::dynamic_pointer_cast<const QObjectNode>(GetNodeWithId(object_id));
     if (! node)
     {
         qWarning() << "No Object found.";
