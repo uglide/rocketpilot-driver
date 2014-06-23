@@ -40,7 +40,7 @@ public:
 
 /// Specialist class for all QObject object nodes.
 /// This will cover a majority of what we use and we will only need to break
-/// out to specilist classes for a couple of minor (i.e. QModelIndex)
+/// out to specialist classes for a couple of minor edge-cases (i.e. QModelIndex)
 ///
 /// QObjectNode wraps a single QObject pointer. It derives from
 /// xpathselect::Node (DBusNode) and, like that class, is designed to be

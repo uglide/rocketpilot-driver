@@ -58,7 +58,6 @@ void GetTableWidgetChildren(QTableWidget *table, xpathselect::NodeVector& childr
 {
     QList<QTableWidgetItem *> tablewidgetitems = table->findItems("*", Qt::MatchWildcard|Qt::MatchRecursive);
     foreach (QTableWidgetItem *item, tablewidgetitems){
-        // std::make_shared<QTableWidgetItemNode>(item, this->shared_from_this())
         children.push_back(
             std::make_shared<QTableWidgetItemNode>(item, parent)
             );
@@ -153,8 +152,6 @@ void GetTreeWidgetChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& ch
     }
 }
 
-// This coul probably be wrapped up into an AbstractItemView as could
-// the above TreeView stuff
 void GetListViewChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
     QAbstractItemModel* abstract_model = list_view->model();
@@ -545,7 +542,6 @@ QVariantMap QTableWidgetItemNode::GetProperties() const
 
     properties["text"] = SafePackProperty(PackProperty(item_->text()));
     properties["toolTip"] = SafePackProperty(PackProperty(item_->toolTip()));
-    // safePackProperty(item_->icon().isNull() ? PackProperty("") : PackProperty(item_->icon()));
     properties["icon"] = SafePackProperty(PackProperty(item_->icon()));
     properties["whatsThis"] = SafePackProperty(PackProperty(item_->whatsThis()));
     properties["row"] = SafePackProperty(PackProperty(item_->row()));
