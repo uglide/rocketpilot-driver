@@ -26,10 +26,10 @@
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
-void GetTableWidgetChildren(QObject* table_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
-void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
-void GetTreeWidgetChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
-void GetListViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetTableWidgetChildren(QTableWidget* table, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetTreeViewChildren(QTreeView* tree_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetTreeWidgetChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetListViewChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 
 void CollectAllIndexes(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
 QVariant SafePackProperty(QVariant const& prop);
@@ -54,13 +54,8 @@ bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QV
      return argument;
  }
 
-void GetTableWidgetChildren(QObject *table_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+void GetTableWidgetChildren(QTableWidget *table, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
-    QTableWidget* table = qobject_cast<QTableWidget *>(table_obj);
-    if(! table) {
-        qDebug() << "Unable to cast object to QTableWidget (even though it apparently inherits from it)";
-    }
-
     QList<QTableWidgetItem *> tablewidgetitems = table->findItems("*", Qt::MatchWildcard|Qt::MatchRecursive);
     foreach (QTableWidgetItem *item, tablewidgetitems){
         // std::make_shared<QTableWidgetItemNode>(item, this->shared_from_this())
@@ -114,14 +109,8 @@ bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QV
 }
 
 
-void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+void GetTreeViewChildren(QTreeView* tree_view, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
-    QTreeView* tree_view = qobject_cast<QTreeView *>(tree_obj);
-    if(! tree_view) {
-        qDebug() << "Unable to cast object to QTreeView (even though it apparently inherits from it)";
-        return;
-    }
-
     QAbstractItemModel* abstract_model = tree_view->model();
     if(! abstract_model)
     {
@@ -152,14 +141,8 @@ void GetTreeViewChildren(QObject* tree_obj, xpathselect::NodeVector& children, D
     }
 }
 
-void GetTreeWidgetChildren(QObject* tree_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+void GetTreeWidgetChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
-    QTreeWidget* tree_widget = qobject_cast<QTreeWidget *>(tree_obj);
-    if(! tree_widget) {
-        qDebug() << "Unable to cast object to QTreeWidget (even though it apparently inherits from it)";
-        return;
-    }
-
     // Lets grab all the top-level elements, they can get their own childnren.
     for(int i=0; i < tree_widget->topLevelItemCount(); ++i) {
         children.push_back(
@@ -172,14 +155,8 @@ void GetTreeWidgetChildren(QObject* tree_obj, xpathselect::NodeVector& children,
 
 // This coul probably be wrapped up into an AbstractItemView as could
 // the above TreeView stuff
-void GetListViewChildren(QObject* list_obj, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+void GetListViewChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
-    QListView* list_view = qobject_cast<QListView *>(list_obj);
-    if(! list_view) {
-        qDebug() << "Unable to cast object to QTreeView (even though it apparently inherits from it)";
-        return;
-    }
-
     QAbstractItemModel* abstract_model = list_view->model();
 
     if(! abstract_model) {
@@ -314,19 +291,43 @@ xpathselect::NodeVector QObjectNode::Children() const
     // Because QTreeWidget inherits from QTreeView check for it first.
     if(object_->inherits("QTableWidget"))
     {
-        GetTableWidgetChildren(object_, children, shared_from_this());
+        QTableWidget* table = qobject_cast<QTableWidget *>(object_);
+        if(table) {
+            GetTableWidgetChildren(table, children, shared_from_this());
+        }
+        else {
+            qDebug() << "Unable to cast object to QTableWidget (even though it apparently inherits from it)";
+        }
     }
     else if(object_->inherits("QTreeWidget"))
     {
-        GetTreeWidgetChildren(object_, children, shared_from_this());
+        QTreeWidget* tree_widget = qobject_cast<QTreeWidget *>(object_);
+        if(tree_widget) {
+            GetTreeWidgetChildren(tree_widget, children, shared_from_this());
+        }
+        else {
+            qDebug() << "Unable to cast object to QTreeWidget (even though it apparently inherits from it)";
+        }
     }
     else if(object_->inherits("QTreeView"))
     {
-        GetTreeViewChildren(object_, children, shared_from_this());
+        QTreeView* tree_view = qobject_cast<QTreeView *>(object_);
+        if(tree_view) {
+            GetTreeViewChildren(tree_view, children, shared_from_this());
+        }
+        else {
+            qDebug() << "Unable to cast object to QTreeView (even though it apparently inherits from it)";
+        }
     }
     else if(object_->inherits("QListView"))
     {
-        GetListViewChildren(object_, children, shared_from_this());
+        QListView* list_view = qobject_cast<QListView *>(object_);
+        if(list_view) {
+            GetListViewChildren(list_view, children, shared_from_this());
+        }
+        else {
+            qDebug() << "Unable to cast object to QTreeView (even though it apparently inherits from it)";
+        }
     }
 
 #ifdef QT5_SUPPORT
