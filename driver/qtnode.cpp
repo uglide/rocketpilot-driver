@@ -36,6 +36,13 @@ QVariant SafePackProperty(QVariant const& prop);
 
 bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QVariant& value);
 
+inline int32_t xor_id(quint64 big_id)
+{
+    int32_t high = static_cast<int32_t>(big_id >> 32);
+    int32_t low = static_cast<int32_t>(big_id);
+    return high ^ low;
+}
+
 // Marshall the NodeIntrospectionData data into a D-Bus argument
  QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
  {
@@ -463,7 +470,7 @@ std::string QModelIndexNode::GetPath() const
 
 int32_t QModelIndexNode::GetId() const
 {
-    return qHash(index_);
+    return xor_id(static_cast<quint64>(qHash(index_)));
 }
 
 bool QModelIndexNode::MatchStringProperty(const std::string& name, const std::string& value) const
@@ -561,7 +568,7 @@ std::string QTableWidgetItemNode::GetPath() const
 
 int32_t QTableWidgetItemNode::GetId() const
 {
-    return static_cast<int32_t>(reinterpret_cast<qptrdiff>(item_));
+    return xor_id(static_cast<quint64>(reinterpret_cast<quintptr>(item_)));
 }
 
 bool QTableWidgetItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
@@ -660,7 +667,7 @@ std::string QTreeWidgetItemNode::GetPath() const
 
 int32_t QTreeWidgetItemNode::GetId() const
 {
-    return static_cast<int32_t>(reinterpret_cast<qptrdiff>(item_));
+    return xor_id(static_cast<quint64>(reinterpret_cast<quintptr>(item_)));
 }
 
 bool QTreeWidgetItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
