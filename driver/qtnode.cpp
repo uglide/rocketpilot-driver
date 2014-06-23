@@ -18,22 +18,22 @@
 #include <QDBusArgument>
 
 // Marshall the NodeIntrospectionData data into a D-Bus argument
- QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
- {
-     argument.beginStructure();
-     argument << node_data.object_path << node_data.state;
-     argument.endStructure();
-     return argument;
- }
+QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
+{
+    argument.beginStructure();
+    argument << node_data.object_path << node_data.state;
+    argument.endStructure();
+    return argument;
+}
 
- // Retrieve the NodeIntrospectionData data from the D-Bus argument
- const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospectionData &node_data)
- {
-     argument.beginStructure();
-     argument >> node_data.object_path >> node_data.state;
-     argument.endStructure();
-     return argument;
- }
+// Retrieve the NodeIntrospectionData data from the D-Bus argument
+const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospectionData &node_data)
+{
+    argument.beginStructure();
+    argument >> node_data.object_path >> node_data.state;
+    argument.endStructure();
+    return argument;
+}
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
