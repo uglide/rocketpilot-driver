@@ -31,7 +31,7 @@ void GetTreeViewChildren(QTreeView* tree_view, xpathselect::NodeVector& children
 void GetTreeWidgetChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void GetListViewChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 
-void CollectAllIndexes(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
+void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
 QVariant SafePackProperty(QVariant const& prop);
 
 bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QVariant& value);
@@ -64,7 +64,7 @@ void GetTableWidgetChildren(QTableWidget *table, xpathselect::NodeVector& childr
     }
 }
 
-void CollectAllIndexes(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection)
+void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection)
 {
     // Is there a decent way for me to determine infinite recursion.
     // The interviews example breaks this code as it just continues creating new children.
@@ -72,9 +72,8 @@ void CollectAllIndexes(QModelIndex index, QAbstractItemModel *model, QModelIndex
         for(int r=0; r < model->rowCount(index); ++r) {
             QModelIndex new_index = model->index(r, c, index);
             collection.push_back(new_index);
-            // actually the hashing should never be the same
-            if(qHash(new_index) != qHash(index)) {
-                CollectAllIndexes(new_index, model, collection);
+            if(new_index.isValid() && qHash(new_index) != qHash(index)) {
+                CollectAllIndices(new_index, model, collection);
             }
         }
     }
@@ -117,16 +116,16 @@ void GetTreeViewChildren(QTreeView* tree_view, xpathselect::NodeVector& children
         return;
     }
 
-    QModelIndexList all_of_them;
+    QModelIndexList all_indices;
     for(int c=0; c < abstract_model->columnCount(); ++c) {
         for(int r=0; r < abstract_model->rowCount(); ++r) {
             QModelIndex index = abstract_model->index(r, c);
-            all_of_them.push_back(index);
-            CollectAllIndexes(index, abstract_model, all_of_them);
+            all_indices.push_back(index);
+            CollectAllIndices(index, abstract_model, all_indices);
         }
     }
 
-    foreach(QModelIndex index, all_of_them)
+    foreach(QModelIndex index, all_indices)
     {
         if(index.isValid())
         {
@@ -161,23 +160,23 @@ void GetListViewChildren(QListView* list_view, xpathselect::NodeVector& children
         return;
     }
 
-    QModelIndexList all_of_them;
+    QModelIndexList all_indices;
     QModelIndex root_index = list_view->rootIndex();
     if(root_index.isValid()) {
         // The root item is the parent item to the view's toplevel items
-        CollectAllIndexes(root_index, abstract_model, all_of_them);
+        CollectAllIndices(root_index, abstract_model, all_indices);
     }
     else {
         for(int c=0; c < abstract_model->columnCount(); ++c) {
             for(int r=0; r < abstract_model->rowCount(); ++r) {
                 QModelIndex index = abstract_model->index(r, c);
-                all_of_them.push_back(index);
-                CollectAllIndexes(index, abstract_model, all_of_them);
+                all_indices.push_back(index);
+                CollectAllIndices(index, abstract_model, all_indices);
             }
         }
     }
 
-    foreach(QModelIndex index, all_of_them) {
+    foreach(QModelIndex index, all_indices) {
         if(index.isValid())
         {
             children.push_back(
