@@ -66,8 +66,6 @@ void GetTableWidgetChildren(QTableWidget *table, xpathselect::NodeVector& childr
 
 void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection)
 {
-    // Is there a decent way for me to determine infinite recursion.
-    // The interviews example breaks this code as it just continues creating new children.
     for(int c=0; c < model->columnCount(index); ++c) {
         for(int r=0; r < model->rowCount(index); ++r) {
             QModelIndex new_index = model->index(r, c, index);
@@ -141,7 +139,6 @@ void GetTreeViewChildren(QTreeView* tree_view, xpathselect::NodeVector& children
 
 void GetTreeWidgetChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
-    // Lets grab all the top-level elements, they can get their own childnren.
     for(int i=0; i < tree_widget->topLevelItemCount(); ++i) {
         children.push_back(
             std::make_shared<QTreeWidgetItemNode>(
@@ -222,7 +219,6 @@ std::string QObjectNode::GetName() const
     QString name = object_->metaObject()->className();
 
     // QML type names get mangled by Qt - they get _QML_N or _QMLTYPE_N appended.
-    //
     if (name.contains('_'))
         name = name.split('_').front();
     return name.toStdString();
@@ -283,7 +279,7 @@ xpathselect::NodeVector QObjectNode::Children() const
 {
     xpathselect::NodeVector children;
 
-    // Do special children handling if needed.
+    // Do any special children handling if needed.
     // Because QTreeWidget inherits from QTreeView check for it first.
     if(object_->inherits("QTableWidget"))
     {
@@ -434,7 +430,6 @@ QVariantMap QModelIndexNode::GetProperties() const
                     properties[role_names[name]+"Role"] = property;
             }
             else {
-                // Not sure if this should be set as blank or left.
                 properties[role_names[name]+"Role"] = PackProperty("");
             }
         }
@@ -468,7 +463,6 @@ std::string QModelIndexNode::GetPath() const
 
 int32_t QModelIndexNode::GetId() const
 {
-    // ahha, the rub. Need to use a hash here, but we might lose precision?
     return qHash(index_);
 }
 
