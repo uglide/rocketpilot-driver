@@ -34,7 +34,7 @@ void GetDataElementChildren(QListView* list_view, xpathselect::NodeVector& child
 void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
 QVariant SafePackProperty(QVariant const& prop);
 
-bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QVariant& value);
+bool MatchProperty(const QVariantMap& packed_properties, const std::string& name, QVariant value);
 
 inline int32_t xor_id(quint64 big_id)
 {
@@ -96,13 +96,14 @@ QVariant SafePackProperty(QVariant const& prop)
         return blank_default;
 }
 
-bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QVariant& value)
+bool MatchProperty(const QVariantMap& packed_properties, const std::string& name, QVariant value)
 {
-    if (! packed_properties.contains(name))
+    QString qname = QString::fromStdString(name);
+    if (! packed_properties.contains(qname))
         return false;
 
     // Because the properties are packed, we need the value, not the type.
-    QVariant object_value = qvariant_cast<QVariantList>(packed_properties[name]).at(1);
+    QVariant object_value = qvariant_cast<QVariantList>(packed_properties[qname]).at(1);
     if (value.canConvert(object_value.type()))
     {
         value.convert(object_value.type());
@@ -254,11 +255,7 @@ int32_t QObjectNode::GetId() const
 
 bool QObjectNode::MatchStringProperty(const std::string& name, const std::string& value) const
 {
-    QVariantMap properties = GetNodeProperties(object_);
-
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(QString::fromStdString(value));
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetNodeProperties(object_), name, QString::fromStdString(value));
 }
 
 bool QObjectNode::MatchIntegerProperty(const std::string& name, int32_t value) const
@@ -266,20 +263,12 @@ bool QObjectNode::MatchIntegerProperty(const std::string& name, int32_t value) c
     if (name == "id")
         return value == GetId();
 
-    QVariantMap properties = GetNodeProperties(object_);
-
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(value);
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetNodeProperties(object_), name, value);
 }
 
 bool QObjectNode::MatchBooleanProperty(const std::string& name, bool value) const
 {
-    QVariantMap properties = GetNodeProperties(object_);
-
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(value);
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetNodeProperties(object_), name, value);
 }
 
 xpathselect::NodeVector QObjectNode::Children() const
@@ -475,10 +464,7 @@ int32_t QModelIndexNode::GetId() const
 
 bool QModelIndexNode::MatchStringProperty(const std::string& name, const std::string& value) const
 {
-    QVariantMap properties = GetProperties();
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(QString::fromStdString(value));
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetProperties(), name, QString::fromStdString(value));
 }
 
 bool QModelIndexNode::MatchIntegerProperty(const std::string& name, int32_t value) const
@@ -486,18 +472,12 @@ bool QModelIndexNode::MatchIntegerProperty(const std::string& name, int32_t valu
     if (name == "id")
         return value == GetId();
 
-    QVariantMap properties = GetProperties();
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(value);
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetProperties(), name, value);
 }
 
 bool QModelIndexNode::MatchBooleanProperty(const std::string& name, bool value) const
 {
-    QVariantMap properties = GetProperties();
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(value);
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetProperties(), name, value);
 }
 
 xpathselect::NodeVector QModelIndexNode::Children() const
@@ -573,10 +553,7 @@ int32_t QTableWidgetItemNode::GetId() const
 
 bool QTableWidgetItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
 {
-    QVariantMap properties = GetProperties();
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(QString::fromStdString(value));
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetProperties(), name, QString::fromStdString(value));
 }
 
 bool QTableWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t value) const
@@ -584,18 +561,12 @@ bool QTableWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t
     if (name == "id")
         return value == GetId();
 
-    QVariantMap properties = GetProperties();
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(value);
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetProperties(), name, value);
 }
 
 bool QTableWidgetItemNode::MatchBooleanProperty(const std::string& name, bool value) const
 {
-    QVariantMap properties = GetProperties();
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(value);
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetProperties(), name, value);
 }
 
 xpathselect::NodeVector QTableWidgetItemNode::Children() const
@@ -672,10 +643,7 @@ int32_t QTreeWidgetItemNode::GetId() const
 
 bool QTreeWidgetItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
 {
-    QVariantMap properties = GetProperties();
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(QString::fromStdString(value));
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetProperties(), name, QString::fromStdString(value));
 }
 
 bool QTreeWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t value) const
@@ -683,18 +651,12 @@ bool QTreeWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t 
     if (name == "id")
         return value == GetId();
 
-    QVariantMap properties = GetProperties();
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(value);
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetProperties(), name, value);
 }
 
 bool QTreeWidgetItemNode::MatchBooleanProperty(const std::string& name, bool value) const
 {
-    QVariantMap properties = GetProperties();
-    QString qname = QString::fromStdString(name);
-    QVariant qvalue = QVariant(value);
-    return MatchProperty(properties, qname, qvalue);
+    return MatchProperty(GetProperties(), name, value);
 }
 
 xpathselect::NodeVector QTreeWidgetItemNode::Children() const
