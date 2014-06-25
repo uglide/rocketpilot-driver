@@ -26,10 +26,10 @@
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
-void GetTableWidgetChildren(QTableWidget* table, xpathselect::NodeVector& children, DBusNode::Ptr parent);
-void GetTreeViewChildren(QTreeView* tree_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
-void GetTreeWidgetChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent);
-void GetListViewChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetDataElementChildren(QTableWidget* table, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetDataElementChildren(QTreeView* tree_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetDataElementChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetDataElementChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 
 void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
 QVariant SafePackProperty(QVariant const& prop);
@@ -61,7 +61,7 @@ const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospection
     return argument;
 }
 
-void GetTableWidgetChildren(QTableWidget *table, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+void GetDataElementChildren(QTableWidget *table, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
     QList<QTableWidgetItem *> tablewidgetitems = table->findItems("*", Qt::MatchWildcard|Qt::MatchRecursive);
     foreach (QTableWidgetItem *item, tablewidgetitems){
@@ -112,7 +112,7 @@ bool MatchProperty(const QVariantMap& packed_properties, const QString& name, QV
 }
 
 
-void GetTreeViewChildren(QTreeView* tree_view, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+void GetDataElementChildren(QTreeView* tree_view, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
     QAbstractItemModel* abstract_model = tree_view->model();
     if(! abstract_model)
@@ -144,7 +144,7 @@ void GetTreeViewChildren(QTreeView* tree_view, xpathselect::NodeVector& children
     }
 }
 
-void GetTreeWidgetChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+void GetDataElementChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
     for(int i=0; i < tree_widget->topLevelItemCount(); ++i) {
         children.push_back(
@@ -155,7 +155,7 @@ void GetTreeWidgetChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& ch
     }
 }
 
-void GetListViewChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+void GetDataElementChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
     QAbstractItemModel* abstract_model = list_view->model();
 
@@ -292,7 +292,7 @@ xpathselect::NodeVector QObjectNode::Children() const
     {
         QTableWidget* table = qobject_cast<QTableWidget *>(object_);
         if(table) {
-            GetTableWidgetChildren(table, children, shared_from_this());
+            GetDataElementChildren(table, children, shared_from_this());
         }
         else {
             qDebug() << "Casting object to QTableWidget failed. Unable to retrieve children.";
@@ -302,7 +302,7 @@ xpathselect::NodeVector QObjectNode::Children() const
     {
         QTreeWidget* tree_widget = qobject_cast<QTreeWidget *>(object_);
         if(tree_widget) {
-            GetTreeWidgetChildren(tree_widget, children, shared_from_this());
+            GetDataElementChildren(tree_widget, children, shared_from_this());
         }
         else {
             qDebug() << "Casting object to QTreeWidget failed. Unable to retrieve children.";
@@ -312,7 +312,7 @@ xpathselect::NodeVector QObjectNode::Children() const
     {
         QTreeView* tree_view = qobject_cast<QTreeView *>(object_);
         if(tree_view) {
-            GetTreeViewChildren(tree_view, children, shared_from_this());
+            GetDataElementChildren(tree_view, children, shared_from_this());
         }
         else {
             qDebug() << "Casting object to QTreeView failed. Unable to retrieve children.";
@@ -322,7 +322,7 @@ xpathselect::NodeVector QObjectNode::Children() const
     {
         QListView* list_view = qobject_cast<QListView *>(object_);
         if(list_view) {
-            GetListViewChildren(list_view, children, shared_from_this());
+            GetDataElementChildren(list_view, children, shared_from_this());
         }
         else {
             qDebug() << "Casting object to QTreeView failed. Unable to retrieve children.";
