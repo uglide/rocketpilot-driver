@@ -276,7 +276,9 @@ xpathselect::NodeVector QObjectNode::Children() const
     xpathselect::NodeVector children;
 
     // Do any special children handling if needed.
-    // Because QTreeWidget inherits from QTreeView check for it first.
+    // Need to make sure to make these checks in the correct order.
+    // i.e. Because QTreeWidget inherits from QTreeView do it first otherwise
+    // we would never reach the specific QTreeWidget code.
     if(object_->inherits("QTableWidget"))
     {
         QTableWidget* table = qobject_cast<QTableWidget *>(object_);
