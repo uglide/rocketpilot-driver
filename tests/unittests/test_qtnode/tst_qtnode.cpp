@@ -20,16 +20,45 @@
 
 #include <QtTest>
 
+#include <QModelIndex>
+#include <QStandardItemModel>
+
 int32_t calclulate_ap_id(quint64 big_id);
+void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
 
 class tst_qtnode: public QObject
 {
     Q_OBJECT
 
 private slots:
+    void initTestCase();
+    void cleanup();
     void test_calclulate_ap_id_data();
     void test_calclulate_ap_id();
+
+    void test_CollectAllIndices_collects_all_table_data();
+    void test_CollectAllIndices_collects_all_table();
+    void test_CollectAllIndices_collects_all_list_data();
+    void test_CollectAllIndices_collects_all_list();
+    void test_CollectAllIndices_ignores_invalids_data();
+    void test_CollectAllIndices_ignores_invalids();
+private:
+    QStandardItemModel *testModel;
 };
+
+
+void tst_qtnode::initTestCase()
+{
+    testModel = 0;
+}
+
+void tst_qtnode::cleanup()
+{
+    if(testModel) {
+        delete testModel;
+        testModel = 0;
+    }
+}
 
 void tst_qtnode::test_calclulate_ap_id_data()
 {
@@ -50,6 +79,85 @@ void tst_qtnode::test_calclulate_ap_id()
     QFETCH(int32_t, expected_result);
 
     QCOMPARE(calclulate_ap_id(id), expected_result);
+}
+
+void tst_qtnode::test_CollectAllIndices_collects_all_table_data()
+{
+    int row_count = 2;
+    int col_count = 2;
+    testModel = new QStandardItemModel(row_count, col_count);
+
+    for (int row = 0; row < row_count; ++row) {
+        for (int column = 0; column < col_count; ++column) {
+            QStandardItem *item = new QStandardItem(
+                QString("row %0, column %1").arg(row).arg(column));
+            testModel->setItem(row, column, item);
+        }
+    }
+}
+
+void tst_qtnode::test_CollectAllIndices_collects_all_table()
+{
+    QModelIndexList collection;
+    QStandardItem *root_item = testModel->invisibleRootItem();
+    CollectAllIndices(root_item->index(), testModel, collection);
+
+    QCOMPARE(collection.size(), 4);
+
+    // qDebug() << "--> " << collection.size();
+    // foreach(QModelIndex blah, collection) {
+    //     qDebug() << ">> " << testModel->data(blah);
+    // }
+}
+
+void tst_qtnode::test_CollectAllIndices_collects_all_list_data()
+{
+    int listitem_count = 4;
+    testModel = new QStandardItemModel();
+    QStandardItem *parentItem = testModel->invisibleRootItem();
+    for (int i = 0; i < listitem_count; ++i) {
+        QStandardItem *item = new QStandardItem(QString("item %0").arg(i));
+        parentItem->appendRow(item);
+        parentItem = item;
+    }
+}
+
+void tst_qtnode::test_CollectAllIndices_collects_all_list()
+{
+    QModelIndexList collection;
+    QStandardItem *root_item = testModel->invisibleRootItem();
+    CollectAllIndices(root_item->index(), testModel, collection);
+
+    QCOMPARE(collection.size(), 4);
+
+    // qDebug() << "--> " << collection.size();
+    // foreach(QModelIndex blah, collection) {
+    //     qDebug() << ">> " << testModel->data(blah);
+    // }
+}
+
+void tst_qtnode::test_CollectAllIndices_ignores_invalids_data()
+{
+    int row_col_count = 2;
+    int extra_row_col_count = 4;
+    testModel = new QStandardItemModel(row_col_count, row_col_count);
+
+    for (int row = 0; row < extra_row_col_count; ++row) {
+        for (int column = 0; column < extra_row_col_count; ++column) {
+            QStandardItem *item = new QStandardItem(
+                QString("row %0, column %1").arg(row).arg(column));
+            testModel->setItem(row, column, item);
+        }
+    }
+}
+
+void tst_qtnode::test_CollectAllIndices_ignores_invalids()
+{
+    QModelIndexList collection;
+    QStandardItem *root_item = testModel->invisibleRootItem();
+    CollectAllIndices(root_item->index(), testModel, collection);
+
+    QCOMPARE(collection.size(), 4);
 }
 
 QTEST_MAIN(tst_qtnode)
