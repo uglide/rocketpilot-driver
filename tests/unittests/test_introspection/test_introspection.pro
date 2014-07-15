@@ -13,7 +13,7 @@ contains(QT_VERSION, ^5\\..\\..*) {
     DEFINES += QT5_SUPPORT
 }
 
-INCLUDEPATH += ../../driver
+INCLUDEPATH += ../../../driver
 
 SOURCES += \
 	tst_introspection.cpp \
