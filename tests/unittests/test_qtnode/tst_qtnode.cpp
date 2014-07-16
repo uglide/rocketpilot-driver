@@ -40,8 +40,6 @@ private slots:
     void test_CollectAllIndices_collects_all_table();
     void test_CollectAllIndices_collects_all_list_data();
     void test_CollectAllIndices_collects_all_list();
-    void test_CollectAllIndices_ignores_invalids_data();
-    void test_CollectAllIndices_ignores_invalids();
 private:
     QStandardItemModel *testModel;
 };
@@ -118,15 +116,6 @@ void tst_qtnode::test_CollectAllIndices_collects_all_list_data()
 }
 
 void tst_qtnode::test_CollectAllIndices_collects_all_list()
-{
-    QModelIndexList collection;
-    QStandardItem *root_item = testModel->invisibleRootItem();
-    CollectAllIndices(root_item->index(), testModel, collection);
-
-    QCOMPARE(collection.size(), 4);
-}
-
-void tst_qtnode::test_CollectAllIndices_ignores_invalids()
 {
     QModelIndexList collection;
     QStandardItem *root_item = testModel->invisibleRootItem();
