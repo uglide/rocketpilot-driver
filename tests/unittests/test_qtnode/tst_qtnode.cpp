@@ -23,8 +23,11 @@
 #include <QModelIndex>
 #include <QStandardItemModel>
 
+#include "introspection.h"
+
 int32_t calclulate_ap_id(quint64 big_id);
 void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
+bool MatchProperty(const QVariantMap& packed_properties, const std::string& name, QVariant value);
 
 class tst_qtnode: public QObject
 {
@@ -40,6 +43,9 @@ private slots:
     void test_CollectAllIndices_collects_all_table();
     void test_CollectAllIndices_collects_all_list_data();
     void test_CollectAllIndices_collects_all_list();
+
+    void test_MatchProperty_data();
+    void test_MatchProperty();
 private:
     QStandardItemModel *testModel;
 };
@@ -122,6 +128,41 @@ void tst_qtnode::test_CollectAllIndices_collects_all_list()
     CollectAllIndices(root_item->index(), testModel, collection);
 
     QCOMPARE(collection.size(), 4);
+}
+
+Q_DECLARE_METATYPE(std::string)
+void tst_qtnode::test_MatchProperty_data()
+{
+    QTest::addColumn<QVariantMap>("packedProperties");
+    QTest::addColumn<std::string>("name");
+    QTest::addColumn<QVariant>("value");
+    QTest::addColumn<bool>("expectedResult");
+
+    QVariantMap p;
+    p["string"] = PackProperty(QVariant("string"));
+    p["int"] = PackProperty(QVariant(1));
+    p["bool"] = PackProperty(QVariant(true));
+
+    QTest::newRow("Matches string") << p << std::string("string") << QVariant("string") << true;
+    QTest::newRow("Matches int") << p << std::string("int") << QVariant(1) << true;
+    QTest::newRow("Matches bool") << p << std::string("bool") << QVariant(true) << true;
+
+    QTest::newRow("Fails not present") << p << std::string("notpresent") << QVariant("string") << false;
+    QTest::newRow("Fails values do not match")
+        << p
+        << std::string("string")
+        << QVariant("notstring")
+        << false;
+}
+
+void tst_qtnode::test_MatchProperty()
+{
+    QFETCH(QVariantMap, packedProperties);
+    QFETCH(std::string, name);
+    QFETCH(QVariant, value);
+    QFETCH(bool, expectedResult);
+
+    QCOMPARE(MatchProperty(packedProperties, name, value), expectedResult);
 }
 
 QTEST_MAIN(tst_qtnode)
