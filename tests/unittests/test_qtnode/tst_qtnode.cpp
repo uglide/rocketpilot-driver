@@ -103,11 +103,6 @@ void tst_qtnode::test_CollectAllIndices_collects_all_table()
     CollectAllIndices(root_item->index(), testModel, collection);
 
     QCOMPARE(collection.size(), 4);
-
-    // qDebug() << "--> " << collection.size();
-    // foreach(QModelIndex blah, collection) {
-    //     qDebug() << ">> " << testModel->data(blah);
-    // }
 }
 
 void tst_qtnode::test_CollectAllIndices_collects_all_list_data()
@@ -129,26 +124,6 @@ void tst_qtnode::test_CollectAllIndices_collects_all_list()
     CollectAllIndices(root_item->index(), testModel, collection);
 
     QCOMPARE(collection.size(), 4);
-
-    // qDebug() << "--> " << collection.size();
-    // foreach(QModelIndex blah, collection) {
-    //     qDebug() << ">> " << testModel->data(blah);
-    // }
-}
-
-void tst_qtnode::test_CollectAllIndices_ignores_invalids_data()
-{
-    int row_col_count = 2;
-    int extra_row_col_count = 4;
-    testModel = new QStandardItemModel(row_col_count, row_col_count);
-
-    for (int row = 0; row < extra_row_col_count; ++row) {
-        for (int column = 0; column < extra_row_col_count; ++column) {
-            QStandardItem *item = new QStandardItem(
-                QString("row %0, column %1").arg(row).arg(column));
-            testModel->setItem(row, column, item);
-        }
-    }
 }
 
 void tst_qtnode::test_CollectAllIndices_ignores_invalids()
