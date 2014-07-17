@@ -60,6 +60,7 @@ private slots:
     void test_GetDataElementChildren_QTreeWidget_collects_all();
 private:
     std::shared_ptr<QStandardItemModel> testModel;
+    std::shared_ptr<QTreeWidget> treeWidget;
 };
 
 
@@ -200,21 +201,19 @@ void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all()
 
 void tst_qtnode::test_GetDataElementChildren_QTreeWidget_collects_all_data()
 {
+    treeWidget = std::make_shared<QTreeWidget>();
+    treeWidget->setColumnCount(1);
+    QList<QTreeWidgetItem *> items;
+    for (int i = 0; i < 5; ++i)
+        items.append(new QTreeWidgetItem());
+    treeWidget->insertTopLevelItems(0, items);
 }
 
 void tst_qtnode::test_GetDataElementChildren_QTreeWidget_collects_all()
 {
-    // add QTreeWidget as member (a shared ptr).
-    std::shared_ptr<QTreeWidget> widget = std::make_shared<QTreeWidget>();
-    widget->setColumnCount(1);
-    QList<QTreeWidgetItem *> items;
-    for (int i = 0; i < 5; ++i)
-        items.append(new QTreeWidgetItem((QTreeWidget*)0, QStringList(QString("item: %1").arg(i))));
-    widget->insertTopLevelItems(0, items);
-
     xpathselect::NodeVector children;
     DBusNode::Ptr parent;
-    GetDataElementChildren(widget.get(), children, parent);
+    GetDataElementChildren(treeWidget.get(), children, parent);
 
     QCOMPARE((int)children.size(), 5);
 
