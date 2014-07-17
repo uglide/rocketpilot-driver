@@ -20,14 +20,21 @@
 
 #include <QtTest>
 
+#include <QTreeView>
 #include <QModelIndex>
 #include <QStandardItemModel>
 
 #include "introspection.h"
+#include "qtnode.h"
 
 int32_t calclulate_ap_id(quint64 big_id);
 void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
 bool MatchProperty(const QVariantMap& packed_properties, const std::string& name, QVariant value);
+
+// void GetDataElementChildren(QTableWidget* table, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetDataElementChildren(QTreeView* tree_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+// void GetDataElementChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+// void GetDataElementChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 
 class tst_qtnode: public QObject
 {
@@ -46,6 +53,9 @@ private slots:
 
     void test_MatchProperty_data();
     void test_MatchProperty();
+
+    void test_GetDataElementChildren_QTreeView_collects_all_data();
+    void test_GetDataElementChildren_QTreeView_collects_all();
 private:
     QStandardItemModel *testModel;
 };
@@ -53,6 +63,7 @@ private:
 
 void tst_qtnode::initTestCase()
 {
+    QApplication::setApplicationName("tst_qtnode");
     testModel = 0;
 }
 
@@ -163,6 +174,38 @@ void tst_qtnode::test_MatchProperty()
     QFETCH(bool, expectedResult);
 
     QCOMPARE(MatchProperty(packedProperties, name, value), expectedResult);
+}
+
+// Prepare the model for use.
+void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all_data()
+{
+    // testModel = new QStandardItemModel(row_count, col_count);
+    testModel = new QStandardItemModel(this);
+    testModel->setColumnCount(1);
+    testModel->setRowCount(5);
+    testModel->setData(testModel->index(0, 0), "test0");
+    testModel->setData(testModel->index(1, 0), "test1");
+    testModel->setData(testModel->index(2, 0), "test2");
+    testModel->setData(testModel->index(3, 0), "test3");
+    testModel->setData(testModel->index(4, 0), "test4");
+}
+
+void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all()
+{
+    QTreeView *view = new QTreeView();
+    view->setModel(testModel);
+
+    xpathselect::NodeVector children;
+    DBusNode::Ptr parent;
+
+    GetDataElementChildren(view, children, parent);
+
+    QCOMPARE((int)children.size(), 5);
+
+    auto node_parent = children[0]->GetParent();
+    QVERIFY(node_parent == parent);
+
+    delete view;
 }
 
 QTEST_MAIN(tst_qtnode)
