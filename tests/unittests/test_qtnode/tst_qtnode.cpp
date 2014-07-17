@@ -22,6 +22,8 @@
 
 #include <QTreeView>
 #include <QTreeWidget>
+#include <QTableWidget>
+#include <QListView>
 #include <QModelIndex>
 #include <QStandardItemModel>
 
@@ -32,10 +34,10 @@ int32_t calclulate_ap_id(quint64 big_id);
 void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
 bool MatchProperty(const QVariantMap& packed_properties, const std::string& name, QVariant value);
 
-// void GetDataElementChildren(QTableWidget* table, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetDataElementChildren(QTableWidget* table, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void GetDataElementChildren(QTreeView* tree_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void GetDataElementChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent);
-// void GetDataElementChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+void GetDataElementChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 
 class tst_qtnode: public QObject
 {
@@ -58,9 +60,16 @@ private slots:
     void test_GetDataElementChildren_QTreeView_collects_all();
     void test_GetDataElementChildren_QTreeWidget_collects_all_data();
     void test_GetDataElementChildren_QTreeWidget_collects_all();
+    void test_GetDataElementChildren_QListView_collects_all_data();
+    void test_GetDataElementChildren_QListView_collects_all();
+    void test_GetDataElementChildren_QTableWidget_collects_all_data();
+    void test_GetDataElementChildren_QTableWidget_collects_all();
 private:
     std::shared_ptr<QStandardItemModel> testModel;
     std::shared_ptr<QTreeWidget> treeWidget;
+    std::shared_ptr<QListView> listView;
+    std::shared_ptr<QTreeView> treeView;
+    std::shared_ptr<QTableWidget> tableWidget;
 };
 
 
@@ -170,7 +179,6 @@ void tst_qtnode::test_MatchProperty()
     QCOMPARE(MatchProperty(packedProperties, name, value), expectedResult);
 }
 
-// Prepare the model for use.
 void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all_data()
 {
     testModel = std::make_shared<QStandardItemModel>();
@@ -181,17 +189,17 @@ void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all_data()
     testModel->setData(testModel->index(2, 0), "test2");
     testModel->setData(testModel->index(3, 0), "test3");
     testModel->setData(testModel->index(4, 0), "test4");
+
+    treeView = std::make_shared<QTreeView>();
+    treeView->setModel(testModel.get());
 }
 
 void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all()
 {
-    std::shared_ptr<QTreeView> view = std::make_shared<QTreeView>();
-    view->setModel(testModel.get());
-
     xpathselect::NodeVector children;
     DBusNode::Ptr parent;
 
-    GetDataElementChildren(view.get(), children, parent);
+    GetDataElementChildren(treeView.get(), children, parent);
 
     QCOMPARE((int)children.size(), 5);
 
@@ -214,6 +222,60 @@ void tst_qtnode::test_GetDataElementChildren_QTreeWidget_collects_all()
     xpathselect::NodeVector children;
     DBusNode::Ptr parent;
     GetDataElementChildren(treeWidget.get(), children, parent);
+
+    QCOMPARE((int)children.size(), 5);
+
+    auto node_parent = children[0]->GetParent();
+    QVERIFY(node_parent == parent);
+}
+
+void tst_qtnode::test_GetDataElementChildren_QListView_collects_all_data()
+{
+    testModel = std::make_shared<QStandardItemModel>();
+    testModel->setColumnCount(1);
+    testModel->setRowCount(5);
+    testModel->setData(testModel->index(0, 0), "test0");
+    testModel->setData(testModel->index(1, 0), "test1");
+    testModel->setData(testModel->index(2, 0), "test2");
+    testModel->setData(testModel->index(3, 0), "test3");
+    testModel->setData(testModel->index(4, 0), "test4");
+
+    listView = std::make_shared<QListView>();
+    listView->setModel(testModel.get());
+}
+
+void tst_qtnode::test_GetDataElementChildren_QListView_collects_all()
+{
+    xpathselect::NodeVector children;
+    DBusNode::Ptr parent;
+
+    GetDataElementChildren(listView.get(), children, parent);
+
+    QCOMPARE((int)children.size(), 5);
+
+    auto node_parent = children[0]->GetParent();
+    QVERIFY(node_parent == parent);
+}
+
+void tst_qtnode::test_GetDataElementChildren_QTableWidget_collects_all_data()
+{
+    tableWidget = std::make_shared<QTableWidget>();
+    tableWidget->setRowCount(4);
+    tableWidget->setColumnCount(2);
+
+    for (int row = 0; row < 4; ++row) {
+        for (int column = 0; column < 2; ++column) {
+            tableWidget->setItem(row, column, new QTableWidgetItem());
+        }
+    }
+}
+
+void tst_qtnode::test_GetDataElementChildren_QTableWidget_collects_all()
+{
+    xpathselect::NodeVector children;
+    DBusNode::Ptr parent;
+
+    GetDataElementChildren(listView.get(), children, parent);
 
     QCOMPARE((int)children.size(), 5);
 
