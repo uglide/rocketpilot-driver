@@ -63,9 +63,9 @@ public:
     virtual std::string GetName() const;
     virtual std::string GetPath() const;
     virtual int32_t GetId() const;
-    virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
-    virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
-    virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
+    virtual bool MatchStringProperty(std::string const& name, std::string const& value) const;
+    virtual bool MatchIntegerProperty(std::string const& name, int32_t value) const;
+    virtual bool MatchBooleanProperty(std::string const& name, bool value) const;
     virtual xpathselect::NodeVector Children() const;
 
 private:
@@ -88,9 +88,9 @@ public:
     virtual std::string GetName() const;
     virtual std::string GetPath() const;
     virtual int32_t GetId() const;
-    virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
-    virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
-    virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
+    virtual bool MatchStringProperty(std::string const& name, std::string const& value) const;
+    virtual bool MatchIntegerProperty(std::string const& name, int32_t value) const;
+    virtual bool MatchBooleanProperty(std::string const& name, bool value) const;
     virtual xpathselect::NodeVector Children() const;
 
 private:
@@ -116,9 +116,9 @@ public:
     virtual std::string GetName() const;
     virtual std::string GetPath() const;
     virtual int32_t GetId() const;
-    virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
-    virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
-    virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
+    virtual bool MatchStringProperty(std::string const& name, std::string const& value) const;
+    virtual bool MatchIntegerProperty(std::string const& name, int32_t value) const;
+    virtual bool MatchBooleanProperty(std::string const& name, bool value) const;
     virtual xpathselect::NodeVector Children() const;
 
 private:
@@ -143,9 +143,9 @@ public:
     virtual std::string GetName() const;
     virtual std::string GetPath() const;
     virtual int32_t GetId() const;
-    virtual bool MatchStringProperty(const std::string& name, const std::string& value) const;
-    virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
-    virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
+    virtual bool MatchStringProperty(std::string const& name, std::string const& value) const;
+    virtual bool MatchIntegerProperty(std::string const& name, int32_t value) const;
+    virtual bool MatchBooleanProperty(std::string const& name, bool value) const;
     virtual xpathselect::NodeVector Children() const;
 
 private:

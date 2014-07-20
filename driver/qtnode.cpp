@@ -34,7 +34,7 @@ void GetDataElementChildren(QListView* list_view, xpathselect::NodeVector& child
 void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
 QVariant SafePackProperty(QVariant const& prop);
 
-bool MatchProperty(const QVariantMap& packed_properties, const std::string& name, QVariant value);
+bool MatchProperty(QVariantMap const& packed_properties, std::string const& name, QVariant value);
 
 inline int32_t calculate_ap_id(quint64 big_id)
 {
@@ -96,7 +96,7 @@ QVariant SafePackProperty(QVariant const& prop)
         return blank_default;
 }
 
-bool MatchProperty(const QVariantMap& packed_properties, const std::string& name, QVariant value)
+bool MatchProperty(QVariantMap const& packed_properties, std::string const& name, QVariant value)
 {
     QString qname = QString::fromStdString(name);
     if (! packed_properties.contains(qname))
@@ -253,12 +253,12 @@ int32_t QObjectNode::GetId() const
     return qvariant_cast<int32_t>(object_->property(AP_ID_NAME));
 }
 
-bool QObjectNode::MatchStringProperty(const std::string& name, const std::string& value) const
+bool QObjectNode::MatchStringProperty(std::string const& name, std::string const& value) const
 {
     return MatchProperty(GetNodeProperties(object_), name, QString::fromStdString(value));
 }
 
-bool QObjectNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+bool QObjectNode::MatchIntegerProperty(std::string const& name, int32_t value) const
 {
     if (name == "id")
         return value == GetId();
@@ -266,7 +266,7 @@ bool QObjectNode::MatchIntegerProperty(const std::string& name, int32_t value) c
     return MatchProperty(GetNodeProperties(object_), name, value);
 }
 
-bool QObjectNode::MatchBooleanProperty(const std::string& name, bool value) const
+bool QObjectNode::MatchBooleanProperty(std::string const& name, bool value) const
 {
     return MatchProperty(GetNodeProperties(object_), name, value);
 }
@@ -464,12 +464,12 @@ int32_t QModelIndexNode::GetId() const
     return calculate_ap_id(static_cast<quint64>(qHash(index_)));
 }
 
-bool QModelIndexNode::MatchStringProperty(const std::string& name, const std::string& value) const
+bool QModelIndexNode::MatchStringProperty(std::string const& name, std::string const& value) const
 {
     return MatchProperty(GetProperties(), name, QString::fromStdString(value));
 }
 
-bool QModelIndexNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+bool QModelIndexNode::MatchIntegerProperty(std::string const& name, int32_t value) const
 {
     if (name == "id")
         return value == GetId();
@@ -477,7 +477,7 @@ bool QModelIndexNode::MatchIntegerProperty(const std::string& name, int32_t valu
     return MatchProperty(GetProperties(), name, value);
 }
 
-bool QModelIndexNode::MatchBooleanProperty(const std::string& name, bool value) const
+bool QModelIndexNode::MatchBooleanProperty(std::string const& name, bool value) const
 {
     return MatchProperty(GetProperties(), name, value);
 }
@@ -553,12 +553,12 @@ int32_t QTableWidgetItemNode::GetId() const
     return calculate_ap_id(static_cast<quint64>(reinterpret_cast<quintptr>(item_)));
 }
 
-bool QTableWidgetItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
+bool QTableWidgetItemNode::MatchStringProperty(std::string const& name, std::string const& value) const
 {
     return MatchProperty(GetProperties(), name, QString::fromStdString(value));
 }
 
-bool QTableWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+bool QTableWidgetItemNode::MatchIntegerProperty(std::string const& name, int32_t value) const
 {
     if (name == "id")
         return value == GetId();
@@ -566,7 +566,7 @@ bool QTableWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t
     return MatchProperty(GetProperties(), name, value);
 }
 
-bool QTableWidgetItemNode::MatchBooleanProperty(const std::string& name, bool value) const
+bool QTableWidgetItemNode::MatchBooleanProperty(std::string const& name, bool value) const
 {
     return MatchProperty(GetProperties(), name, value);
 }
@@ -643,12 +643,12 @@ int32_t QTreeWidgetItemNode::GetId() const
     return calculate_ap_id(static_cast<quint64>(reinterpret_cast<quintptr>(item_)));
 }
 
-bool QTreeWidgetItemNode::MatchStringProperty(const std::string& name, const std::string& value) const
+bool QTreeWidgetItemNode::MatchStringProperty(std::string const& name, std::string const& value) const
 {
     return MatchProperty(GetProperties(), name, QString::fromStdString(value));
 }
 
-bool QTreeWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t value) const
+bool QTreeWidgetItemNode::MatchIntegerProperty(std::string const& name, int32_t value) const
 {
     if (name == "id")
         return value == GetId();
@@ -656,7 +656,7 @@ bool QTreeWidgetItemNode::MatchIntegerProperty(const std::string& name, int32_t 
     return MatchProperty(GetProperties(), name, value);
 }
 
-bool QTreeWidgetItemNode::MatchBooleanProperty(const std::string& name, bool value) const
+bool QTreeWidgetItemNode::MatchBooleanProperty(std::string const& name, bool value) const
 {
     return MatchProperty(GetProperties(), name, value);
 }
