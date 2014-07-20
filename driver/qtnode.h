@@ -23,8 +23,8 @@ struct NodeIntrospectionData
 Q_DECLARE_METATYPE(NodeIntrospectionData);
 Q_DECLARE_METATYPE(QList<NodeIntrospectionData>);
 
-QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data);
-const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospectionData &node_data);
+QDBusArgument &operator<<(QDBusArgument &argument, NodeIntrospectionData const& node_data);
+const QDBusArgument &operator>>(QDBusArgument const& argument, NodeIntrospectionData &node_data);
 
 // Interface for Introspecting an object to query it's details.
 class DBusNode : public xpathselect::Node

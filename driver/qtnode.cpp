@@ -44,7 +44,7 @@ inline int32_t calculate_ap_id(quint64 big_id)
 }
 
 // Marshall the NodeIntrospectionData data into a D-Bus argument
-QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data)
+QDBusArgument &operator<<(QDBusArgument &argument, NodeIntrospectionData const& node_data)
 {
     argument.beginStructure();
     argument << node_data.object_path << node_data.state;
@@ -53,7 +53,7 @@ QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &
 }
 
 // Retrieve the NodeIntrospectionData data from the D-Bus argument
-const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospectionData &node_data)
+const QDBusArgument &operator>>(QDBusArgument const& argument, NodeIntrospectionData& node_data)
 {
     argument.beginStructure();
     argument >> node_data.object_path >> node_data.state;
