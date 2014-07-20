@@ -2,8 +2,8 @@ Autopilot Qt Driver
 ###################
 
 
-What is this I don't even?
-==========================
+What is this?
+=============
 
 This is the Qt driver for autopilot. It allows autopilot to inspect the
 internals of Qt4, Qt5, and QMl-based applications.
