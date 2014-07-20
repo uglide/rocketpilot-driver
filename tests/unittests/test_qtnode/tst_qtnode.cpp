@@ -30,7 +30,7 @@
 #include "introspection.h"
 #include "qtnode.h"
 
-int32_t calclulate_ap_id(quint64 big_id);
+int32_t calculate_ap_id(quint64 big_id);
 void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
 bool MatchProperty(const QVariantMap& packed_properties, const std::string& name, QVariant value);
 
@@ -45,8 +45,8 @@ class tst_qtnode: public QObject
 
 private slots:
     void initTestCase();
-    void test_calclulate_ap_id_data();
-    void test_calclulate_ap_id();
+    void test_calculate_ap_id_data();
+    void test_calculate_ap_id();
 
     void test_CollectAllIndices_collects_all_table_data();
     void test_CollectAllIndices_collects_all_table();
@@ -78,7 +78,7 @@ void tst_qtnode::initTestCase()
     QApplication::setApplicationName("tst_qtnode");
 }
 
-void tst_qtnode::test_calclulate_ap_id_data()
+void tst_qtnode::test_calculate_ap_id_data()
 {
     QTest::addColumn<quint64>("id");
     QTest::addColumn<int32_t>("expected_result");
@@ -91,12 +91,12 @@ void tst_qtnode::test_calclulate_ap_id_data()
     QTest::newRow("6") << Q_UINT64_C(0xF0F0F0F0FFFFFFFF) << int(0xF0F0F0F);
 }
 
-void tst_qtnode::test_calclulate_ap_id()
+void tst_qtnode::test_calculate_ap_id()
 {
     QFETCH(quint64, id);
     QFETCH(int32_t, expected_result);
 
-    QCOMPARE(calclulate_ap_id(id), expected_result);
+    QCOMPARE(calculate_ap_id(id), expected_result);
 }
 
 void tst_qtnode::test_CollectAllIndices_collects_all_table_data()
