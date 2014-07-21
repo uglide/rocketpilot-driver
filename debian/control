@@ -28,7 +28,7 @@ Package: libautopilot-qt
 Section: libs
 Architecture: any
 Depends: libxpathselect1.4,
-	 python-autopilot (>= 1.4) | python3-autopilot (>= 1.4),
+	 python3-autopilot (>= 1.4),
          ${misc:Depends},
          ${shlibs:Depends},
 Replaces: autopilot-qt,

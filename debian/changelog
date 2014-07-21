@@ -1,3 +1,9 @@
+autopilot-qt (1.4+14.04.20140312-0ubuntu3) utopic; urgency=medium
+
+  * Drop python-autopilot depends.
+
+ -- Dimitri John Ledkov <xnox@ubuntu.com>  Thu, 15 May 2014 18:03:46 +0100
+
 autopilot-qt (1.4+14.04.20140312-0ubuntu2) trusty; urgency=medium
 
   * No-change rebuild for shlib changes in qtbase and qtdeclarative.
