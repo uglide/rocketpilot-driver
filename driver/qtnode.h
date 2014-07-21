@@ -78,7 +78,6 @@ class QModelIndexNode : public DBusNode, public std::enable_shared_from_this<QMo
 {
 public:
     QModelIndexNode(QModelIndex index, QAbstractItemView* parent_view, DBusNode::Ptr parent);
-    explicit QModelIndexNode(QModelIndex index, QAbstractItemView* parent_view);
 
     // DBusNode
     virtual NodeIntrospectionData GetIntrospectionData() const;
@@ -106,7 +105,6 @@ class QTableWidgetItemNode : public DBusNode, public std::enable_shared_from_thi
 {
 public:
     QTableWidgetItemNode(QTableWidgetItem *item, DBusNode::Ptr parent);
-    explicit QTableWidgetItemNode(QTableWidgetItem *item);
 
     // DBusNode
     virtual NodeIntrospectionData GetIntrospectionData() const;
@@ -133,7 +131,6 @@ class QTreeWidgetItemNode : public DBusNode, public std::enable_shared_from_this
 {
 public:
     QTreeWidgetItemNode(QTreeWidgetItem *item, DBusNode::Ptr parent);
-    explicit QTreeWidgetItemNode(QTreeWidgetItem *item);
 
     // DBusNode
     virtual NodeIntrospectionData GetIntrospectionData() const;

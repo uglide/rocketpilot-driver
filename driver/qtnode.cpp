@@ -396,13 +396,6 @@ QModelIndexNode::QModelIndexNode(QModelIndex index, QAbstractItemView* parent_vi
     full_path_ = parent_path + "/" + GetName();
 }
 
-QModelIndexNode::QModelIndexNode(QModelIndex index, QAbstractItemView* parent_view)
-    : index_(index)
-    , parent_view_(parent_view)
-{
-    full_path_ = "/" + GetName();
-}
-
 NodeIntrospectionData QModelIndexNode::GetIntrospectionData() const
 {
     NodeIntrospectionData data;
@@ -506,12 +499,6 @@ QTableWidgetItemNode::QTableWidgetItemNode(QTableWidgetItem *item, DBusNode::Ptr
     full_path_ = parent_path + "/" + GetName();
 }
 
-QTableWidgetItemNode::QTableWidgetItemNode(QTableWidgetItem *item)
-    : item_(item)
-{
-    full_path_ = "/" + GetName();
-}
-
 NodeIntrospectionData QTableWidgetItemNode::GetIntrospectionData() const
 {
     NodeIntrospectionData data;
@@ -593,12 +580,6 @@ QTreeWidgetItemNode::QTreeWidgetItemNode(QTreeWidgetItem *item, DBusNode::Ptr pa
 {
     std::string parent_path = parent ? parent->GetPath() : "";
     full_path_ = parent_path + "/" + GetName();
-}
-
-QTreeWidgetItemNode::QTreeWidgetItemNode(QTreeWidgetItem *item)
-    : item_(item)
-{
-    full_path_ = "/" + GetName();
 }
 
 NodeIntrospectionData QTreeWidgetItemNode::GetIntrospectionData() const
