@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2014 Canonical, Ltd.
  *
  * Authors:
  *  Christopher Lee <chris.lee@canonical.com>
@@ -27,6 +27,8 @@
 #include <QModelIndex>
 #include <QStandardItemModel>
 
+#include "tst_qtnode.h"
+
 #include "introspection.h"
 #include "qtnode.h"
 
@@ -38,39 +40,6 @@ void GetDataElementChildren(QTableWidget* table, xpathselect::NodeVector& childr
 void GetDataElementChildren(QTreeView* tree_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void GetDataElementChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void GetDataElementChildren(QListView* list_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
-
-class tst_qtnode: public QObject
-{
-    Q_OBJECT
-
-private slots:
-    void initTestCase();
-    void test_calculate_ap_id_data();
-    void test_calculate_ap_id();
-
-    void test_CollectAllIndices_collects_all_table_data();
-    void test_CollectAllIndices_collects_all_table();
-    void test_CollectAllIndices_collects_all_list_data();
-    void test_CollectAllIndices_collects_all_list();
-
-    void test_MatchProperty_data();
-    void test_MatchProperty();
-
-    void test_GetDataElementChildren_QTreeView_collects_all_data();
-    void test_GetDataElementChildren_QTreeView_collects_all();
-    void test_GetDataElementChildren_QTreeWidget_collects_all_data();
-    void test_GetDataElementChildren_QTreeWidget_collects_all();
-    void test_GetDataElementChildren_QListView_collects_all_data();
-    void test_GetDataElementChildren_QListView_collects_all();
-    void test_GetDataElementChildren_QTableWidget_collects_all_data();
-    void test_GetDataElementChildren_QTableWidget_collects_all();
-private:
-    std::shared_ptr<QStandardItemModel> testModel;
-    std::shared_ptr<QTreeWidget> treeWidget;
-    std::shared_ptr<QListView> listView;
-    std::shared_ptr<QTreeView> treeView;
-    std::shared_ptr<QTableWidget> tableWidget;
-};
 
 
 void tst_qtnode::initTestCase()
@@ -282,6 +251,3 @@ void tst_qtnode::test_GetDataElementChildren_QTableWidget_collects_all()
     auto node_parent = children[0]->GetParent();
     QVERIFY(node_parent == parent);
 }
-
-QTEST_MAIN(tst_qtnode)
-#include "tst_qtnode.moc"
