@@ -26,6 +26,8 @@
 
 const QByteArray AP_ID_NAME("_autopilot_id");
 
+void CollectSpecialChildren(QObject* object, xpathselect::NodeVector& children, DBusNode::Ptr parent);
+
 void GetDataElementChildren(QTableWidget* table, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void GetDataElementChildren(QTreeView* tree_view, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void GetDataElementChildren(QTreeWidget* tree_widget, xpathselect::NodeVector& children, DBusNode::Ptr parent);
@@ -276,58 +278,39 @@ bool QObjectNode::MatchBooleanProperty(std::string const& name, bool value) cons
     return MatchProperty(GetNodeProperties(object_), name, value);
 }
 
+template <class T>
+void AttemptGetSpecialChildren(QObject* object, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+{
+    if(object->inherits(T::staticMetaObject.className()))
+    {
+        T* table = qobject_cast<T *>(object);
+        if(table) {
+            GetDataElementChildren(table, children, parent);
+        }
+        else {
+            qDebug() << "Casting object (with objectName: " << object->objectName() << ") "
+                     << "to " << T::staticMetaObject.className()
+                     << "failed. Unable to retrieve children.";
+        }
+    }
+}
+
+void CollectSpecialChildren(QObject* object, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+{
+    // Need to make sure to make these checks in the correct order.
+    // i.e. Because QTreeWidget inherits from QTreeView do it first otherwise
+    // we would never reach the specific QTreeWidget code.
+    AttemptGetSpecialChildren<QTableWidget>(object, children, parent);
+    AttemptGetSpecialChildren<QTreeWidget>(object, children, parent);
+    AttemptGetSpecialChildren<QTreeView>(object, children, parent);
+    AttemptGetSpecialChildren<QListView>(object, children, parent);
+}
+
 xpathselect::NodeVector QObjectNode::Children() const
 {
     xpathselect::NodeVector children;
 
-    // Do any special children handling if needed.
-    // Need to make sure to make these checks in the correct order.
-    // i.e. Because QTreeWidget inherits from QTreeView do it first otherwise
-    // we would never reach the specific QTreeWidget code.
-    if(object_->inherits("QTableWidget"))
-    {
-        QTableWidget* table = qobject_cast<QTableWidget *>(object_);
-        if(table) {
-            GetDataElementChildren(table, children, shared_from_this());
-        }
-        else {
-            qDebug() << "Casting object (with objectName: " << object_->objectName() << ") "
-                     << "to QTableWidget failed. Unable to retrieve children.";
-        }
-    }
-    else if(object_->inherits("QTreeWidget"))
-    {
-        QTreeWidget* tree_widget = qobject_cast<QTreeWidget *>(object_);
-        if(tree_widget) {
-            GetDataElementChildren(tree_widget, children, shared_from_this());
-        }
-        else {
-            qDebug() << "Casting object (with objectName: " << object_->objectName() << ") "
-                     << "to QTreeWidget failed. Unable to retrieve children.";
-        }
-    }
-    else if(object_->inherits("QTreeView"))
-    {
-        QTreeView* tree_view = qobject_cast<QTreeView *>(object_);
-        if(tree_view) {
-            GetDataElementChildren(tree_view, children, shared_from_this());
-        }
-        else {
-            qDebug() << "Casting object (with objectName: " << object_->objectName() << ") "
-                     << "to QTreeView failed. Unable to retrieve children.";
-        }
-    }
-    else if(object_->inherits("QListView"))
-    {
-        QListView* list_view = qobject_cast<QListView *>(object_);
-        if(list_view) {
-            GetDataElementChildren(list_view, children, shared_from_this());
-        }
-        else {
-            qDebug() << "Casting object (with objectName: " << object_->objectName() << ") "
-                     << "to QListView failed. Unable to retrieve children.";
-        }
-    }
+    CollectSpecialChildren(object_, children, shared_from_this());
 
 #ifdef QT5_SUPPORT
     // Qt5's hierarchy for QML has changed a bit:

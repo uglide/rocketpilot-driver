@@ -46,6 +46,11 @@ private slots:
     void test_MatchProperty_data();
     void test_MatchProperty();
 
+    void populate_QTreeView_with_data();
+    void populate_QTreeWidget_with_data();
+    void populate_QListView_with_data();
+    void populate_QTableWidget_with_data();
+
     void test_GetDataElementChildren_QTreeView_collects_all_data();
     void test_GetDataElementChildren_QTreeView_collects_all();
     void test_GetDataElementChildren_QTreeWidget_collects_all_data();
@@ -54,6 +59,16 @@ private slots:
     void test_GetDataElementChildren_QListView_collects_all();
     void test_GetDataElementChildren_QTableWidget_collects_all_data();
     void test_GetDataElementChildren_QTableWidget_collects_all();
+
+    void test_CollectSpecialChildren_QTreeView_collects_all_data();
+    void test_CollectSpecialChildren_QTreeView_collects_all();
+    void test_CollectSpecialChildren_QTreeWidget_collects_all_data();
+    void test_CollectSpecialChildren_QTreeWidget_collects_all();
+    void test_CollectSpecialChildren_QListView_collects_all_data();
+    void test_CollectSpecialChildren_QListView_collects_all();
+
+    void test_CollectSpecialChildren_QTableWidget_collects_all_data();
+    void test_CollectSpecialChildren_QTableWidget_collects_all();
 private:
     std::shared_ptr<QStandardItemModel> testModel;
     std::shared_ptr<QTreeWidget> treeWidget;

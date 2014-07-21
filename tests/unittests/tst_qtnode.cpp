@@ -33,6 +33,7 @@
 #include "qtnode.h"
 
 int32_t calculate_ap_id(quint64 big_id);
+void CollectSpecialChildren(QObject* object, xpathselect::NodeVector& children, DBusNode::Ptr parent);
 void CollectAllIndices(QModelIndex index, QAbstractItemModel *model, QModelIndexList &collection);
 bool MatchProperty(const QVariantMap& packed_properties, const std::string& name, QVariant value);
 
@@ -148,7 +149,7 @@ void tst_qtnode::test_MatchProperty()
     QCOMPARE(MatchProperty(packedProperties, name, value), expectedResult);
 }
 
-void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all_data()
+void tst_qtnode::populate_QTreeView_with_data()
 {
     testModel = std::make_shared<QStandardItemModel>();
     testModel->setColumnCount(1);
@@ -161,6 +162,49 @@ void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all_data()
 
     treeView = std::make_shared<QTreeView>();
     treeView->setModel(testModel.get());
+}
+
+void tst_qtnode::populate_QTreeWidget_with_data()
+{
+    treeWidget = std::make_shared<QTreeWidget>();
+    treeWidget->setColumnCount(1);
+    QList<QTreeWidgetItem *> items;
+    for (int i = 0; i < 5; ++i)
+        items.append(new QTreeWidgetItem());
+    treeWidget->insertTopLevelItems(0, items);
+}
+
+void tst_qtnode::populate_QListView_with_data()
+{
+    testModel = std::make_shared<QStandardItemModel>();
+    testModel->setColumnCount(1);
+    testModel->setRowCount(5);
+    testModel->setData(testModel->index(0, 0), "test0");
+    testModel->setData(testModel->index(1, 0), "test1");
+    testModel->setData(testModel->index(2, 0), "test2");
+    testModel->setData(testModel->index(3, 0), "test3");
+    testModel->setData(testModel->index(4, 0), "test4");
+
+    listView = std::make_shared<QListView>();
+    listView->setModel(testModel.get());
+}
+
+void tst_qtnode::populate_QTableWidget_with_data()
+{
+    tableWidget = std::make_shared<QTableWidget>();
+    tableWidget->setRowCount(4);
+    tableWidget->setColumnCount(2);
+
+    for (int row = 0; row < 4; ++row) {
+        for (int column = 0; column < 2; ++column) {
+            tableWidget->setItem(row, column, new QTableWidgetItem());
+        }
+    }
+}
+
+void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all_data()
+{
+    populate_QTreeView_with_data();
 }
 
 void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all()
@@ -178,12 +222,7 @@ void tst_qtnode::test_GetDataElementChildren_QTreeView_collects_all()
 
 void tst_qtnode::test_GetDataElementChildren_QTreeWidget_collects_all_data()
 {
-    treeWidget = std::make_shared<QTreeWidget>();
-    treeWidget->setColumnCount(1);
-    QList<QTreeWidgetItem *> items;
-    for (int i = 0; i < 5; ++i)
-        items.append(new QTreeWidgetItem());
-    treeWidget->insertTopLevelItems(0, items);
+    populate_QTreeWidget_with_data();
 }
 
 void tst_qtnode::test_GetDataElementChildren_QTreeWidget_collects_all()
@@ -200,17 +239,7 @@ void tst_qtnode::test_GetDataElementChildren_QTreeWidget_collects_all()
 
 void tst_qtnode::test_GetDataElementChildren_QListView_collects_all_data()
 {
-    testModel = std::make_shared<QStandardItemModel>();
-    testModel->setColumnCount(1);
-    testModel->setRowCount(5);
-    testModel->setData(testModel->index(0, 0), "test0");
-    testModel->setData(testModel->index(1, 0), "test1");
-    testModel->setData(testModel->index(2, 0), "test2");
-    testModel->setData(testModel->index(3, 0), "test3");
-    testModel->setData(testModel->index(4, 0), "test4");
-
-    listView = std::make_shared<QListView>();
-    listView->setModel(testModel.get());
+    populate_QListView_with_data();
 }
 
 void tst_qtnode::test_GetDataElementChildren_QListView_collects_all()
@@ -228,15 +257,7 @@ void tst_qtnode::test_GetDataElementChildren_QListView_collects_all()
 
 void tst_qtnode::test_GetDataElementChildren_QTableWidget_collects_all_data()
 {
-    tableWidget = std::make_shared<QTableWidget>();
-    tableWidget->setRowCount(4);
-    tableWidget->setColumnCount(2);
-
-    for (int row = 0; row < 4; ++row) {
-        for (int column = 0; column < 2; ++column) {
-            tableWidget->setItem(row, column, new QTableWidgetItem());
-        }
-    }
+    populate_QTableWidget_with_data();
 }
 
 void tst_qtnode::test_GetDataElementChildren_QTableWidget_collects_all()
@@ -250,4 +271,64 @@ void tst_qtnode::test_GetDataElementChildren_QTableWidget_collects_all()
 
     auto node_parent = children[0]->GetParent();
     QVERIFY(node_parent == parent);
+}
+
+void tst_qtnode::test_CollectSpecialChildren_QTreeView_collects_all_data()
+{
+    populate_QTreeView_with_data();
+}
+
+void tst_qtnode::test_CollectSpecialChildren_QTreeView_collects_all()
+{
+    xpathselect::NodeVector children;
+    DBusNode::Ptr parent;
+
+    CollectSpecialChildren(treeView.get(), children, parent);
+
+    QCOMPARE((int)children.size(), 5);
+}
+
+void tst_qtnode::test_CollectSpecialChildren_QTreeWidget_collects_all_data()
+{
+    populate_QTreeWidget_with_data();
+}
+
+void tst_qtnode::test_CollectSpecialChildren_QTreeWidget_collects_all()
+{
+    xpathselect::NodeVector children;
+    DBusNode::Ptr parent;
+
+    CollectSpecialChildren(treeWidget.get(), children, parent);
+
+    QCOMPARE((int)children.size(), 5);
+}
+
+void tst_qtnode::test_CollectSpecialChildren_QListView_collects_all_data()
+{
+    populate_QListView_with_data();
+}
+
+void tst_qtnode::test_CollectSpecialChildren_QListView_collects_all()
+{
+    xpathselect::NodeVector children;
+    DBusNode::Ptr parent;
+
+    CollectSpecialChildren(listView.get(), children, parent);
+
+    QCOMPARE((int)children.size(), 5);
+}
+
+void tst_qtnode::test_CollectSpecialChildren_QTableWidget_collects_all_data()
+{
+    populate_QTableWidget_with_data();
+}
+
+void tst_qtnode::test_CollectSpecialChildren_QTableWidget_collects_all()
+{
+    xpathselect::NodeVector children;
+    DBusNode::Ptr parent;
+
+    CollectSpecialChildren(tableWidget.get(), children, parent);
+
+    QCOMPARE((int)children.size(), 8);
 }
