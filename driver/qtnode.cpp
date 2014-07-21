@@ -400,11 +400,7 @@ QVariantMap QModelIndexNode::GetProperties() const
     if(model)
     {
         // Make an attempt to store the 'text' of a node to be user friendly-ish.
-        QVariant text_property = PackProperty(model->data(index_));
-        if(text_property.isValid())
-            properties["text"] = text_property;
-        else
-            properties["text"] = PackProperty("");
+        properties["text"] = SafePackProperty(model->data(index_));
 
         // Include any Role data (mung the role name with added "Role")
         const QHash<int, QByteArray> role_names = model->roleNames();
@@ -412,9 +408,7 @@ QVariantMap QModelIndexNode::GetProperties() const
         foreach(int name, role_names.keys())
         {
             if(item_data.contains(name)) {
-                QVariant property = PackProperty(item_data[name]);
-                if(property.isValid())
-                    properties[role_names[name]+"Role"] = property;
+                properties[role_names[name]+"Role"] = SafePackProperty(item_data[name]);
             }
             else {
                 properties[role_names[name]+"Role"] = PackProperty("");
