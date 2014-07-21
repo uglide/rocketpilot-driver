@@ -332,3 +332,14 @@ void tst_qtnode::test_CollectSpecialChildren_QTableWidget_collects_all()
 
     QCOMPARE((int)children.size(), 8);
 }
+
+void tst_qtnode::test_CollectSpecialChildren_QObject_collects_nothing()
+{
+    xpathselect::NodeVector children;
+    DBusNode::Ptr parent;
+    std::shared_ptr<QObject> testObject = std::make_shared<QObject>();
+
+    CollectSpecialChildren(testObject.get(), children, parent);
+
+    QCOMPARE((int)children.size(), 0);
+}

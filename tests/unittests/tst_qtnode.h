@@ -66,9 +66,9 @@ private slots:
     void test_CollectSpecialChildren_QTreeWidget_collects_all();
     void test_CollectSpecialChildren_QListView_collects_all_data();
     void test_CollectSpecialChildren_QListView_collects_all();
-
     void test_CollectSpecialChildren_QTableWidget_collects_all_data();
     void test_CollectSpecialChildren_QTableWidget_collects_all();
+    void test_CollectSpecialChildren_QObject_collects_nothing();
 private:
     std::shared_ptr<QStandardItemModel> testModel;
     std::shared_ptr<QTreeWidget> treeWidget;

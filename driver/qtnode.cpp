@@ -279,9 +279,10 @@ bool QObjectNode::MatchBooleanProperty(std::string const& name, bool value) cons
 }
 
 template <class T>
-void AttemptGetSpecialChildren(QObject* object, xpathselect::NodeVector& children, DBusNode::Ptr parent)
+bool AttemptGetSpecialChildren(QObject* object, xpathselect::NodeVector& children, DBusNode::Ptr parent)
 {
-    if(object->inherits(T::staticMetaObject.className()))
+    auto className = T::staticMetaObject.className();
+    if(object->inherits(className))
     {
         T* table = qobject_cast<T *>(object);
         if(table) {
@@ -289,10 +290,13 @@ void AttemptGetSpecialChildren(QObject* object, xpathselect::NodeVector& childre
         }
         else {
             qDebug() << "Casting object (with objectName: " << object->objectName() << ") "
-                     << "to " << T::staticMetaObject.className()
+                     << "to " << className
                      << "failed. Unable to retrieve children.";
+            return false;
         }
+        return true;
     }
+    return false;
 }
 
 void CollectSpecialChildren(QObject* object, xpathselect::NodeVector& children, DBusNode::Ptr parent)
@@ -300,10 +304,10 @@ void CollectSpecialChildren(QObject* object, xpathselect::NodeVector& children, 
     // Need to make sure to make these checks in the correct order.
     // i.e. Because QTreeWidget inherits from QTreeView do it first otherwise
     // we would never reach the specific QTreeWidget code.
-    AttemptGetSpecialChildren<QTableWidget>(object, children, parent);
-    AttemptGetSpecialChildren<QTreeWidget>(object, children, parent);
-    AttemptGetSpecialChildren<QTreeView>(object, children, parent);
-    AttemptGetSpecialChildren<QListView>(object, children, parent);
+    AttemptGetSpecialChildren<QTableWidget>(object, children, parent)
+        || AttemptGetSpecialChildren<QTreeWidget>(object, children, parent)
+        || AttemptGetSpecialChildren<QTreeView>(object, children, parent)
+        || AttemptGetSpecialChildren<QListView>(object, children, parent);
 }
 
 xpathselect::NodeVector QObjectNode::Children() const
