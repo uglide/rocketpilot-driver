@@ -244,9 +244,9 @@ void tst_qtnode::test_GetDataElementChildren_QTableWidget_collects_all()
     xpathselect::NodeVector children;
     DBusNode::Ptr parent;
 
-    GetDataElementChildren(listView.get(), children, parent);
+    GetDataElementChildren(tableWidget.get(), children, parent);
 
-    QCOMPARE((int)children.size(), 5);
+    QCOMPARE((int)children.size(), 8);
 
     auto node_parent = children[0]->GetParent();
     QVERIFY(node_parent == parent);
