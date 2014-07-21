@@ -118,7 +118,9 @@ void GetDataElementChildren(QTreeView* tree_view, xpathselect::NodeVector& child
     QAbstractItemModel* abstract_model = tree_view->model();
     if(! abstract_model)
     {
-        qDebug() << "Unable to retrieve model for QTreeView";
+        qDebug() << "Unable to get element children from QTreeView "
+                 << "with objectName '" << tree_view->objectName() << "'. "
+                 << "No model found.";
         return;
     }
 
@@ -161,7 +163,9 @@ void GetDataElementChildren(QListView* list_view, xpathselect::NodeVector& child
     QAbstractItemModel* abstract_model = list_view->model();
 
     if(! abstract_model) {
-        qDebug() << "Unable to retrieve model for QTreeView";
+        qDebug() << "Unable to get element children from QListView "
+                 << "with objectName '" << list_view->objectName() << "'. "
+                 << "No model found.";
         return;
     }
 
@@ -286,7 +290,8 @@ xpathselect::NodeVector QObjectNode::Children() const
             GetDataElementChildren(table, children, shared_from_this());
         }
         else {
-            qDebug() << "Casting object to QTableWidget failed. Unable to retrieve children.";
+            qDebug() << "Casting object (with objectName: " << object_->objectName() << ") "
+                     << "to QTableWidget failed. Unable to retrieve children.";
         }
     }
     else if(object_->inherits("QTreeWidget"))
@@ -296,7 +301,8 @@ xpathselect::NodeVector QObjectNode::Children() const
             GetDataElementChildren(tree_widget, children, shared_from_this());
         }
         else {
-            qDebug() << "Casting object to QTreeWidget failed. Unable to retrieve children.";
+            qDebug() << "Casting object (with objectName: " << object_->objectName() << ") "
+                     << "to QTreeWidget failed. Unable to retrieve children.";
         }
     }
     else if(object_->inherits("QTreeView"))
@@ -306,7 +312,8 @@ xpathselect::NodeVector QObjectNode::Children() const
             GetDataElementChildren(tree_view, children, shared_from_this());
         }
         else {
-            qDebug() << "Casting object to QTreeView failed. Unable to retrieve children.";
+            qDebug() << "Casting object (with objectName: " << object_->objectName() << ") "
+                     << "to QTreeView failed. Unable to retrieve children.";
         }
     }
     else if(object_->inherits("QListView"))
@@ -316,7 +323,8 @@ xpathselect::NodeVector QObjectNode::Children() const
             GetDataElementChildren(list_view, children, shared_from_this());
         }
         else {
-            qDebug() << "Casting object to QTreeView failed. Unable to retrieve children.";
+            qDebug() << "Casting object (with objectName: " << object_->objectName() << ") "
+                     << "to QListView failed. Unable to retrieve children.";
         }
     }
 
