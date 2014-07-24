@@ -1,0 +1,88 @@
+Autopilot Qt Driver
+###################
+
+
+What is this?
+=============
+
+This is the Qt driver for autopilot. It allows autopilot to inspect the
+internals of Qt4, Qt5, and QMl-based applications.
+
+How does it work?
+=================
+
+Qt loads a 'qt_testability' library, if *either* the ``-testability`` command
+line argument is passed to ``QCoreApplication``, *or* if the
+``QT_LOAD_TESTABILITY`` environment variable is set. This codebase provides that
+library, along with several others.
+
+Upon being loaded, it connects to the system bus, and exposes an interface that
+the autopilot test runner knows how to interact with.
+
+How do I build it?
+==================
+
+First, make sure you have all the build dependencies installed::
+
+	$ sudo mk-build-deps -i
+
+Then build the library::
+
+	$ # Make the shadow build directory:
+	$ mkdir build
+	$ cd build
+	$ # Build the qt4 libraries. These steps can be skipped if you only care about Qt5
+	$ qmake -qt=qt4 ../autopilot-qt.pro
+	$ make
+	$ # Build Qt5. This is required, even if you don't care about Qt5:
+	$ qmake -qt=qt5 ../autopilot-qt.pro
+	$ make
+
+To use the library you just built, make sure your 'build' directory is in your
+``LD_LIBRARY_PATH`` environment varaible::
+
+	$ export LD_LIBRARY_PATH=`pwd`:$LD_LIBRARY_PATH
+
+How do I run the unit tests?
+============================
+
+After completing the build instructions above, make sure you are still in the
+'build' directory and run::
+
+	$ ./tests/unittests/tst_introspection
+
+How do I run the autopilot tests?
+=================================
+
+After completing the build instructions above, make sure you are still in the
+'build' directory and run::
+
+	$ cd tests/autopilot
+	$ PYTHONPATH=../../../tests/autopilot python3 -m autopilot.run run libautopilot_qt
+
+
+How do I install autopilot-qt from source to the system?
+========================================================
+
+The only sensible way to do this is to build the debian packages::
+
+ 	$ bzr bd
+
+ If the package signing fails (probably because you haven't added to
+ debian/changelog) then you can install the built (but unsigned) packages like
+ so::
+
+ 	$ sudo dpkg -i ../build-area/libautopilot-qt*.deb
+
+Otherwise the packages will be in the parent directory, and can be installed
+like so::
+
+ 	$ sudo dpkg -i ../libautopilot-qt*.deb
+
+Note that the unit test suite is run during a package buid, but the autopilot
+tests are not.
+
+Who should I ask for more information?
+======================================
+
+Autopilot developers all hang out on #ubuntu-autopilot on irc.freenode.net.
