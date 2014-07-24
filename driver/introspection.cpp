@@ -51,8 +51,8 @@ void AddCustomProperties(QObject* obj, QVariantMap& properties);
 QList<NodeIntrospectionData> Introspect(QString const& query_string)
 {
     QList<NodeIntrospectionData> state;
-    QList<QtNode::Ptr> node_list = GetNodesThatMatchQuery(query_string);
-    foreach (QtNode::Ptr obj, node_list)
+    QList<DBusNode::Ptr> node_list = GetNodesThatMatchQuery(query_string);
+    foreach (DBusNode::Ptr obj, node_list)
     {
         state.append(obj->GetIntrospectionData());
     }
@@ -62,7 +62,7 @@ QList<NodeIntrospectionData> Introspect(QString const& query_string)
 }
 
 
-QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
+QList<DBusNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
 {
 #ifdef QT5_SUPPORT
     std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QApplication::instance());
@@ -84,13 +84,13 @@ QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
         root->AddChild((QObject*) widget);
     }
 #endif
-    QList<QtNode::Ptr> node_list;
+    QList<DBusNode::Ptr> node_list;
 
     xpathselect::NodeVector list = xpathselect::SelectNodes(root, query_string.toStdString());
     for (auto node : list)
     {
         // node may be our root node wrapper *or* an ordinary qobject wrapper
-        auto object_ptr = std::static_pointer_cast<const QtNode>(node);
+        auto object_ptr = std::static_pointer_cast<const DBusNode>(node);
         if (object_ptr)
         {
             node_list.append(object_ptr);

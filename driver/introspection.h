@@ -16,8 +16,8 @@ by the Free Software Foundation.
 /// Introspect 'obj' and return it's properties in a QVariantMap.
 QList<NodeIntrospectionData> Introspect(const QString& query_string);
 
-/// Get a list of QtNode pointers that match the given query.
-QList<QtNode::Ptr> GetNodesThatMatchQuery(QString const& query_string);
+/// Get a list of DBusNode pointers that match the given query.
+QList<DBusNode::Ptr> GetNodesThatMatchQuery(QString const& query_string);
 
 /// Return true if 't' is a type that we can marshall over DBus
 QVariant PackProperty(QVariant const& prop);

@@ -8,7 +8,7 @@ class QCoreApplication;
 class QObject;
 
 
-class RootNode: public QtNode
+class RootNode: public QObjectNode
 {
 public:
     RootNode(QCoreApplication* application);

@@ -19,25 +19,40 @@ Q_DECLARE_METATYPE(QList<NodeIntrospectionData>);
 QDBusArgument &operator<<(QDBusArgument &argument, const NodeIntrospectionData &node_data);
 const QDBusArgument &operator>>(const QDBusArgument &argument, NodeIntrospectionData &node_data);
 
-/// Base class for all Qt-based object nodes.
-///
-/// QtNode wraps a single QObject pointer. It derives from xpathselect::Node and,
-/// like that class, is designed to be allocated on the heap and stored in a
-/// std::shared_ptr.
-class QtNode: public xpathselect::Node, public std::enable_shared_from_this<QtNode>
+// Interface for Introspecting an object to query it's details.
+class DBusNode : public xpathselect::Node
 {
 public:
-    typedef std::shared_ptr<const QtNode> Ptr;
+    typedef std::shared_ptr<const DBusNode> Ptr;
 
-    QtNode(QObject* object, Ptr parent);
-    explicit QtNode(QObject* object);
+    DBusNode() {}
+    virtual ~DBusNode() {}
+
+    virtual NodeIntrospectionData GetIntrospectionData() const=0;
+};
+
+/// Specialist class for all QObject object nodes.
+/// This will cover a majority of what we use and we will only need to break
+/// out to specilist classes for a couple of minor (i.e. QModelIndex)
+///
+/// QObjectNode wraps a single QObject pointer. It derives from
+/// xpathselect::Node (DBusNode) and, like that class, is designed to be
+/// allocated on the heap and stored in a std::shared_ptr.
+class QObjectNode : public DBusNode, public std::enable_shared_from_this<QObjectNode>
+{
+public:
+    typedef std::shared_ptr<const QObjectNode> Ptr;
+
+    QObjectNode(QObject* object, DBusNode::Ptr parent);
+    explicit QObjectNode(QObject* object);
 
     QObject* getWrappedObject() const;
-    xpathselect::Node::Ptr GetParent() const;
 
+    // DBusNode
     virtual NodeIntrospectionData GetIntrospectionData() const;
 
-
+    // xpathselect::Node
+    xpathselect::Node::Ptr GetParent() const;
     virtual std::string GetName() const;
     virtual std::string GetPath() const;
     virtual int32_t GetId() const;
@@ -45,10 +60,11 @@ public:
     virtual bool MatchIntegerProperty(const std::string& name, int32_t value) const;
     virtual bool MatchBooleanProperty(const std::string& name, bool value) const;
     virtual xpathselect::NodeVector Children() const;
+
 private:
     QObject *object_;
     std::string full_path_;
-    Ptr parent_;
+    DBusNode::Ptr parent_;
 };
 
 #endif // QTNODE_H
