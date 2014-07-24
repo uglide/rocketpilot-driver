@@ -39,7 +39,7 @@ QVariant SafePackProperty(QVariant const& prop);
 bool MatchProperty(QVariantMap const& packed_properties, std::string const& name, QVariant value);
 
 // Produce an id suitable for xpathselects' GetId
-inline int32_t calculate_ap_id(quint64 big_id)
+int32_t calculate_ap_id(quint64 big_id)
 {
     int32_t high = static_cast<int32_t>(big_id >> 32);
     int32_t low = static_cast<int32_t>(big_id);
