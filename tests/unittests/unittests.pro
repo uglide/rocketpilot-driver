@@ -1,7 +1,7 @@
 #include(../../coverage.pri)
 
 CONFIG += testcase
-TARGET = tst_introspection
+TARGET = tst_libautopilot-qt
 
 QT += testlib dbus widgets quick
 
@@ -16,12 +16,16 @@ contains(QT_VERSION, ^5\\..\\..*) {
 INCLUDEPATH += ../../driver
 
 SOURCES += \
+	tst_main.cpp \
+	tst_qtnode.cpp \
 	tst_introspection.cpp \
     ../../driver/introspection.cpp \
     ../../driver/rootnode.cpp \
     ../../driver/qtnode.cpp
 
 HEADERS += \
+    tst_qtnode.h \
+    tst_introspection.h \
     ../../driver/introspection.h \
     ../../driver/rootnode.h \
     ../../driver/qtnode.h

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Canonical, Ltd.
+ * Copyright (C) 2013-2014 Canonical, Ltd.
  *
  * Authors:
  *  Michael Zanetti <michael.zanetti@canonical.com>
@@ -25,34 +25,12 @@
 #include <QGridLayout>
 #include <QPushButton>
 
+#include "tst_introspection.h"
+
 #include "introspection.h"
 #include "qtnode.h"
 
 QVariant IntrospectNode(QObject* obj);
-
-class tst_Introspection : public QObject
-{
-    Q_OBJECT
-
-private slots:
-    void initTestCase();
-    void cleanupTestCase();
-
-    void test_introspect_data();
-    void test_introspect();
-
-    void test_application_names_data();
-    void test_application_names();
-
-    void test_properties_data();
-    void test_properties();
-
-    void test_property_matching();
-
-private:
-    QMainWindow *m_object;
-};
-
 
 void tst_Introspection::initTestCase()
 {
@@ -510,7 +488,3 @@ void tst_Introspection::test_property_matching()
     QVERIFY(n.MatchIntegerProperty("myUInt", 5) == true);
     QVERIFY(n.MatchBooleanProperty("visible", true) == true);
 }
-
-QTEST_MAIN(tst_Introspection)
-
-#include "tst_introspection.moc"
