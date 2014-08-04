@@ -58,10 +58,8 @@ Section: libs
 Architecture: any
 Depends: ${misc:Depends},
          ${shlibs:Depends},
-Replaces: autopilot-qt5, libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
-Conflicts: autopilot-qt5
+Replaces: libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
 Breaks: libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
-Provides: autopilot-qt5
 Description: make Qt applications introspectable by autopilot - Qt5 plugin
  autopilot-qt allows autopilot to test any existing Qt application, without
  having to rebuild the application under test.

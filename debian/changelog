@@ -1,3 +1,10 @@
+autopilot-qt (1.4+14.10.20140724.1-0ubuntu3) UNRELEASED; urgency=medium
+
+  * Remove completely unnecessary Conflicts/Provides/Replaces on
+    autopilot-qt5.
+
+ -- Steve Langasek <steve.langasek@ubuntu.com>  Mon, 04 Aug 2014 10:24:03 +0200
+
 autopilot-qt (1.4+14.10.20140724.1-0ubuntu2) utopic; urgency=medium
 
   * Remove bare libautopilot_driver_qt*.so files from the package; these are
