@@ -27,20 +27,63 @@ Vcs-Browser: https://bazaar.launchpad.net/~autopilot/autopilot-qt/trunk/files
 Package: libautopilot-qt
 Section: libs
 Architecture: any
-Depends: libxpathselect1.4,
-	 python3-autopilot (>= 1.4),
+Depends: autopilot-qt4,
+         autopilot-qt5,
+         qttestability-autopilot,
          ${misc:Depends},
          ${shlibs:Depends},
-Replaces: autopilot-qt,
-          autopilot-qt5,
-Conflicts: autopilot-qt,
-           autopilot-qt5,
-Provides: autopilot-qt,
-          autopilot-qt5,
-Recommends: python-autopilot,
-Description: This project makes Qt applications introspectable by autopilot.
- This allows autopilot to test any existing Qt4 or Qt5 application,
- without having to rebuild the application under test.
+Description: make Qt applications introspectable by autopilot
+ autopilot-qt allows autopilot to test any existing Qt application, without
+ having to rebuild the application under test.
+ .
+ This is a compatibility package depending on both the Qt4 and Qt5 drivers.
+
+Package: autopilot-qt4
+Section: libs
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Replaces: autopilot-qt, libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
+Conflicts: autopilot-qt
+Breaks: libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
+Provides: autopilot-qt
+Description: make Qt applications introspectable by autopilot - Qt4 plugin
+ autopilot-qt allows autopilot to test any existing Qt application, without
+ having to rebuild the application under test.
+ .
+ This package provides the driver used for packages built against Qt4.
+
+Package: autopilot-qt5
+Section: libs
+Architecture: any
+Depends: ${misc:Depends},
+         ${shlibs:Depends},
+Replaces: libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
+Breaks: libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
+Description: make Qt applications introspectable by autopilot - Qt5 plugin
+ autopilot-qt allows autopilot to test any existing Qt application, without
+ having to rebuild the application under test.
+ .
+ This package provides the driver used for packages built against Qt5.
+
+Package: qttestability-autopilot
+Section: libs
+Architecture: any
+Depends: libxpathselect1.4,
+	 python3-autopilot (>= 1.4),
+         autopilot-qt5 | autopilot-qt4
+         ${misc:Depends},
+         ${shlibs:Depends}
+Recommends: python-autopilot
+Replaces: libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
+Breaks: libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
+Description: make Qt applications introspectable by autopilot
+ autopilot-qt allows autopilot to test any existing Qt application, without
+ having to rebuild the application under test.
+ .
+ This package provides the qttestability library, which requires the
+ matching autopilot-qt4 or autopilot-qt5 driver package installed for the
+ application under test.
 
 Package: libautopilot-qt-autopilot
 Section: libs
