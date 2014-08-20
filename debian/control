@@ -70,11 +70,10 @@ Package: qttestability-autopilot
 Section: libs
 Architecture: any
 Depends: libxpathselect1.4,
-	 python3-autopilot (>= 1.4),
+         python3-autopilot (>= 1.4),
          autopilot-qt5 | autopilot-qt4
          ${misc:Depends},
          ${shlibs:Depends}
-Recommends: python-autopilot
 Replaces: libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
 Breaks: libautopilot-qt (<< 1.4+14.10.20140724.1-0ubuntu2)
 Description: make Qt applications introspectable by autopilot
@@ -89,8 +88,7 @@ Package: libautopilot-qt-autopilot
 Section: libs
 Architecture: any
 Depends: libautopilot-qt (>= ${source:Version}),
-         python-autopilot,
-         python-support (>= 0.90),
+         python3-autopilot,
          ${misc:Depends},
          ${shlibs:Depends},
 Description: Autopilot tests for libautopilot-qt
