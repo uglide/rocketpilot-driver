@@ -1,3 +1,10 @@
+autopilot-qt (1.4+14.10.20140820-0ubuntu1) utopic; urgency=low
+
+  [ Robert Bruce Park ]
+  * Move to python3 autopilot dependencies (thanks to pitti).
+
+ -- Ubuntu daily release <ps-jenkins@lists.canonical.com>  Wed, 20 Aug 2014 00:09:51 +0000
+
 autopilot-qt (1.4+14.10.20140724.1-0ubuntu3) utopic; urgency=medium
 
   * Remove completely unnecessary Conflicts/Provides/Replaces on
