@@ -21,7 +21,9 @@
 #include <QApplication>
 #include <QStringList>
 
-#ifdef QT5_SUPPORT
+#ifdef QT_VERSION >= QT_VERSION_CHECK(5, 3, 0)
+#include <QQuickWidget>
+#elif QT5_SUPPORT
 #include <QQuickView>
 #else
 #include <QDeclarativeView>
@@ -39,7 +41,9 @@ int main(int argc, char *argv[])
         app.setApplicationName(args.at(appNameIndex+1));
     }
 
-#ifdef QT5_SUPPORT
+#ifdef QT_VERSION > QT_VERSION_CHECK(5, 3, 0)
+    QQuickWidget view;
+#elif QT5_SUPPORT
     QQuickView view;
 #else
     QDeclarativeView view;

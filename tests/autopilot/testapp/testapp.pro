@@ -2,7 +2,7 @@ TEMPLATE = app
 
 contains(QT_VERSION, ^5\\..\\..*) {
     TARGET = qt5testapp
-    QT += widgets quick
+    QT += widgets quick quickwidgets
     qmlfile.file = qt5.qml
 
     DEFINES += QT5_SUPPORT
