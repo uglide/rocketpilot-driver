@@ -3,7 +3,7 @@
 CONFIG += testcase
 TARGET = tst_libautopilot-qt
 
-QT += testlib dbus widgets quick
+QT += testlib dbus widgets quick quickwidgets
 
 CONFIG += link_pkgconfig debug
 PKGCONFIG += xpathselect

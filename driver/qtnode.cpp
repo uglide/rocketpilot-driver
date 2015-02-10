@@ -11,6 +11,7 @@
   #include <QtQml/QQmlContext>
   #include <QtQuick/QQuickView>
   #include <QtQuick/QQuickItem>
+  #include <QtQuickWidgets/QQuickWidget>
 #else
   #include <QGraphicsScene>
   #include <QGraphicsObject>
@@ -325,6 +326,12 @@ xpathselect::NodeVector QObjectNode::Children() const
     QQuickView *view = qobject_cast<QQuickView*>(object_);
     if (view && view->rootObject() != 0) {
         children.push_back(std::make_shared<QObjectNode>(view->rootObject(), shared_from_this()));
+    }
+
+    QQuickWidget *wview = qobject_cast<QQuickWidget*>(object_);
+    if (wview && wview->rootObject() != 0) {
+        qDebug() << "Collect QQuickWidget childrens";
+        children.push_back(std::make_shared<QObjectNode>(wview->rootObject(), shared_from_this()));
     }
 
     QQuickItem* item = qobject_cast<QQuickItem*>(object_);

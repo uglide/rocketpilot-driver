@@ -45,7 +45,7 @@ Item {
         id: rect
         objectName: "testRectangle"
         anchors.fill: parent
-        color: "blue"
+        color: "grey"
     }
 
     MouseArea {

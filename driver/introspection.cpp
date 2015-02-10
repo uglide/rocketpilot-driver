@@ -20,6 +20,7 @@ by the Free Software Foundation.
   #include <QtWidgets/QWidget>
   #include <QtQuick/QQuickItem>
   #include <QtQuick/QQuickWindow>
+  #include <QtQuickWidgets/QQuickWidget>
 #else
   #include <QGraphicsItem>
   #include <QGraphicsScene>
@@ -165,8 +166,7 @@ void AddCustomProperties(QObject* obj, QVariantMap &properties)
 {
     // Add any custom properties we need to the given QObject.
     // Add GlobalRect support for QWidget-derived classes
-    QWidget *w = qobject_cast<QWidget*>(obj);
-    if (w)
+    if (QWidget *w = qobject_cast<QWidget*>(obj))
     {
         QRect r = w->rect();
         r = QRect(w->mapToGlobal(r.topLeft()), r.size());

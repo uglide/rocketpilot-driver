@@ -9,7 +9,7 @@ contains(QT_VERSION, ^5\\..\\..*) {
 }
 
 DESTDIR=..
-QT = core gui dbus quick widgets testlib
+QT = core gui dbus quick quickwidgets widgets testlib
 CONFIG += link_pkgconfig
 PKGCONFIG += xpathselect
 QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined

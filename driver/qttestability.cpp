@@ -21,7 +21,7 @@ const QString DBUS_OBJECT_PATH("/com/canonical/Autopilot/Introspection");
 void qt_testability_init(void)
 {
     qDebug().nospace()
-        << "Testability driver loaded. Wire protocol version is "
+        << "Modified Testability driver loaded. Wire protocol version is "
         << AutopilotAdaptor::WIRE_PROTO_VERSION
         << ".";
     qDBusRegisterMetaType<NodeIntrospectionData>();
