@@ -1,16 +1,10 @@
 TEMPLATE = app
 
-contains(QT_VERSION, ^5\\..\\..*) {
-    TARGET = qt5testapp
-    QT += widgets quick quickwidgets
-    qmlfile.file = qt5.qml
+TARGET = qt5testapp
+QT += widgets quick quickwidgets
+qmlfile.file = qt5.qml
 
-    DEFINES += QT5_SUPPORT
-} else {
-    TARGET = qt4testapp
-    QT += declarative
-    qmlfile.file = qt4.qml
-}
+DEFINES += QT5_SUPPORT
 
 SOURCES += testapp.cpp
 

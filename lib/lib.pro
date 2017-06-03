@@ -8,8 +8,15 @@ QT -= core gui
 QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
 QMAKE_CXXFLAGS -= -pedantic
 
-SOURCES = qttestability.cpp
-HEADERS = qttestability.h
+win32* {
+    SOURCES = $$PWD/windows/qttestability.cpp
+    HEADERS = $$PWD/windows/qttestability.h
+}
+
+unix:!macx {
+    SOURCES = $$PWD/linux/qttestability.cpp
+    HEADERS = $$PWD/linux/qttestability.h
+}
 
 target.file = libtestability*
 INSTALLS += target

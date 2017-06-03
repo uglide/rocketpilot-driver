@@ -6,12 +6,14 @@ TARGET = tst_libautopilot-qt
 QT += testlib dbus widgets quick quickwidgets
 
 CONFIG += link_pkgconfig debug
-PKGCONFIG += xpathselect
+
+unix:!macx {
+    PKGCONFIG += xpathselect
+}
+
 QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
 
-contains(QT_VERSION, ^5\\..\\..*) {
-    DEFINES += QT5_SUPPORT
-}
+DEFINES += QT5_SUPPORT
 
 INCLUDEPATH += ../../driver
 

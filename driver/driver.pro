@@ -1,19 +1,19 @@
 TEMPLATE = lib
 
-#version check qt
-contains(QT_VERSION, ^5\\..\\..*) {
-    DEFINES += QT5_SUPPORT
-    TARGET = autopilot_driver_qt5
-} else {
-    TARGET = autopilot_driver_qt4
-}
+DEFINES += QT5_SUPPORT
+TARGET = autopilot_driver_qt5
 
 DESTDIR=..
 QT = core gui dbus quick quickwidgets widgets testlib
 QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
 
-INCLUDEPATH += $$PWD/../3rdparty
-LIBS += $$PWD/../bin/libxpathselect.a
+win32* {
+    INCLUDEPATH += $$PWD/../3rdparty
+    LIBS += $$PWD/../bin/libxpathselect.a
+} else {
+    CONFIG += link_pkgconfig
+    PKGCONFIG += xpathselect
+}
 
 SOURCES = qttestability.cpp \
           dbus_adaptor.cpp \
