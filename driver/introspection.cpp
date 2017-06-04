@@ -12,22 +12,14 @@ by the Free Software Foundation.
 
 #include <QDebug>
 
-#ifdef QT5_SUPPORT
-  #include <QtWidgets/QApplication>
-  #include <QtWidgets/QGraphicsItem>
-  #include <QtWidgets/QGraphicsScene>
-  #include <QtWidgets/QGraphicsView>
-  #include <QtWidgets/QWidget>
-  #include <QtQuick/QQuickItem>
-  #include <QtQuick/QQuickWindow>
-  #include <QtQuickWidgets/QQuickWidget>
-#else
-  #include <QGraphicsItem>
-  #include <QGraphicsScene>
-  #include <QGraphicsView>
-  #include <QApplication>
-  #include <QWidget>
-#endif
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QGraphicsItem>
+#include <QtWidgets/QGraphicsScene>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QWidget>
+#include <QtQuick/QQuickItem>
+#include <QtQuick/QQuickWindow>
+#include <QtQuickWidgets/QQuickWidget>
 
 #include <QMap>
 #include <QMetaProperty>
@@ -65,7 +57,6 @@ QList<NodeIntrospectionData> Introspect(QString const& query_string)
 
 QList<DBusNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
 {
-#ifdef QT5_SUPPORT
     std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QApplication::instance());
 
     // Add all QWidget top level widgets
@@ -78,13 +69,7 @@ QList<DBusNode::Ptr> GetNodesThatMatchQuery(QString const& query_string)
     {
         root->AddChild((QObject*) widget);
     }
-#else
-    std::shared_ptr<RootNode> root = std::make_shared<RootNode>(QApplication::instance());
-    foreach (QWidget *widget, QApplication::topLevelWidgets())
-    {
-        root->AddChild((QObject*) widget);
-    }
-#endif
+
     QList<DBusNode::Ptr> node_list;
 
     xpathselect::NodeVector list = xpathselect::SelectNodes(root, query_string.toStdString());
@@ -186,17 +171,19 @@ void AddCustomProperties(QObject* obj, QVariantMap &properties)
                     scene_rect.size());
         properties["globalRect"] = PackProperty(global_rect);
     }
-#ifdef QT5_SUPPORT
+
     // ... and support for QQuickItems (aka. Qt5 Declarative items)
     else if (QQuickItem *i = qobject_cast<QQuickItem*>(obj))
     {
         QQuickWindow *view = i->window();
-        QRectF bounding_rect = i->boundingRect();
-        bounding_rect = i->mapRectToScene(bounding_rect);
-        QRect global_rect = QRect(view->mapToGlobal(bounding_rect.toRect().topLeft()), bounding_rect.size().toSize());
-        properties["globalRect"] = PackProperty(global_rect);
+
+        if (view) {
+            QRectF bounding_rect = i->boundingRect();
+            bounding_rect = i->mapRectToScene(bounding_rect);
+            QRect global_rect = QRect(view->mapToGlobal(bounding_rect.toRect().topLeft()), bounding_rect.size().toSize());
+            properties["globalRect"] = PackProperty(global_rect);
+        }
     }
-#endif
 }
 
 QVariant PackProperty(QVariant const& prop)
@@ -310,6 +297,7 @@ QVariant PackProperty(QVariant const& prop)
 
     default:
     {
+        //qDebug() << "Unsupported type:" << prop.typeName();
         return QVariant(); // unsupported type, will not be sent to the client.
     }
     }
@@ -325,17 +313,40 @@ QStringList GetNodeChildNames(QObject* obj)
             child_names.append(GetNodeName(child));
         }
     }
-#ifdef QT5_SUPPORT
     // In case of a QQuickWindow, add the main contentItem()
     if (QQuickWindow *window = qobject_cast<QQuickWindow*>(obj)) {
-        child_names.append(GetNodeName(window->contentItem()));
+        //child_names.append(GetNodeName(window->contentItem()));
+
+        // Process data property
+        if (window->property("data").isValid()) {
+            QQmlListProperty<QObject> data = qvariant_cast<QQmlListProperty<QObject>>(window->property("data"));
+            qDebug() << "Getting data property for QQuickWindow: " << data.count(&data);
+
+            for (int index = 0; index < data.count(&data); index++) {
+                QObject* item = data.at(&data, index);
+                child_names.append(GetNodeName(item));
+            }
+
+        }
+
     }
     // In case of QQuickItems include also childItems(), not only children().
     if (QQuickItem *item = qobject_cast<QQuickItem*>(obj)) {
         foreach (QObject *child, item->childItems()) {
             child_names.append(GetNodeName(child));
         }
+    }        
+
+    // QML Support Enhancements
+    QString nodeName = GetNodeName(obj);
+
+    if (nodeName.startsWith("QQuickLoader") && obj->property("item").isValid()) {
+        QObject *child = qvariant_cast<QObject *>(obj->property("item"));
+
+        if (child) {
+            child_names.append(GetNodeName(child));
+        }
     }
-#endif
+
     return child_names;
 }

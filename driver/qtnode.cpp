@@ -317,7 +317,6 @@ xpathselect::NodeVector QObjectNode::Children() const
 
     CollectSpecialChildren(object_, children, shared_from_this());
 
-#ifdef QT5_SUPPORT
     // Qt5's hierarchy for QML has changed a bit:
     // - On top there's a QQuickView which holds all the QQuick items
     // - QQuickItems don't always follow the QObject type hierarchy (e.g. QQuickListView does not), therefore we use the QQuickItem's childItems()
@@ -334,6 +333,22 @@ xpathselect::NodeVector QObjectNode::Children() const
         children.push_back(std::make_shared<QObjectNode>(wview->rootObject(), shared_from_this()));
     }
 
+    QQuickWindow *quickWindow = qobject_cast<QQuickWindow*>(object_);
+    if (quickWindow) {
+        //children.push_back(std::make_shared<QObjectNode>(quickWindow->contentItem(), shared_from_this()));
+
+        // Process data property
+        if (quickWindow->property("data").isValid()) {
+            QQmlListProperty<QObject> data = qvariant_cast<QQmlListProperty<QObject>>(quickWindow->property("data"));
+
+            for (int index = 0; index < data.count(&data); index++) {
+                QObject* item = data.at(&data, index);
+
+                children.push_back(std::make_shared<QObjectNode>(item, shared_from_this()));
+            }
+        }
+    }
+
     QQuickItem* item = qobject_cast<QQuickItem*>(object_);
     if (item) {
         foreach (QQuickItem *childItem, item->childItems()) {
@@ -348,29 +363,6 @@ xpathselect::NodeVector QObjectNode::Children() const
                 children.push_back(std::make_shared<QObjectNode>(child, shared_from_this()));
         }
     }
-
-#else
-    foreach (QObject *child, object_->children())
-    {
-        if (child->parent() == object_)
-            children.push_back(std::make_shared<QObjectNode>(child, shared_from_this()));
-    }
-
-    // If our wrapped object is a QGraphicsScene, we need to explicitly grab any child graphics
-    // items that are derived from QObjects. Declarative UIs use this idiom, so this need to be
-    // done to support QML applications.
-    QGraphicsScene *scene = qobject_cast<QGraphicsScene*>(object_);
-    if (scene)
-    {
-        QList<QGraphicsItem*> child_items = scene->items();
-        foreach(QGraphicsItem* item, child_items)
-        {
-            QGraphicsObject *obj = item->toGraphicsObject();
-            if (obj && ! obj->parent())
-                children.push_back(std::make_shared<QObjectNode>(obj, shared_from_this()));
-        }
-    }
-#endif
 
     return children;
 }
