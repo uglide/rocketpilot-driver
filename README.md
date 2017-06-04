@@ -11,7 +11,7 @@ internals of Qt5 / QMl-based applications.
 - Add Windows support
 
 
-###H ow does it work?
+### How does it work?
 
 Qt loads a 'qt_testability' library, if *either* the ``-testability`` command
 line argument is passed to ``QCoreApplication``, *or* if the
