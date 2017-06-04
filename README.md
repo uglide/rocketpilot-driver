@@ -1,17 +1,17 @@
 ## Unofficial Autopilot Qt Driver
 
-###What is this?
+### What is this?
 
 
 This is modified the Qt driver for autopilot. It allows autopilot to inspect the
 internals of Qt5 / QMl-based applications.
 
-###Goals of fork
+### Goals of fork
 - Improve introspection
 - Add Windows support
 
 
-###How does it work?
+###H ow does it work?
 
 Qt loads a 'qt_testability' library, if *either* the ``-testability`` command
 line argument is passed to ``QCoreApplication``, *or* if the
@@ -22,10 +22,10 @@ Upon being loaded, it connects to the system bus, and exposes an interface that
 the autopilot test runner knows how to interact with.
 
 
-###Build
+### Build
 
-####Ubuntu
-#####Dependencies
+#### Ubuntu
+##### Dependencies
 ```
 sudo apt-get install libxpathselect-dev
 
