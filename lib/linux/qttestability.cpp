@@ -1,5 +1,6 @@
 /*
 Copyright 2012 Canonical
+Copyright 2016-2017 Igor Malinovskiy
 
 This program is free software: you can redistribute it and/or modify it
 under the terms of the GNU General Public License version 3, as published
@@ -8,12 +9,7 @@ by the Free Software Foundation.
 
 #include "qttestability.h"
 
-#ifdef Q_OS_LINUX
-    #include <link.h>
-#else
-    #include <dlfcn.h>
-#endif
-
+#include <dlfcn.h>
 #include <string>
 #include <iostream>
 
@@ -21,7 +17,7 @@ by the Free Software Foundation.
 void qt_testability_init(void)
 {
     std::string driver_name;
-    #ifdef Q_OS_LINUX
+    #ifdef __linux__
         driver_name = "libautopilot_driver_qt5.so.1";
     #else
         driver_name = "libautopilot_driver_qt5.dylib";
