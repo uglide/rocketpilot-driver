@@ -11,9 +11,7 @@ QMAKE_CXXFLAGS -= -pedantic
 win32* {
     SOURCES = $$PWD/windows/qttestability.cpp
     HEADERS = $$PWD/windows/qttestability.h
-}
-
-unix:!macx {
+} else {
     SOURCES = $$PWD/linux/qttestability.cpp
     HEADERS = $$PWD/linux/qttestability.h
 }

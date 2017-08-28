@@ -7,13 +7,15 @@ DESTDIR=..
 QT = core gui dbus quick quickwidgets widgets testlib
 QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
 
-win32* {
-    INCLUDEPATH += $$PWD/../3rdparty
-    LIBS += $$PWD/../bin/libxpathselect.a
-} else {
+if (unix:!macx) {
     CONFIG += link_pkgconfig
     PKGCONFIG += xpathselect
+} else {
+    INCLUDEPATH += $$PWD/../3rdparty/
+    LIBS += $$PWD/../3rdparty/libxpathselect.a
 }
+
+message($$INCLUDEPATH)
 
 SOURCES = qttestability.cpp \
           dbus_adaptor.cpp \

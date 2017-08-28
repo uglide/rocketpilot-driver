@@ -36,5 +36,9 @@ void qt_testability_init(void)
     if (!connection.registerObject(DBUS_OBJECT_PATH, obj))
     {
         qDebug("Unable to register object on D-Bus! Testability interface will not be available.");
+    } else {
+        qDebug() << connection.name() << connection.isConnected();
     }
+
+    connection.registerService("name.glide.rocketpilot");
 }

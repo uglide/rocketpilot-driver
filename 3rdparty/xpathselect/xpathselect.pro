@@ -10,3 +10,8 @@ HEADERS = *.h
 
 target.file = libxpathselect*
 INSTALLS += target
+
+unix:macx {
+  CONFIG += staticlib
+  INCLUDEPATH += /usr/local/Cellar/boost/1.65.0/include/
+}
