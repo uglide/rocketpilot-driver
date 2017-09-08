@@ -31,3 +31,11 @@ sudo apt-get install libxpathselect-dev
 
 ```
 
+#### OS X
+```
+brew install boost
+cd 3rdparty/xpathselect
+qmake
+make -j 2
+```
+
