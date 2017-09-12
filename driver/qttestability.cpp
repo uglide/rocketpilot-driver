@@ -32,6 +32,11 @@ void qt_testability_init(void)
     new AutopilotQtSpecificAdaptor(obj);
 
     QDBusConnection connection = QDBusConnection::sessionBus();
+    
+    if (!connection.isConnected()) {
+        qDebug("Cannot connect to the D-Bus session bus. Please check your system settings and try again.");
+        return;
+    }
 
     if (!connection.registerObject(DBUS_OBJECT_PATH, obj))
     {
@@ -40,5 +45,7 @@ void qt_testability_init(void)
         qDebug() << connection.name() << connection.isConnected();
     }
 
-    connection.registerService("name.glide.rocketpilot");
+    if (!connection.registerService("name.glide.rocketpilot")) {
+        qDebug("Unable to register service on D-Bus! Testability interface will not be available.");
+    }
 }
