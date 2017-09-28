@@ -3,7 +3,7 @@
 ### What is this?
 
 
-This is modified the Qt driver for autopilot. It allows autopilot to inspect the
+This is modified the Qt driver for autopilot. It allows [RocketPilot](https://github.com/uglide/RocketPilot) (Autopilot fork) to inspect the
 internals of Qt5 / QMl-based applications.
 
 ### Goals of fork
@@ -20,7 +20,7 @@ line argument is passed to ``QCoreApplication``, *or* if the
 library, along with several others.
 
 Upon being loaded, it connects to the system bus, and exposes an interface that
-the autopilot test runner knows how to interact with.
+the RocketPilot knows how to interact with.
 
 
 ### Build
