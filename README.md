@@ -1,4 +1,4 @@
-## RocketPilot-Driver aka *Unofficial Autopilot Qt Driver*
+## RocketPilot-Driver aka *RocketPilot Qt Testability Driver*
 
 ### What is this?
 
