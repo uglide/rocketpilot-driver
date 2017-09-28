@@ -2,9 +2,8 @@
 
 ### What is this?
 
-
-This is modified the Qt driver for autopilot. It allows [RocketPilot](https://github.com/uglide/RocketPilot) (Autopilot fork) to inspect the
-internals of Qt5 / QMl-based applications.
+This is Qt testability driver which allows [RocketPilot](https://github.com/uglide/RocketPilot) (Autopilot fork) to inspect the
+internals of Qt5 / QML-based applications.
 
 ### Goals of fork
 - Improve introspection :white_check_mark:
