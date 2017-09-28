@@ -315,20 +315,7 @@ QStringList GetNodeChildNames(QObject* obj)
     }
     // In case of a QQuickWindow, add the main contentItem()
     if (QQuickWindow *window = qobject_cast<QQuickWindow*>(obj)) {
-        //child_names.append(GetNodeName(window->contentItem()));
-
-        // Process data property
-        if (window->property("data").isValid()) {
-            QQmlListProperty<QObject> data = qvariant_cast<QQmlListProperty<QObject>>(window->property("data"));
-            qDebug() << "Getting data property for QQuickWindow: " << data.count(&data);
-
-            for (int index = 0; index < data.count(&data); index++) {
-                QObject* item = data.at(&data, index);
-                child_names.append(GetNodeName(item));
-            }
-
-        }
-
+        child_names.append(GetNodeName(window->contentItem()));
     }
     // In case of QQuickItems include also childItems(), not only children().
     if (QQuickItem *item = qobject_cast<QQuickItem*>(obj)) {
