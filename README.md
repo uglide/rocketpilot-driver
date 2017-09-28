@@ -1,4 +1,4 @@
-## Unofficial Autopilot Qt Driver
+## RocketPilot-Driver aka *Unofficial Autopilot Qt Driver*
 
 ### What is this?
 
@@ -7,8 +7,9 @@ This is modified the Qt driver for autopilot. It allows autopilot to inspect the
 internals of Qt5 / QMl-based applications.
 
 ### Goals of fork
-- Improve introspection
-- Add Windows support
+- Improve introspection :white_check_mark:
+- Add OSX support :white_check_mark:
+- Add Windows support :soon:
 
 
 ### How does it work?
