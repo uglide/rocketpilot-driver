@@ -13,5 +13,5 @@ INSTALLS += target
 
 unix:macx {
   CONFIG += staticlib
-  INCLUDEPATH += /usr/local/Cellar/boost/1.65.0/include/
+  INCLUDEPATH += /usr/local/opt/boost/include/
 }
