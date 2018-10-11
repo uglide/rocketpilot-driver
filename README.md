@@ -39,3 +39,14 @@ qmake
 make -j 2
 ```
 
+### Windows (Mingw)
+1. Install Msys2 to C:\msys2 & update core packages
+2. Install packages:
+```
+pacman -S mingw32/mingw-w64-i686-dbus
+pacman -S mingw32/mingw-w64-i686-dbus-c++
+pacman -S mingw32/mingw-w64-i686-boost
+pacman -S mingw32/mingw-w64-i686-dlfcn
+```
+3. Build xpathselect (3rdparty/xpathselect) using QtCreator with Qt 5.9 Mingw
+4. Build rocketpilot-driver
