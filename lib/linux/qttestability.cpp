@@ -18,9 +18,9 @@ void qt_testability_init(void)
 {
     std::string driver_name;
     #ifdef __linux__
-        driver_name = "libautopilot_driver_qt5.so.1";
+        driver_name = "librocketpilot_driver_qt5.so.1";
     #else
-        driver_name = "libautopilot_driver_qt5.dylib";
+        driver_name = "librocketpilot_driver_qt5.dylib";
     #endif
 
     void* driver = dlopen(driver_name.c_str(), RTLD_LAZY);

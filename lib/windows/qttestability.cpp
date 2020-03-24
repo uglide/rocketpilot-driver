@@ -5,7 +5,7 @@
 
 void qt_testability_init(void)
 {    
-    HINSTANCE driver = LoadLibrary(L"libautopilot_driver_qt5.dll");
+    HINSTANCE driver = LoadLibrary(L"rocketpilot_driver_qt5.dll");
     if (!driver)
     {
         std::cerr << "Cannot load library" << std::endl

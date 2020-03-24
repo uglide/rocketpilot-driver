@@ -2,3 +2,4 @@ Makefile
 libqttestability.so*
 *.pro.user*
 moc_*.cpp
+3rdparty/xpathselect/boost*

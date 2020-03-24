@@ -2,8 +2,13 @@ TEMPLATE = lib
 TARGET = xpathselect
 DESTDIR=..
 
-QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
-QMAKE_CXXFLAGS -= -pedantic
+win32* {
+   CONFIG += c++11 staticlib
+   INCLUDEPATH += $$PWD/boost.1.71.0.0/lib/native/include
+} else {
+   QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
+   QMAKE_CXXFLAGS -= -pedantic
+}
 
 SOURCES = *.cpp
 HEADERS = *.h
