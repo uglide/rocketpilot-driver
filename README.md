@@ -8,7 +8,7 @@ internals of Qt5 / QML-based applications.
 ### Goals of fork
 - Improve introspection :white_check_mark:
 - Add OSX support :white_check_mark:
-- Add Windows support :soon:
+- Add Windows support :white_check_mark:
 
 
 ### How does it work?
@@ -25,28 +25,43 @@ the RocketPilot knows how to interact with.
 ### Build
 
 #### Ubuntu
-##### Dependencies
 ```
 sudo apt-get install libxpathselect-dev
+qmake
+make -j 2
 
 ```
 
-#### OS X
+#### macOS
 ```
 brew install boost
 cd 3rdparty/xpathselect
 qmake
 make -j 2
+cd ../../
+qmake
+make -j 2
 ```
 
-### Windows (Mingw)
-1. Install Msys2 to C:\msys2 & update core packages
-2. Install packages:
+
+#### Windows
+1. Install nuget https://www.nuget.org/downloads
+2. Install boost lib:
 ```
-pacman -S mingw32/mingw-w64-i686-dbus
-pacman -S mingw32/mingw-w64-i686-dbus-c++
-pacman -S mingw32/mingw-w64-i686-boost
-pacman -S mingw32/mingw-w64-i686-dlfcn
+cd 3rdparty/xpathselect
+nuget install boost -Version 1.71.0
 ```
-3. Build xpathselect (3rdparty/xpathselect) using QtCreator with Qt 5.9 Mingw
+3. Build xpathselect (3rdparty/xpathselect) using QtCreator
 4. Build rocketpilot-driver
+5. Install Msys2 to C:\msys2 & update core packages
+6. Install dbus:
+```
+pacman -S mingw64/mingw-w64-x86_64-dbus
+```
+7. Update C:\msys64\mingw64\share\dbus-1\session.conf :
+```
+<listen>tcp:host=localhost,port=54321,family=ipv4</listen>
+```
+8. Add `C:\msys64\mingw64\bin` to PATH
+9. Add `DBUS_SESSION_BUS_ADDRESS` env variable with value `tcp:host=localhost,port=54321,family=ipv4`
+10. Run `dbus-daemon.exe --session`

@@ -1,13 +1,21 @@
 TEMPLATE = lib
 
 DEFINES += QT5_SUPPORT
-TARGET = autopilot_driver_qt5
+TARGET = rocketpilot_driver_qt5
 
 DESTDIR=..
 QT = core gui dbus quick quickwidgets widgets testlib
-QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
 
-if (unix:!macx) {
+win32* {
+    CONFIG += c++11
+} else {
+    QMAKE_CXXFLAGS += -std=c++0x -Wl,--no-undefined
+}
+
+win32* {
+    INCLUDEPATH += $$PWD/../3rdparty/
+    LIBS += $$PWD/../3rdparty/xpathselect.lib
+} else:unix:!macx {
     CONFIG += link_pkgconfig
     PKGCONFIG += xpathselect
 } else {

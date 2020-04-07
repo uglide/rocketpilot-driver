@@ -23,8 +23,11 @@
 namespace xpathselect
 {
     /// Search the node tree beginning with 'root' and return nodes that
-    /// match 'query'.
-    extern "C" NodeVector SelectNodes(Node::Ptr const& root, std::string query);
+    /// match 'query'.    
+    #if !(defined(WIN32) | defined(WIN64))
+    extern "C"
+    #endif
+    NodeVector SelectNodes(Node::Ptr const& root, std::string query);
 }
 
 #endif

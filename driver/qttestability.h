@@ -9,7 +9,11 @@ by the Free Software Foundation.
 #ifndef QTTESTABILITY_H
 #define QTTESTABILITY_H
 
-extern "C" void qt_testability_init(void);
+extern "C"
+#if (defined(WIN32) | defined(WIN64))
+__declspec(dllexport)
+#endif
+void qt_testability_init(void);
 
 
 #endif
