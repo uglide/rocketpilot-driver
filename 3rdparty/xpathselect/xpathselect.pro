@@ -19,4 +19,5 @@ INSTALLS += target
 unix:macx {
   CONFIG += staticlib
   INCLUDEPATH += /usr/local/opt/boost/include/
+  INCLUDEPATH += /opt/homebrew/opt/boost/include/
 }
